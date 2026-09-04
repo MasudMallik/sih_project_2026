@@ -1,2 +1,11 @@
 scikit-learn
 mlflow
+
+langchain
+langchain-core
+langchain-community
+langchain-groq
+langchain-chroma
+dotenv
+sentence-transformers
+pypdf
