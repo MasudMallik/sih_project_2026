@@ -29,7 +29,7 @@ export function SOSButton({
 
   const getButtonClasses = () => {
     let base =
-      "h-[148px] w-[148px] rounded-full border-none text-[30px] font-bold letter-spacing-1 cursor-pointer transition-all";
+      "h-[204px] w-[204px] rounded-full border-[8px] border-[#713020] text-[38px] font-bold tracking-wide cursor-pointer transition-all";
 
     if (isSuccess) {
       return (
@@ -58,35 +58,33 @@ export function SOSButton({
   };
 
   return (
-    <div className="flex justify-center px-4 py-6 max-md:px-6">
-      <div className="w-full max-w-[480px] rounded-xl border border-[#223B29] bg-[#16281C] p-8 text-center">
-        <button
-          onClick={onTap}
-          disabled={disabled || isLoading}
-          className={getButtonClasses()}
-        >
-          {isLoading ? (
-            <span className="inline-block animate-spin">⟳</span>
-          ) : (
-            getButtonText()
-          )}
-        </button>
-
-        <div className="mt-4.5 text-[15px] font-semibold text-[#EAE7DA]">
-          {getCaption()}
-        </div>
-
-        <div className="mt-1.5 max-w-[360px] mx-auto text-[12px] text-[#93A490]">
-          Shares your live location with the nearest rescue team the moment you
-          tap
-        </div>
-
-        {isError && (
-          <div className="mt-4 text-[12px] text-[#E8756A]">
-            Failed to send SOS. Please call 1078 directly or try again.
-          </div>
+    <section className="flex min-h-[370px] w-full flex-col items-center justify-center border-y border-[#223B29] bg-[#102519] px-6 py-8 text-center">
+      <button
+        onClick={onTap}
+        disabled={disabled || isLoading}
+        className={getButtonClasses()}
+      >
+        {isLoading ? (
+          <span className="inline-block animate-spin">⟳</span>
+        ) : (
+          getButtonText()
         )}
+      </button>
+
+      <div className="mt-4 text-[17px] font-semibold text-[#EAE7DA]">
+        {getCaption()}
       </div>
-    </div>
+
+      <div className="mt-2 max-w-[460px] text-[14px] leading-5 text-[#93A490]">
+        Shares your live location with the nearest rescue team the moment you
+        tap
+      </div>
+
+      {isError && (
+        <div className="mt-4 text-[12px] text-[#E8756A]">
+          Failed to send SOS. Please call 1078 directly or try again.
+        </div>
+      )}
+    </section>
   );
 }

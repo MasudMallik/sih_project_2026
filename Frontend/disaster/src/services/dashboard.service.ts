@@ -1,47 +1,30 @@
 /**
  * Dashboard Service - Data Fetching
  * 
- * This file provides the API integration layer for dashboard data.
- * Currently uses mock data, easily replaceable with backend API calls.
- * 
- * Later, replace `getMockDashboard` with real API call:
- * 
- * export const fetchDashboard = async () => {
- *   const response = await fetch('/api/dashboard', {
- *     headers: { 'Authorization': `Bearer ${token}` }
- *   });
- *   if (!response.ok) throw new Error('Failed to fetch dashboard');
- *   return response.json();
- * };
+ * Dashboard data is owned by the backend and database. This service is the
+ * frontend boundary for that API response.
  */
 
-import { getMockDashboard } from "../mock/dashboard.mock";
 import type { Dashboard, DashboardLoadingState } from "../@types/interface/dashboard";
+
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
 
 /**
  * Fetch dashboard data
  * 
- * Currently returns mock data.
- * Later, connect to backend API and replace mock implementation.
- * 
- * TODO: Replace getMockDashboard() with actual API call
+ * Fetch the dashboard assembled by the backend from the database.
  */
 export const fetchDashboard = async (): Promise<Dashboard> => {
-  try {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
+  const response = await fetch(`${API_BASE_URL}/api/dashboard`, {
+    headers: { Accept: "application/json" },
+    credentials: "include",
+  });
 
-    // TODO: Replace with real API call:
-    // const response = await fetch('/api/dashboard', {
-    //   headers: { 'Authorization': `Bearer ${getToken()}` }
-    // });
-    // if (!response.ok) throw new Error('Failed to fetch dashboard');
-    // return response.json();
-
-    return getMockDashboard();
-  } catch (error) {
-    throw error instanceof Error ? error : new Error("Failed to fetch dashboard");
+  if (!response.ok) {
+    throw new Error(`Failed to load dashboard (${response.status})`);
   }
+
+  return (await response.json()) as Dashboard;
 };
 
 /**

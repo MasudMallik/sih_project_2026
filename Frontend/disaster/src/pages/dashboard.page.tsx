@@ -4,11 +4,10 @@ import { RiskSummary } from "../components/dashboard/RiskSummary";
 import { WeatherSnapshot } from "../components/dashboard/WeatherSnapshot";
 import { IncidentReportForm } from "../components/dashboard/IncidentReportForm";
 import { SOSButton } from "../components/dashboard/SOSButton";
-import type { Dashboard, SOSState } from "../@types/interface/dashboard";
+import type { Dashboard, DisasterType, SOSState } from "../@types/interface/dashboard";
 import { fetchDashboard } from "../services/dashboard.service";
 import { submitIncidentReport } from "../services/incident.service";
 import { sendSOS } from "../services/sos.service";
-import { mockDisasterTypes } from "../mock/dashboard.mock";
 
 export default function DisasterDashboard() {
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
@@ -44,7 +43,7 @@ export default function DisasterDashboard() {
     try {
       const response = await submitIncidentReport({
         location: data.location,
-        disasterType: data.disasterType as any,
+        disasterType: data.disasterType as DisasterType,
         description: data.description,
         timestamp: new Date().toISOString(),
       });
@@ -180,7 +179,7 @@ export default function DisasterDashboard() {
 
         {/* Incident Report Form */}
         <IncidentReportForm
-          disasterTypes={mockDisasterTypes}
+          disasterTypes={dashboard.disasterTypes}
           onSubmit={handleIncidentSubmit}
           isLoading={isLoading}
         />

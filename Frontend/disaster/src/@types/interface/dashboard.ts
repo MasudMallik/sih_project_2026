@@ -105,6 +105,7 @@ export interface Dashboard {
   location: Location;
   risk: RiskSummary;
   weather: Weather;
+  disasterTypes: DisasterTypeOption[];
   lastSyncTime: string;
   lastSyncMinutesAgo: number;
 }

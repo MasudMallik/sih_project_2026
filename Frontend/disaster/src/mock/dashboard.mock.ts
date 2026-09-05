@@ -115,6 +115,7 @@ export const mockDashboard: Dashboard = {
   location: mockLocation,
   risk: mockRiskSummary,
   weather: mockWeather,
+  disasterTypes: mockDisasterTypes,
   lastSyncTime: new Date().toISOString(),
   lastSyncMinutesAgo: 2,
 };
