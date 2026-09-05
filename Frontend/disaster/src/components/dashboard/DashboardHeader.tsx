@@ -3,14 +3,12 @@ import type { User } from "../../@types/interface/dashboard";
 interface DashboardHeaderProps {
   user: User;
   onNotificationClick?: () => void;
-  onSettingsClick?: () => void;
   onProfileClick?: () => void;
 }
 
 export function DashboardHeader({
   user,
   onNotificationClick,
-  onSettingsClick,
   onProfileClick,
 }: DashboardHeaderProps) {
   return (
@@ -39,15 +37,6 @@ export function DashboardHeader({
           >
             🔔
             <span className="absolute top-[-2px] right-[-2px] h-[9px] w-[9px] rounded-full border-2 border-[#0F1D14] bg-[#C0392B]"></span>
-          </button>
-
-          {/* Settings */}
-          <button
-            onClick={onSettingsClick}
-            className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[#2A4632] bg-[#16281C] text-lg text-[#93A490] transition-colors hover:border-[#E08A3E] hover:text-[#E08A3E]"
-            title="Settings"
-          >
-            ⚙
           </button>
 
           {/* Profile */}

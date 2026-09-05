@@ -146,7 +146,6 @@ export default function DisasterDashboard() {
       <DashboardHeader
         user={dashboard.user}
         onNotificationClick={() => console.log("Notifications")}
-        onSettingsClick={() => console.log("Settings")}
         onProfileClick={() => console.log("Profile")}
       />
 

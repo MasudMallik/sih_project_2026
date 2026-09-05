@@ -32,10 +32,7 @@ export default function SignUp() {
   const handleSuccess = () => {
     showToast("success", "Account created successfully", "Welcome to Geo Rakshak.");
     setSubmitted(true);
-    // Simulated redirect — replace with real router navigation.
-    setTimeout(() => {
-      console.log("Navigating to /dashboard…");
-    }, 1200);
+    navigate("/dashboard");
   };
 
   return (
