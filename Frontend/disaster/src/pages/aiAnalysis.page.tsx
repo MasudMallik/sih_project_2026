@@ -9,6 +9,7 @@ import React, {
   type PropsWithChildren,
 } from "react";
 import { Send, Mic, X, Keyboard, ArrowLeft, Trash2 } from "lucide-react";
+import { sendChatMessage } from "../services/chat.service";
 
 /* ============================================================================
    BRAND TOKENS
@@ -43,8 +44,8 @@ type Message = {
 type ChatContextValue = {
   messages: Message[];
   isTyping: boolean;
-  sendUserMessage: (text: string) => void;
-  sendVoiceExchange: (transcript: string, spokenReply: string) => void;
+  error: string | null;
+  sendUserMessage: (text: string, viaVoice?: boolean) => Promise<string | null>;
   clearChat: () => void;
 };
 
@@ -54,53 +55,6 @@ function useChat(): ChatContextValue {
   if (!context) throw new Error("useChat must be used inside ChatProvider");
   return context;
 }
-
-const SEED_MESSAGES: Message[] = [
-  {
-    id: "m1",
-    sender: "ai",
-    text: "I'm watching rainfall, river gauges, and slope sensors across the North Eastern Region. Ask me about a village, a route, or a river, and I'll tell you what the data says right now.",
-  },
-  {
-    id: "m2",
-    sender: "user",
-    text: "Is Lachen village at risk this week?",
-  },
-  {
-    id: "m3",
-    sender: "ai",
-    text: "Rainfall in the Teesta basin is 40% above the weekly average. Two slope sensors above Lachen are showing rising soil saturation. Current risk: Moderate. I'll message you the moment it crosses High.",
-  },
-];
-
-const QUICK_ACTIONS = [
-  "Should residents evacuate?",
-  "Is the road to Chungthang open?",
-  "How high is the Teesta right now?",
-];
-
-const KEYWORD_BANK = [
-  {
-    match: ["evacuat", "leave", "should residents", "what should"],
-    reply:
-      "Move loose stock and vehicles away from the slope side of the village. Keep the route toward Chungthang clear for responders. Want me to notify the local warden?",
-  },
-  {
-    match: ["route", "road", "highway", "bridge", "chungthang"],
-    reply:
-      "NH10 near Rangpo is passable but narrowed by debris. The Teesta bridge crossing is closed until the water level drops below the amber mark, expected around 6 PM.",
-  },
-  {
-    match: ["river", "flood", "water level", "teesta"],
-    reply:
-      "Teesta gauge at Melli is at 4.8m, half a metre below the flood mark, and rising slowly. I'll flag it the moment the trend steepens.",
-  },
-  {
-    match: ["rain", "rainfall", "monsoon"],
-    reply:
-      "62mm has fallen in the last three hours over the Rangpo catchment. That's the kind of burst that has preceded slope failures here before, so sensors in that zone are on a tighter reporting cycle now.",
-  },
-];
 
 const HIGHLIGHT_TERMS = [
   "Teesta",
@@ -126,54 +80,40 @@ function highlightCaption(text: string) {
   );
 }
 
-function craftReply(userText: string) {
-  const lower = userText.toLowerCase();
-  const hit = KEYWORD_BANK.find((k) => k.match.some((w) => lower.includes(w)));
-  if (hit) return hit.reply;
-  return "I don't have a confident read on that yet, but I'm cross-checking the nearest sensor cluster. Current regional risk is Moderate with no High-risk zones active.";
-}
-
 function ChatProvider({ children }: PropsWithChildren) {
-  const [messages, setMessages] = useState(SEED_MESSAGES);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const pushAIReply = useCallback((toText: string) => {
+  const sendUserMessage = useCallback(async (text: string, viaVoice = false) => {
+    if (!text.trim()) return null;
+    setError(null);
+    setMessages((prev) => [...prev, { id: crypto.randomUUID(), sender: "user", text, viaVoice }]);
     setIsTyping(true);
-    const delay = 850 + Math.random() * 650;
-    setTimeout(() => {
+    try {
+      const reply = await sendChatMessage(text);
       setMessages((prev) => [
         ...prev,
-        { id: crypto.randomUUID(), sender: "ai", text: craftReply(toText) },
+        { id: crypto.randomUUID(), sender: "ai", text: reply, viaVoice },
       ]);
+      return reply;
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Unable to contact the assistant.");
+      return null;
+    } finally {
       setIsTyping(false);
-    }, delay);
-  }, []);
-
-  const sendUserMessage = useCallback(
-    (text: string) => {
-      if (!text.trim()) return;
-      setMessages((prev) => [...prev, { id: crypto.randomUUID(), sender: "user", text }]);
-      pushAIReply(text);
-    },
-    [pushAIReply]
-  );
-
-  const sendVoiceExchange = useCallback((transcript: string, spokenReply: string) => {
-    setMessages((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), sender: "user", text: transcript, viaVoice: true },
-      { id: crypto.randomUUID(), sender: "ai", text: spokenReply, viaVoice: true },
-    ]);
+    }
   }, []);
 
   const clearChat = useCallback(() => {
     setIsTyping(false);
+    setError(null);
     setMessages([]);
   }, []);
 
   return (
     <ChatContext.Provider
-      value={{ messages, isTyping, sendUserMessage, sendVoiceExchange, clearChat }}
+      value={{ messages, isTyping, error, sendUserMessage, clearChat }}
     >
       {children}
     </ChatContext.Provider>
@@ -215,6 +155,28 @@ function VoiceOrb({ size = 120, state = "idle", showIcon = false }: VoiceOrbProp
   );
 }
 
+type SpeechRecognitionResultEvent = {
+  results: ArrayLike<{ 0: { transcript: string } }>;
+};
+
+type SpeechRecognitionInstance = {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start: () => void;
+  stop: () => void;
+  onresult: ((event: SpeechRecognitionResultEvent) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+};
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
+
+type SpeechWindow = Window & {
+  SpeechRecognition?: SpeechRecognitionConstructor;
+  webkitSpeechRecognition?: SpeechRecognitionConstructor;
+};
+
 /* ============================================================================
    VOICE POPUP - full-screen takeover, styled after the reference: a back
    arrow top-left, a short line of context in the upper-middle area, and
@@ -224,12 +186,13 @@ function VoiceOrb({ size = 120, state = "idle", showIcon = false }: VoiceOrbProp
    caption just gives the person something to read while that happens.
 ============================================================================ */
 function VoicePopup({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { sendVoiceExchange } = useChat();
+  const { sendUserMessage } = useChat();
   const [status, setStatus] = useState<VoiceOrbProps["state"]>("idle");
   const [caption, setCaption] = useState(
     "Ask me about a village, a route, or a river — I'm listening."
   );
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const recognition = useRef<SpeechRecognitionInstance | null>(null);
 
   const clearTimers = () => {
     timers.current.forEach(clearTimeout);
@@ -241,34 +204,41 @@ function VoicePopup({ open, onClose }: { open: boolean; onClose: () => void }) {
     setStatus("listening");
     setCaption("Listening…");
 
-    const sampleQuestions = [
-      "Is the road to Chungthang open right now?",
-      "How high is the Teesta at Melli?",
-      "Any villages at high risk tonight?",
-    ];
-    const question = sampleQuestions[Math.floor(Math.random() * sampleQuestions.length)];
+    const speechWindow = window as SpeechWindow;
+    const SpeechRecognition = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setStatus("idle");
+      setCaption("Voice input is not supported in this browser. Use the text box instead.");
+      return;
+    }
 
-    timers.current.push(
-      setTimeout(() => {
-        setCaption(`"${question}"`);
-        setStatus("processing");
-      }, 1500)
-    );
-    timers.current.push(
-      setTimeout(() => {
-        const reply = craftReply(question);
+    const instance = new SpeechRecognition();
+    recognition.current = instance;
+    instance.continuous = false;
+    instance.interimResults = false;
+    instance.lang = "en-IN";
+    instance.onresult = async (event) => {
+      const transcript = event.results[0]?.[0]?.transcript.trim();
+      if (!transcript) return;
+      setStatus("processing");
+      setCaption(`"${transcript}"`);
+      const reply = await sendUserMessage(transcript, true);
+      if (reply) {
         setStatus("speaking");
         setCaption(reply);
-        sendVoiceExchange(question, reply);
-      }, 2600)
-    );
-    timers.current.push(
-      setTimeout(() => {
-        setStatus("listening");
-        setCaption("Go ahead, I'm still listening.");
-      }, 6600)
-    );
-  }, [sendVoiceExchange]);
+      } else {
+        setStatus("idle");
+      }
+    };
+    instance.onerror = () => {
+      setStatus("idle");
+      setCaption("Voice input could not be started. Use the text box instead.");
+    };
+    instance.onend = () => {
+      recognition.current = null;
+    };
+    instance.start();
+  }, [sendUserMessage]);
 
   useEffect(() => {
     if (open) {
@@ -281,6 +251,8 @@ function VoicePopup({ open, onClose }: { open: boolean; onClose: () => void }) {
       );
     } else {
       clearTimers();
+      recognition.current?.stop();
+      recognition.current = null;
     }
     return clearTimers;
   }, [open]);
@@ -290,6 +262,8 @@ function VoicePopup({ open, onClose }: { open: boolean; onClose: () => void }) {
       runExchange();
     } else {
       clearTimers();
+      recognition.current?.stop();
+      recognition.current = null;
       setStatus("idle");
       setCaption("Paused — tap the orb to keep talking.");
     }
@@ -412,7 +386,7 @@ function TypingIndicator() {
 }
 
 function ChatSection() {
-  const { messages, isTyping, sendUserMessage, clearChat } = useChat();
+  const { messages, isTyping, error, sendUserMessage, clearChat } = useChat();
   const [draft, setDraft] = useState("");
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [confirmingClear, setConfirmingClear] = useState(false);
@@ -488,19 +462,7 @@ function ChatSection() {
               <MessageBubble key={m.id} msg={m} />
             ))}
             {isTyping && <TypingIndicator />}
-          </div>
-
-          <div className="flex gap-2 flex-wrap px-4 pb-3">
-            {QUICK_ACTIONS.map((q) => (
-              <button
-                key={q}
-                onClick={() => sendUserMessage(q)}
-                className="text-xs px-3 py-1.5 rounded-full border transition-colors hover:bg-black/[0.03]"
-                style={{ borderColor: "#DED4BB", color: BRAND.inkSoft }}
-              >
-                {q}
-              </button>
-            ))}
+            {error && <p className="text-center text-xs text-red-700">{error}</p>}
           </div>
 
           <div className="relative p-3 border-t flex items-center gap-2" style={{ borderColor: "#DED4BB" }}>
