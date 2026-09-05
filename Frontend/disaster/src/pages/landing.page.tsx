@@ -1,5 +1,4 @@
 import { useEffect, useState, type MouseEvent } from "react";
-import { useLocation } from "react-router";
 
 const navItems = [["Home", "home"], ["About", "about"], ["Safety Tips", "safety-tips"], ["Contact", "contact"]] as const;
 const steps = [
@@ -23,29 +22,8 @@ function Brand() {
 
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const location = useLocation();
   
-  useEffect(() => {
-    // Handle scrolling from navigation state (coming from Signup page)
-    const scrollTarget = (location.state as any)?.scrollTo;
-    if (scrollTarget) {
-      setTimeout(() => {
-        const element = document.getElementById(scrollTarget);
-        if (element) {
-          element.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }
-      }, 100);
-      return;
-    }
-
-    // Handle scrolling from URL hash (direct navigation)
-    const hash = window.location.hash;
-    if (!hash) return;
-    
-    const id = hash.substring(1);
+  const scrollToSection = (id: string) => {
     setTimeout(() => {
       const element = document.getElementById(id);
       if (element) {
@@ -55,11 +33,42 @@ export default function LandingPage() {
         });
       }
     }, 100);
-  }, [location]);
+  };
+  
+  useEffect(() => {
+    // Priority 1: Check sessionStorage for scroll target (from Signup navigation)
+    const scrollTarget = sessionStorage.getItem("scrollTo");
+    if (scrollTarget) {
+      scrollToSection(scrollTarget);
+      sessionStorage.removeItem("scrollTo");
+      return;
+    }
+
+    // Priority 2: Check URL hash (direct navigation like /#about)
+    const hash = window.location.hash;
+    if (hash) {
+      const id = hash.substring(1);
+      scrollToSection(id);
+    }
+  }, []);
+  
+  useEffect(() => {
+    // Handle hash changes when user clicks hash links on Landing page
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        const id = hash.substring(1);
+        scrollToSection(id);
+      }
+    };
+    
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
   
   const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
     event.preventDefault();
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollToSection(id);
     setMenuOpen(false);
   };
   return <main className="min-h-screen bg-cream font-body text-ink antialiased">

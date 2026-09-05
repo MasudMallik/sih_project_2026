@@ -16,7 +16,8 @@ export default function SignUp() {
   const [submitted, setSubmitted] = useState(false);
 
   const handleNavClick = (sectionId: string) => {
-    navigate("/", { state: { scrollTo: sectionId } });
+    sessionStorage.setItem("scrollTo", sectionId);
+    navigate("/");
   };
 
   const handleGeoError = (message: string) => {
@@ -59,7 +60,7 @@ export default function SignUp() {
           <nav className="mx-auto flex max-w-6xl items-center justify-between" aria-label="Primary">
             <button
               onClick={() => handleNavClick("home")}
-              className="flex items-center gap-2 group hover:opacity-80 transition-opacity"
+              className="flex items-center gap-2 group hover:opacity-80 transition-opacity bg-none border-none cursor-pointer p-0"
             >
               <span className="h-2 w-2 rounded-full bg-[#D9A24B]" aria-hidden="true" />
               <span className="text-sm font-semibold tracking-wide text-[#F4EFE6]">
