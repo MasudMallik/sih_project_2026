@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from dashboardfile import get_current_user
+from Backend.dashboardfile import get_current_user
 router = APIRouter()
 
 @router.get("/profile")

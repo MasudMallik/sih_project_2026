@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from dashboardfile import get_current_user
+from Backend.dashboardfile import get_current_user
 import os
 
 

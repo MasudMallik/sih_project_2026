@@ -1,83 +1,35 @@
 from fastapi import APIRouter, Depends
-from dashboardfile import get_current_user
-from schemas import PredictionRequest
+from Backend.schemas import InputData
+
+import numpy as np
 router = APIRouter()
-def predict_risk(
-    temperature,
-    rainfall,
-    humidity,
-    wind_speed
-):
-    score = 0
+import joblib
+from pathlib import Path
 
-    # Rainfall
-    if rainfall >= 200:
-        score += 40
-
-    elif rainfall >= 100:
-        score += 25
-
-    elif rainfall >= 50:
-        score += 15
-
-
-    # Temperature
-    if temperature >= 40:
-        score += 20
-
-    elif temperature >= 35:
-        score += 10
-
-
-    # Humidity
-    if humidity >= 80:
-        score += 15
-
-    elif humidity >= 60:
-        score += 10
-
-
-    # Wind speed
-    if wind_speed >= 60:
-        score += 25
-
-    elif wind_speed >= 40:
-        score += 15
-
-
-    score = min(score, 100)
-
-
-    if score >= 70:
-        risk_level = "High"
-
-    elif score >= 40:
-        risk_level = "Medium"
-
-    else:
-        risk_level = "Low"
-
-
-    return {
-        "risk_score": score,
-        "risk_level": risk_level
-    }
-
+model_path = Path(__file__).resolve().parent.parent / "Ml_models" / "trained_model.joblib"
+with model_path.open("rb") as f:
+    model=joblib.load(f)
+if model:
+    print("model loaded succesfully")
 
 @router.post("/ai-prediction")
-def ai_prediction(
-    data: PredictionRequest,
-    current_user=Depends(get_current_user)
-):
-
-    prediction = predict_risk(
-        data.temperature,
-        data.rainfall,
-        data.humidity,
-        data.wind_speed
-    )
-
-    return {
-        "success": True,
-        "prediction": prediction
-    }
+def predict(data: InputData):
+    # Convert input to numpy array
+    features = np.array([[
+        data.Rainfall_mm,
+        data.Slope_Angle,
+        data.Soil_Saturation,
+        data.Vegetation_Cover,
+        data.Earthquake_Activity,
+        data.Proximity_to_Water,
+        data.Soil_Type_Gravel,
+        data.Soil_Type_Sand,
+        data.Soil_Type_Silt
+    ]])
+    try:
+        prediction = model.predict(features)
+        prob=float(np.max(model.predict_proba(features)[0]))
+    except Exception as e:
+        return {"output":False,"prediction":"there was an error please try some times letter"}
+    else:
+        return {"success":True,"prediction": int(prediction[0]),"probability":prob }
