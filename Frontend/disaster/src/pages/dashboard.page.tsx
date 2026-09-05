@@ -52,7 +52,7 @@ export default function DisasterDashboard() {
         success: response.success,
         message: response.message,
       };
-    } catch {
+    } catch (error) {
       return {
         success: false,
         message: error instanceof Error ? error.message : "Failed to submit",
