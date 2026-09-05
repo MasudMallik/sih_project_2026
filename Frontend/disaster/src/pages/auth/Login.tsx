@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { ToastContainer } from "../../components/signup/Toast";
 import { LoginForm } from "../../components/login/LoginForm";
 import { ResetPasswordForm } from "../../components/login/ResetPasswordForm";
@@ -60,12 +60,12 @@ export default function Login() {
         {/* Minimal transparent navigation */}
         <header className="px-6 py-5 sm:px-10">
           <nav className="mx-auto flex max-w-7xl items-center justify-between" aria-label="Primary">
-            <a href="/" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[#E3A63F]" aria-hidden="true" />
               <span className="text-sm font-semibold tracking-wide text-[#F4F1E8]">
                 Geo Rakshak
               </span>
-            </a>
+            </Link>
             <ul className="hidden sm:flex items-center gap-8">
               {NAV_LINKS.map(([label, section]) => (
                 <li key={section}>
@@ -116,14 +116,14 @@ export default function Login() {
 
                 <p className="mt-6 text-center text-sm text-[#8FA98C]">
                   Don&apos;t have an account?{" "}
-                  <a
-                    href="/signup"
+                  <Link
+                    to="/signup"
                     className="font-medium text-[#E3A63F] hover:text-[#EDB454]
                       focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#E3A63F] rounded
                       transition-colors"
                   >
                     Sign up
-                  </a>
+                  </Link>
                 </p>
               </>
             ) : (

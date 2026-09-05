@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { SignupForm } from "../../components/signup/SignupForm";
 import { ToastContainer } from "../../components/signup/Toast";
 import { useToast } from "../../hooks/useToast";
@@ -69,14 +69,14 @@ export default function SignUp() {
 
             <p className="mt-6 text-center text-sm text-[#8FA98C]">
               Already have an account?{" "}
-              <a
-                href="/login"
+              <Link
+                to="/login"
                 className="font-medium text-[#D9A24B] hover:text-[#E8B563]
                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D9A24B] rounded
                   transition-colors"
               >
                 Log in
-              </a>
+              </Link>
             </p>
           </div>
         </main>
