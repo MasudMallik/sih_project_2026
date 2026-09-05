@@ -6,21 +6,22 @@ def chatbot_response(message):
 text = message.lower()
 if "flood" in text:
 return (
+  
   "Flood risk can increase because of heavy rainfall, "
-   "river overflow and drainage problems. "
-    "Follow official local emergency instructions."
+  "river overflow and drainage problems. "
+  "Follow official local emergency instructions."
 )
 elif "earthquake" in text:
 return (
-"During an earthquake, move away from windows and "
-"objects that could fall. Follow official emergency "
-"instructions."
+  "During an earthquake, move away from windows and "
+  "objects that could fall. Follow official emergency "
+  "instructions."
   )
 elif "cyclone" in text or "storm" in text:
 return (
-"During a severe storm or cyclone, monitor official "
-"alerts and follow evacuation instructions from "
-"local authorities."
+  "During a severe storm or cyclone, monitor official "
+  "alerts and follow evacuation instructions from "
+  "local authorities."
 )
 elif "emergency" in text:
 return (
@@ -37,14 +38,14 @@ return (
 
 elif "hello" in text or "hi" in text:
 return (
-"Hello! I am the Disaster Risk Assistant. "
-"You can ask me about floods, earthquakes, "
-"storms, disaster risk or emergency response."
+ "Hello! I am the Disaster Risk Assistant. "
+ "You can ask me about floods, earthquakes, "
+ "storms, disaster risk or emergency response."
 )
 else:
 return (
-"I can help with disaster risk, floods, earthquakes, "
-"storms and emergency-response information."
+ "I can help with disaster risk, floods, earthquakes, "
+ "storms and emergency-response information."
 )
 
 
@@ -58,6 +59,6 @@ data.message
 )
 return {
   "success": True,
-   "message": data.message,
-   "response": response
+  "message": data.message,
+  "response": response
 }
