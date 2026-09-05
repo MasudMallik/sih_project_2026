@@ -3,10 +3,9 @@ import type { Village } from "../../@types/interface/emergencyResponse";
 
 interface VillageCardsProps {
   villages: Village[];
-  onNotify: (village: Village) => void;
 }
 
-export function VillageCards({ villages, onNotify }: VillageCardsProps) {
+export function VillageCards({ villages }: VillageCardsProps) {
   return (
     <section className="rounded-2xl border border-white/10 bg-[#102419]/85 p-5 shadow-2xl backdrop-blur-md lg:p-6">
       <div className="mb-5">
@@ -19,7 +18,7 @@ export function VillageCards({ villages, onNotify }: VillageCardsProps) {
             <div className="flex items-start justify-between gap-2">
               <div>
                 <h3 className="font-semibold text-[#f4efe4]">{village.name}</h3>
-                <p className="mt-1 flex items-center gap-1 text-xs text-[#8aa68f]"><MapPin size={12} /> {village.distance}</p>
+                <p className="mt-1 flex items-center gap-1 text-xs text-[#8aa68f]"><MapPin size={12} /> {village.distance ?? "Distance unavailable"}</p>
               </div>
               <House size={18} className="text-[#d9a441]" />
             </div>
@@ -33,7 +32,6 @@ export function VillageCards({ villages, onNotify }: VillageCardsProps) {
             <div className="mt-3 flex flex-wrap gap-1.5">
               {village.needs.map((need) => <span key={need} className="rounded-full bg-[#d9a441]/10 px-2 py-1 text-[10px] text-[#f0c77d]">{need}</span>)}
             </div>
-            <button type="button" onClick={() => onNotify(village)} className="mt-4 w-full rounded-lg border border-[#d9a441]/50 px-3 py-2 text-xs font-semibold text-[#f0c77d] transition hover:bg-[#d9a441]/10">Notify village</button>
           </article>
         ))}
       </div>

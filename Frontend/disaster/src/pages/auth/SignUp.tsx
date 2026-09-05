@@ -3,27 +3,13 @@ import { useNavigate } from "react-router";
 import { SignupForm } from "../../components/signup/SignupForm";
 import { ToastContainer } from "../../components/signup/Toast";
 import { useToast } from "../../hooks/useToast";
+import { GeoRakshakHeader } from "../../components/GeoRakshakHeader";
 import signupBackground from "../../assets/signup.jpg";
-
-const NAV_LINKS = [{label:"Home",id:"home"},
-{label:"About",id:"about"},
-{label:"Safety Tips", id: "safety-tips"},
-{label:"Contact",id:"contact"}];
-
-function Brand() {
-  return <span className="flex items-center gap-2.5 font-display text-[19px] font-bold text-cream"><span className="h-2.5 w-2.5 rounded-full bg-gold shadow-[0_0_0_4px_rgba(201,138,60,0.25)]" />Geo Rakshak</span>;
-}
 
 export default function SignUp() {
   const navigate = useNavigate();
   const { toasts, showToast, dismissToast } = useToast();
   const [submitted, setSubmitted] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const handleNavClick = (sectionId: string) => {
-    sessionStorage.setItem("scrollTo", sectionId);
-    navigate("/");
-  };
 
   const handleGeoError = (message: string) => {
     showToast("warning", "Location access denied", message);
@@ -57,55 +43,7 @@ export default function SignUp() {
       />
 
       <div className="relative z-10 flex min-h-screen flex-col">
-        {/* Header - same as Landing page */}
-        <header className="sticky top-0 z-50 border-b border-[rgba(244,239,228,0.16)] bg-[rgba(14,31,23,0.92)] backdrop-blur-lg">
-          <div className="mx-auto flex max-w-[1180px] items-center justify-between px-8 py-[18px] max-[520px]:px-5">
-            <button
-              onClick={() => handleNavClick("home")}
-              className="bg-none border-none cursor-pointer p-0 hover:opacity-80 transition-opacity"
-            >
-              <Brand />
-            </button>
-            <nav className="hidden ml-auto items-center gap-[34px] min-[861px]:flex">
-              {NAV_LINKS.map(({ label, id }) => (
-                <button
-                  key={id}
-                  onClick={() => handleNavClick(id)}
-                  className="text-[15px] font-medium text-moss transition-colors duration-200 hover:text-cream bg-none border-none cursor-pointer p-0"
-                >
-                  {label}
-                </button>
-              ))}
-            </nav>
-            <div className="flex items-center gap-4">
-              <button
-                type="button"
-                aria-label="Toggle navigation"
-                aria-expanded={menuOpen}
-                onClick={() => setMenuOpen(!menuOpen)}
-                className="hidden text-2xl text-cream max-[860px]:block bg-none border-none cursor-pointer p-0"
-              >
-                {menuOpen ? "×" : "☰"}
-              </button>
-            </div>
-          </div>
-          {menuOpen && (
-            <nav className="border-t border-[rgba(244,239,228,0.12)] px-8 py-4 min-[861px]:hidden">
-              {NAV_LINKS.map(({ label, id }) => (
-                <button
-                  key={id}
-                  onClick={() => {
-                    handleNavClick(id);
-                    setMenuOpen(false);
-                  }}
-                  className="block py-2 text-moss hover:text-cream w-full text-left bg-none border-none cursor-pointer p-0"
-                >
-                  {label}
-                </button>
-              ))}
-            </nav>
-          )}
-        </header>
+        <GeoRakshakHeader />
 
         {/* Signup card */}
         <main className="flex flex-1 items-center justify-start px-4 py-8 sm:pl-[10vw] sm:pr-8">

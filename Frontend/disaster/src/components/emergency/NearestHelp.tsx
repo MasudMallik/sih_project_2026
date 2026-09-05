@@ -1,4 +1,4 @@
-import { HeartPulse, Hospital, Phone, ShieldCheck, Utensils } from "lucide-react";
+import { HeartPulse, Hospital, MapPin, Phone, ShieldCheck, Utensils } from "lucide-react";
 import type { HelpEntry } from "../../@types/interface/emergencyResponse";
 
 interface NearestHelpProps {
@@ -24,6 +24,7 @@ export function NearestHelp({ entries }: NearestHelpProps) {
                 <p className="text-xs text-[#8aa68f]">{entry.category}</p>
                 <h3 className="truncate text-sm font-semibold text-[#f4efe4]">{entry.title}</h3>
                 <p className="text-xs text-[#b7cbb2]">{entry.availability}</p>
+                {(entry.location || entry.distance) && <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[#8aa68f]"><MapPin size={12} /> {entry.location ?? "Location unavailable"}{entry.distance && <span>{entry.distance}</span>}</p>}
               </div>
               <a href={`tel:${entry.contact.replace(/[^0-9+]/g, "")}`} aria-label={`Call ${entry.title}`} className="rounded-full border border-white/10 p-2 text-[#d9a441] transition hover:border-[#d9a441]"><Phone size={15} /></a>
             </div>

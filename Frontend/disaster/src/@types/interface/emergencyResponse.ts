@@ -1,5 +1,3 @@
-import type { LucideIcon } from "lucide-react";
-
 export type IncidentStatus = "Active" | "Monitoring" | "Resolved";
 export type IncidentSeverity = "Critical" | "High" | "Moderate";
 export type InfrastructureStatus = "Operational" | "Compromised" | "Offline";
@@ -19,7 +17,7 @@ export interface Incident {
 export interface Village {
   id: string;
   name: string;
-  distance: string;
+  distance?: string | null;
   affected: number;
   capacity: number;
   needs: string[];
@@ -40,7 +38,8 @@ export interface HelpEntry {
   title: string;
   contact: string;
   availability: string;
-  icon: LucideIcon;
+  location?: string | null;
+  distance?: string | null;
 }
 
 export interface Resource {
@@ -67,8 +66,3 @@ export interface EmergencyResponseData {
   feed: FeedItem[];
 }
 
-export interface SentAlert {
-  id: string;
-  time: string;
-  text: string;
-}

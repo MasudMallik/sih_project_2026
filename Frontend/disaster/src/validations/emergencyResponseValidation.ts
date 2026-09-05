@@ -14,7 +14,7 @@ export const incidentSchema = z.object({
 export const villageSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
-  distance: z.string().min(1),
+  distance: z.string().nullable().optional(),
   affected: z.number().int().nonnegative(),
   capacity: z.number().int().positive(),
   needs: z.array(z.string().min(1)),
@@ -50,6 +50,8 @@ export const helpEntrySchema = z.object({
   title: z.string().min(1),
   contact: z.string().min(1),
   availability: z.string().min(1),
+  location: z.string().nullable().optional(),
+  distance: z.string().nullable().optional(),
 });
 
 export const emergencyResponseSchema = z.object({
