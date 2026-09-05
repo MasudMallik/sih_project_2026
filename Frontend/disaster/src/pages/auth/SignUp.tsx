@@ -10,10 +10,15 @@ const NAV_LINKS = [{label:"Home",id:"home"},
 {label:"Safety Tips", id: "safety-tips"},
 {label:"Contact",id:"contact"}];
 
+function Brand() {
+  return <span className="flex items-center gap-2.5 font-display text-[19px] font-bold text-cream"><span className="h-2.5 w-2.5 rounded-full bg-gold shadow-[0_0_0_4px_rgba(201,138,60,0.25)]" />Geo Rakshak</span>;
+}
+
 export default function SignUp() {
   const navigate = useNavigate();
   const { toasts, showToast, dismissToast } = useToast();
   const [submitted, setSubmitted] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleNavClick = (sectionId: string) => {
     sessionStorage.setItem("scrollTo", sectionId);
@@ -27,10 +32,7 @@ export default function SignUp() {
   const handleSuccess = () => {
     showToast("success", "Account created successfully", "Welcome to Geo Rakshak.");
     setSubmitted(true);
-    // Simulated redirect — replace with real router navigation.
-    setTimeout(() => {
-      console.log("Navigating to /dashboard…");
-    }, 1200);
+    navigate("/dashboard");
   };
 
   return (
@@ -55,33 +57,54 @@ export default function SignUp() {
       />
 
       <div className="relative z-10 flex min-h-screen flex-col">
-        {/* Minimal top navigation */}
-        <header className="px-6 py-5 sm:px-10">
-          <nav className="mx-auto flex max-w-6xl items-center justify-between" aria-label="Primary">
+        {/* Header - same as Landing page */}
+        <header className="sticky top-0 z-50 border-b border-[rgba(244,239,228,0.16)] bg-[rgba(14,31,23,0.92)] backdrop-blur-lg">
+          <div className="mx-auto flex max-w-[1180px] items-center justify-between px-8 py-[18px] max-[520px]:px-5">
             <button
               onClick={() => handleNavClick("home")}
-              className="flex items-center gap-2 group hover:opacity-80 transition-opacity bg-none border-none cursor-pointer p-0"
+              className="bg-none border-none cursor-pointer p-0 hover:opacity-80 transition-opacity"
             >
-              <span className="h-2 w-2 rounded-full bg-[#D9A24B]" aria-hidden="true" />
-              <span className="text-sm font-semibold tracking-wide text-[#F4EFE6]">
-                Geo Rakshak
-              </span>
+              <Brand />
             </button>
-            <ul className="hidden sm:flex items-center gap-8">
-              {NAV_LINKS.map((link) => (
-                <li key={link.id}>
-                  <button
-                    onClick={() => handleNavClick(link.id)}
-                    className="text-sm text-[#C3D0BE] hover:text-[#F4EFE6]
-                      focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D9A24B] rounded
-                      transition-colors bg-none border-none cursor-pointer p-0"
-                  >
-                    {link.label}
-                  </button>
-                </li>
+            <nav className="hidden ml-auto items-center gap-[34px] min-[861px]:flex">
+              {NAV_LINKS.map(({ label, id }) => (
+                <button
+                  key={id}
+                  onClick={() => handleNavClick(id)}
+                  className="text-[15px] font-medium text-moss transition-colors duration-200 hover:text-cream bg-none border-none cursor-pointer p-0"
+                >
+                  {label}
+                </button>
               ))}
-            </ul>
-          </nav>
+            </nav>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                aria-label="Toggle navigation"
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="hidden text-2xl text-cream max-[860px]:block bg-none border-none cursor-pointer p-0"
+              >
+                {menuOpen ? "×" : "☰"}
+              </button>
+            </div>
+          </div>
+          {menuOpen && (
+            <nav className="border-t border-[rgba(244,239,228,0.12)] px-8 py-4 min-[861px]:hidden">
+              {NAV_LINKS.map(({ label, id }) => (
+                <button
+                  key={id}
+                  onClick={() => {
+                    handleNavClick(id);
+                    setMenuOpen(false);
+                  }}
+                  className="block py-2 text-moss hover:text-cream w-full text-left bg-none border-none cursor-pointer p-0"
+                >
+                  {label}
+                </button>
+              ))}
+            </nav>
+          )}
         </header>
 
         {/* Signup card */}
