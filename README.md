@@ -1,819 +1,1183 @@
-# ðŸ”ï¸ AI-Based Early Warning & Landslide Risk Monitoring System in NER
+# 🌧️ AI-Based Early Warning & Landslide Risk Monitoring System for NER
 
-> **An AI-powered, GIS-enabled disaster intelligence platform for
-> predicting landslide risk, monitoring vulnerable locations, and
-> delivering timely warnings across the North Eastern Region of India.**
+> **Smart India Hackathon 2026 | Problem Statement ID: 26001**
+> **Theme:** Disaster Management
+> **Category:** Software
+> **Team:** TECH SMASH
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/Frontend-React-61DAFB.svg)](https://react.dev/)
-[![MySQL](https://img.shields.io/badge/Database-MySQL-4479A1.svg)](https://www.mysql.com/)
-[![MLflow](https://img.shields.io/badge/MLOps-MLflow-0194E2.svg)](https://mlflow.org/)
-[![DVC](https://img.shields.io/badge/Data%20Versioning-DVC-945DD6.svg)](https://dvc.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](#-license)
+---
 
-------------------------------------------------------------------------
+## 📌 Overview
 
-## ðŸ“Œ Overview
+The **AI-Based Early Warning and Landslide Risk Monitoring System** is an AI-powered disaster management platform designed to monitor, assess, and predict landslide risks across the **North Eastern Region (NER) of India**.
 
-The **AI-Based Early Warning and Landslide Risk Monitoring System in
-NER** is a scalable disaster-management platform designed for the
-geographically challenging and landslide-prone **North Eastern Region
-(NER) of India**.
+The platform combines **rainfall patterns, satellite imagery, terrain and slope data, soil conditions, IoT sensor readings, and historical landslide records** to generate dynamic risk assessments and location-specific early warnings.
 
-The platform combines:
+The goal is to shift disaster management from:
 
--   ðŸŒ§ï¸ Rainfall and weather information
--   ðŸ’§ Soil-moisture observations
--   ðŸ›°ï¸ Satellite imagery
--   ðŸ—ºï¸ Terrain, slope and elevation data
--   ðŸ“š Historical landslide records
--   ðŸ“¡ IoT/sensor observations
--   ðŸ“ Geo-tagged citizen and field reports
--   ðŸ¤– AI/ML-based risk prediction
--   ðŸ—ºï¸ Real-time GIS visualization
--   ðŸš¨ Multi-channel early warnings
+> **Reactive Response → Proactive Risk Management**
 
-The objective is to move from **reactive disaster response** to
-**data-driven, predictive and location-aware disaster preparedness**.
+By identifying vulnerable areas before a landslide occurs, the system can help authorities, emergency response teams, and local communities take preventive action.
 
-------------------------------------------------------------------------
+---
 
-## ðŸŽ¯ Problem
+# 🚨 Problem Statement
 
-Landslides in the North Eastern Region can rapidly damage:
+The North Eastern Region is highly vulnerable to landslides due to:
 
--   Roads and highways
--   Villages and settlements
--   Schools and hospitals
--   Bridges and other infrastructure
--   Power and communication networks
--   Local livelihoods
+* Heavy monsoon rainfall
+* Fragile mountainous terrain
+* Slope instability
+* Soil saturation
+* Unplanned hill cutting
+* Changing environmental conditions
+* Limited real-time monitoring infrastructure
+* Poor connectivity in remote areas
 
-Remote and mountainous areas also face poor connectivity, limited
-monitoring infrastructure and delayed communication.
+### Existing Challenges
 
-A conventional warning mechanism may not sufficiently combine **weather,
-terrain, soil, historical events, satellite information and real-time
-field observations** into a single operational view.
+* **High Vulnerability:** Monsoons frequently trigger debris flows and slope failures.
+* **No Hyper-Local Prediction:** Existing regional alerts may not provide precise slope-level warnings.
+* **Critical Route Disruptions:** Landslides can repeatedly disrupt important highways and transportation routes.
+* **Delayed Ground Verification:** Manual inspection of cracks, subsidence, and slope movement can take days.
+* **Connectivity Issues:** Remote regions may experience unreliable internet and mobile connectivity.
 
-### Our Approach
+---
 
-We propose a unified platform that continuously combines multi-source
-data, generates **location-specific landslide risk scores**, visualizes
-vulnerable areas on a GIS map, and distributes actionable alerts to
-authorities, field officials and communities.
+# 💡 Proposed Solution
 
-------------------------------------------------------------------------
+Our solution is a **Unified AI-Powered Landslide Early Warning and Monitoring Platform** that integrates multiple environmental, geospatial, satellite, sensor, and historical data sources.
 
-## ðŸ’¡ Key Features
+### Core Workflow
 
-### 1. ðŸ¤– AI/ML-Based Risk Prediction
-
--   Landslide susceptibility and risk scoring
--   Multi-factor data fusion
--   Rainfall and antecedent-rainfall analysis
--   Soil-moisture-based risk assessment
--   Terrain/slope-based vulnerability analysis
--   Historical event learning
--   Explainable risk factors
--   Risk classification:
-    -   ðŸŸ¢ Low
-    -   ðŸŸ¡ Moderate
-    -   ðŸŸ  High
-    -   ðŸ”´ Critical
-
-### 2. ðŸ—ºï¸ Real-Time GIS Dashboard
-
--   Interactive risk heatmaps
--   District-wise risk visualization
--   Vulnerable road and infrastructure mapping
--   Villages and critical facilities overlay
--   Sensor locations
--   Reported incidents
--   Rainfall/risk trend visualization
--   Drill-down from region â†’ district â†’ location
-
-### 3. ðŸŒ§ï¸ Weather & Environmental Monitoring
-
-The platform is designed to integrate:
-
--   IMD weather/forecast information
--   Satellite precipitation products
--   Soil-moisture observations
--   DEM/elevation data
--   Slope and terrain parameters
--   Historical landslide inventories
--   Satellite imagery
-
-### 4. ðŸ“± Citizen & Field Reporting
-
-Citizens and authorized field officials can submit:
-
--   ðŸ“¸ Geo-tagged photographs
--   ðŸŽ¥ Geo-tagged videos
--   ðŸª¨ Slope cracks
--   ðŸ”ï¸ Ground movement
--   ðŸš§ Blocked roads
--   ðŸŒŠ Debris flow observations
--   âš ï¸ Other hazard reports
-
-Reports can be reviewed and displayed on the GIS dashboard for faster
-situational awareness.
-
-### 5. ðŸš¨ Multi-Channel Early Warning
-
-Alerts can be delivered through:
-
--   Mobile push notifications
--   SMS
--   Email
--   Automated voice messages
--   In-app warnings
-
-Alerts are prioritized according to **risk severity and location**.
-
-### 6. ðŸŒ Multilingual Support
-
-The system is designed to support localized warnings so that information
-can reach communities in appropriate regional languages.
-
-### 7. ðŸ“¡ Offline-First Capability
-
-Remote areas may have unstable or limited connectivity.
-
-The field application therefore supports:
-
--   Local data caching
--   Offline form submission
--   Offline map/data access
--   Local storage of photos and reports
--   Automatic synchronization when connectivity returns
-
-### 8. ðŸš‘ Emergency Response Prioritization
-
-Authorities can prioritize response based on:
-
-**Risk Level + Population Exposure + Road Connectivity + Critical
-Infrastructure + Real-Time Reports**
-
-This helps identify where intervention is needed first.
-
-------------------------------------------------------------------------
-
-## ðŸ—ï¸ System Architecture
-
-``` text
-                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-                    â”‚       DATA SOURCES        â”‚
-                    â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-                    â”‚ Rainfall / Weather APIs   â”‚
-                    â”‚ Satellite Imagery         â”‚
-                    â”‚ Soil Moisture             â”‚
-                    â”‚ DEM / Slope / Terrain     â”‚
-                    â”‚ Historical Landslides     â”‚
-                    â”‚ IoT Sensors               â”‚
-                    â”‚ Citizen Reports           â”‚
-                    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                                  â”‚
-                                  â–¼
-                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-                    â”‚     DATA INGESTION        â”‚
-                    â”‚ API / ETL / Sensor Feeds  â”‚
-                    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                                  â”‚
-                                  â–¼
-                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-                    â”‚      DATA PROCESSING      â”‚
-                    â”‚ Cleaning â€¢ Validation     â”‚
-                    â”‚ Feature Engineering       â”‚
-                    â”‚ Geospatial Processing     â”‚
-                    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                                  â”‚
-                 â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-                 â–¼                                 â–¼
-      â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”          â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-      â”‚   AI/ML ENGINE      â”‚          â”‚    GIS ENGINE       â”‚
-      â”‚ RF / XGBoost /      â”‚          â”‚ Maps â€¢ Layers       â”‚
-      â”‚ Classification      â”‚          â”‚ Heatmaps â€¢ Assets   â”‚
-      â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜          â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                 â”‚                                â”‚
-                 â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                                â–¼
-                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-                    â”‚   RISK & ALERT ENGINE     â”‚
-                    â”‚ Risk Score â€¢ Severity     â”‚
-                    â”‚ Geofencing â€¢ Priorities   â”‚
-                    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                                  â”‚
-             â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-             â–¼                    â–¼                    â–¼
-      â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-      â”‚ Web Dashboardâ”‚    â”‚ Field/Mobile â”‚    â”‚ Alerts       â”‚
-      â”‚ Authorities  â”‚    â”‚ App          â”‚    â”‚ SMS / Push   â”‚
-      â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+```text
+Satellite Data
+      │
+      ├──────────────┐
+      │              │
+Rainfall Data    Terrain / DEM
+      │              │
+      ├──────┬───────┤
+             │
+       Soil / IoT Sensors
+             │
+             ▼
+       Data Processing
+             │
+             ▼
+      Feature Engineering
+             │
+             ▼
+       AI/ML Prediction
+             │
+             ▼
+       Risk Score (0–100)
+             │
+       ┌─────┴─────┐
+       ▼           ▼
+    GIS Map    Alert Engine
+       │           │
+       ▼           ▼
+ Authorities   Communities
 ```
 
-------------------------------------------------------------------------
+---
 
-## ðŸ§  AI/ML Methodology
+# 🎯 Key Features
 
-The prediction engine can combine spatial, environmental and temporal
-features.
+## 🤖 1. AI-Based Landslide Prediction
+
+The system analyzes multiple environmental factors to identify locations with increased landslide probability.
 
 ### Input Features
 
-  Category         Example Features
-  ---------------- -------------------------------------------------
-  Rainfall         Current rainfall, 24h/72h/7d accumulation
-  Soil             Soil moisture, moisture change
-  Terrain          Elevation, slope, aspect
-  Environment      Land cover, vegetation indicators
-  History          Previous landslide occurrence
-  Infrastructure   Road/village proximity
-  Sensors          Tilt, displacement, crack/ground movement
-  Weather          Forecast rainfall and severe-weather indicators
+* Rainfall
+* Soil conditions
+* Terrain characteristics
+* Elevation
+* Slope
+* Historical landslide events
+* Satellite-derived features
+* Environmental indicators
+* IoT sensor readings
 
-### Candidate Models
+The prediction engine generates a **0–100 landslide risk score**.
 
--   Logistic Regression
--   Random Forest
--   XGBoost
--   Gradient Boosting
--   LSTM/GRU for time-series forecasting
--   CNN-based spatial feature extraction
--   Hybrid CNN-LSTM for advanced experimentation
+---
 
-For an initial deployable prototype, **Random Forest/XGBoost** can
-provide a strong balance between performance, interpretability and
-implementation complexity.
+## 🗺️ 2. GIS-Based Risk Mapping
 
-### Risk Score
+An interactive GIS dashboard provides visualization of:
 
-A conceptual risk score can combine:
+* Landslide-prone zones
+* Vulnerable roads
+* Villages
+* Bridges
+* Critical infrastructure
+* Risk severity
+* Environmental conditions
+* Reported incidents
 
-``` text
-Risk Score =
-    f(
-        Rainfall,
-        Soil Moisture,
-        Slope,
-        Terrain,
-        Historical Landslides,
-        Satellite Indicators,
-        Sensor Signals,
-        Exposure
-    )
+This allows authorities to quickly identify locations requiring monitoring or intervention.
+
+---
+
+## 🌧️ 3. Weather-Linked Risk Forecasting
+
+Rainfall is one of the major triggers of landslides.
+
+The system analyzes:
+
+* Rainfall intensity
+* Rainfall duration
+* Accumulated rainfall
+* Historical rainfall patterns
+* Rainfall-triggered vulnerability
+
+to estimate the probability of landslide occurrence.
+
+---
+
+## 📡 4. IoT-Based Slope Monitoring
+
+Low-cost sensors can continuously monitor slope conditions.
+
+Potential sensor measurements include:
+
+* Soil moisture
+* Soil-pore pressure
+* Ground vibration
+* Slope movement
+* Other instability indicators
+
+Sensor readings can be incorporated into the real-time risk assessment engine.
+
+---
+
+## 🛰️ 5. Satellite & Remote Sensing Integration
+
+The proposed platform can integrate satellite and geospatial datasets such as:
+
+* ISRO / NRSC datasets
+* Bhuvan
+* Sentinel satellite data
+* Digital Elevation Models (DEM)
+* NDVI
+* Geological information
+* Terrain information
+
+Satellite data enables monitoring of large and difficult-to-access areas.
+
+---
+
+## ⚠️ 6. Automated Early Warning
+
+When the predicted risk reaches a configured threshold, the system can generate location-specific alerts.
+
+Potential recipients include:
+
+* District administrations
+* Disaster management authorities
+* Emergency response teams
+* Field officials
+* Local communities
+
+The proposed system aims to support warnings potentially **12–72 hours in advance**, depending on available data, model performance, and validation.
+
+---
+
+## 📱 7. Citizen & Field Reporting
+
+Citizens and field officials can report:
+
+* Ground cracks
+* Slope movement
+* Road blockages
+* Landslide incidents
+* Infrastructure damage
+
+Reports can include **geo-tagged photos and videos**.
+
+An AI-based verification layer can help identify:
+
+* Duplicate reports
+* Irrelevant submissions
+* Potentially false reports
+
+The proposed solution uses **YOLO-v11** for AI-assisted report verification.
+
+---
+
+## 📶 8. Offline & Low-Network Support
+
+Remote areas of NER may have unreliable connectivity.
+
+The platform therefore follows a **zero-bandwidth resilience approach**, allowing critical monitoring and field-reporting workflows to continue during network interruptions through offline synchronization and locally available warning mechanisms.
+
+---
+
+# 🧠 Hybrid AI + Physics Approach
+
+A major differentiating aspect of the proposed solution is the combination of **physics-based slope stability analysis** with **AI/ML prediction**.
+
+### Physics-Based Analysis
+
+The system considers slope mechanics and the **Dynamic Factor of Safety (FoS)** to estimate slope stability.
+
+### AI-Based Prediction
+
+Machine learning models analyze relationships between:
+
+* Rainfall
+* Soil
+* Terrain
+* Historical events
+* Environmental conditions
+* Sensor readings
+
+### Hybrid Architecture
+
+```text
+              Environmental Data
+                     │
+          ┌──────────┴──────────┐
+          │                     │
+    Physics-Based          AI/ML Models
+    Slope Analysis          Prediction
+          │                     │
+          └──────────┬──────────┘
+                     ▼
+              Combined Risk
+                     │
+                     ▼
+              Risk Score 0–100
 ```
 
-The final system converts the model output into actionable severity
-levels.
+Potential AI approaches include:
 
-------------------------------------------------------------------------
+* XGBoost
+* LightGBM
+* LSTM
+* Graph Neural Networks (GNN)
 
-## ðŸ› ï¸ Technology Stack
+---
 
-### Frontend
+# 🏗️ System Architecture
 
--   React
--   JavaScript/TypeScript
--   Leaflet / MapLibre
--   Responsive dashboard UI
+```text
+                       DATA SOURCES
+                            │
+       ┌────────────────────┼────────────────────┐
+       │                    │                    │
+   Satellite             Rainfall             IoT
+     Data                  Data               Sensors
+       │                    │                    │
+       └────────────────────┼────────────────────┘
+                            │
+                   Historical Records
+                            │
+                            ▼
+                  ┌──────────────────┐
+                  │ Data Processing  │
+                  │ & Cleaning       │
+                  └────────┬─────────┘
+                           │
+                           ▼
+                  ┌──────────────────┐
+                  │ Feature          │
+                  │ Engineering      │
+                  └────────┬─────────┘
+                           │
+                           ▼
+               ┌───────────────────────┐
+               │ AI/ML Prediction      │
+               │ XGBoost / LSTM / GNN  │
+               └───────────┬───────────┘
+                           │
+                           ▼
+                    Risk Score 0–100
+                           │
+                 ┌─────────┴─────────┐
+                 │                   │
+                 ▼                   ▼
+            GIS Dashboard       Alert Engine
+                 │                   │
+                 ▼                   ▼
+            Risk Heatmaps       SMS / App
+                 │                   │
+                 └─────────┬─────────┘
+                           ▼
+                  Disaster Response
+                     Authorities
+```
+
+---
+
+# 🔬 Technical Approach
+
+## Multi-Source Data
+
+| Data Source           | Purpose                                        |
+| --------------------- | ---------------------------------------------- |
+| 🌧️ Rainfall          | Detect rainfall-triggered landslide conditions |
+| 🛰️ Satellite Imagery | Monitor surface and environmental changes      |
+| 🗻 DEM                | Extract elevation and terrain characteristics  |
+| 📐 Slope Data         | Estimate terrain instability                   |
+| 🌱 NDVI               | Analyze vegetation/environmental conditions    |
+| 💧 Soil Moisture      | Detect soil saturation                         |
+| 📡 IoT Sensors        | Monitor real-time slope conditions             |
+| 📚 Historical Records | Train and validate ML models                   |
+
+---
+
+# 🧹 Data Processing
+
+The data processing pipeline uses Python and geospatial technologies.
+
+### Technologies
+
+* Python
+* Pandas
+* NumPy
+* GeoPandas
+* Rasterio
+* Scikit-learn
+
+### Processing Pipeline
+
+```text
+Raw Data
+   ↓
+Data Cleaning
+   ↓
+Data Integration
+   ↓
+Spatial Processing
+   ↓
+Feature Extraction
+   ↓
+Feature Engineering
+   ↓
+Machine Learning
+   ↓
+Risk Prediction
+```
+
+### Important Features
+
+The feature engineering pipeline can include:
+
+* Elevation
+* Slope
+* Terrain characteristics
+* Rainfall intensity
+* Rainfall duration
+* Accumulated rainfall
+* Soil moisture
+* Soil-pore pressure
+* Vegetation indicators
+* Historical landslide occurrence
+
+---
+
+# 🤖 Machine Learning
+
+The project follows a data-driven machine learning approach for landslide prediction and risk classification.
+
+### ML Technologies
+
+* Scikit-learn
+* XGBoost
+* LightGBM
+* PyTorch
+
+### Model Pipeline
+
+```text
+Environmental Data
+        ↓
+Feature Engineering
+        ↓
+Training Dataset
+        ↓
+Model Training
+        ↓
+Validation
+        ↓
+Prediction
+        ↓
+Risk Score
+```
+
+Advanced versions of the system can incorporate:
+
+### LSTM
+
+For analyzing temporal rainfall and environmental patterns.
+
+### GNN
+
+For modeling spatial relationships between different geographical locations.
+
+---
+
+# 🧪 MLOps
+
+The project architecture incorporates MLOps practices to improve reproducibility and model management.
+
+### MLflow
+
+Used for:
+
+* Experiment tracking
+* Model management
+* Performance comparison
+* Model lifecycle management
+
+### DVC
+
+Used for:
+
+* Dataset versioning
+* Model/data reproducibility
+* Tracking large datasets
+
+### MLOps Workflow
+
+```text
+Dataset
+   ↓
+DVC
+   ↓
+Data Processing
+   ↓
+Model Training
+   ↓
+MLflow
+   ↓
+Experiment Tracking
+   ↓
+Model Evaluation
+   ↓
+Deployment
+```
+
+---
+
+# 🖥️ Monitoring Platform
+
+The proposed monitoring platform consists of:
 
 ### Backend
 
--   Python
--   FastAPI
--   REST APIs
--   Background processing services
+**FastAPI + Python**
+
+Responsible for:
+
+* API services
+* Data processing
+* Prediction requests
+* Alert generation
+* Communication between services
+
+### Dashboard
+
+**Streamlit**
+
+Used for:
+
+* GIS visualization
+* Risk monitoring
+* Sensor monitoring
+* Weather information
+* Emergency prioritization
 
 ### Database
 
--   MySQL
--   Geospatial data services / PostGIS where required
--   Time-series storage for sensor observations
+**MySQL**
 
-### AI/ML
+Used to store:
 
--   Scikit-learn
--   XGBoost
--   Pandas
--   NumPy
--   Optional TensorFlow/PyTorch for deep-learning models
+* Locations
+* Historical records
+* Risk predictions
+* Sensor data
+* Field reports
+* System information
 
-### MLOps
+---
 
--   MLflow --- experiment tracking and model management
--   DVC --- dataset and model versioning
--   Git/GitHub --- source-code version control
+# 📊 Dashboard
 
-### GIS & Data
+The dashboard provides a centralized view of landslide risk.
 
--   QGIS
--   Leaflet / MapLibre
--   OpenStreetMap
--   DEM/terrain datasets
--   Satellite-derived products
+### Dashboard Components
 
-### Deployment
+* Risk severity levels
+* GIS risk heatmaps
+* Vulnerable locations
+* Road connectivity status
+* Weather-linked forecasts
+* Sensor readings
+* Historical landslide information
+* Emergency response prioritization
+* Citizen/field reports
 
--   Docker
--   Cloud infrastructure
--   CI/CD
--   Object storage for large datasets/media
+### Risk Visualization
 
-------------------------------------------------------------------------
+```text
+LOW
+🟢
+Normal Monitoring
 
-## ðŸ“Š Dashboard Modules
+      ↓
 
-### Authority Dashboard
+MODERATE
+🟡
+Increased Monitoring
 
--   Regional risk overview
--   District-wise risk ranking
--   Live risk heatmap
--   High-risk locations
--   Road connectivity status
--   Critical infrastructure exposure
--   Active warnings
--   Emergency response priority
--   Sensor health/status
--   Citizen/field reports
+      ↓
 
-### Field Application
+HIGH
+🟠
+Preventive Action
 
--   Current location
--   Risk level
--   Nearby warnings
--   Offline map
--   Report hazard
--   Capture photo/video
--   Add GPS coordinates
--   Sync pending reports
+      ↓
 
-### Community View
-
--   Local risk status
--   Early warnings
--   Safe/unsafe area information
--   Emergency instructions
--   Multilingual notifications
-
-------------------------------------------------------------------------
-
-## ðŸš¨ Risk & Alert Workflow
-
-``` text
-New Data
-   â†“
-Data Validation
-   â†“
-Feature Engineering
-   â†“
-AI/ML Prediction
-   â†“
-Risk Score Generation
-   â†“
-GIS Location Mapping
-   â†“
-Severity Classification
-   â†“
-Geofencing
-   â†“
-Alert Decision
-   â†“
-SMS / Push / App / Voice
-   â†“
-Authority & Community Action
+VERY HIGH
+🔴
+Immediate Attention
 ```
 
-------------------------------------------------------------------------
+---
 
-## ðŸ“¡ Offline Synchronization
+# 🚨 Risk Scoring
 
-The field application follows an **offline-first** approach.
+The system uses a configurable **0–100 risk score**.
 
-``` text
-Field User
-    â†“
-Capture Report
-    â†“
-Store Locally
-    â†“
-No Network? â”€â”€ Yes â”€â”€> Keep in Sync Queue
-    â”‚
-    No
-    â†“
-Upload to Server
-    â†“
-Server Validation
-    â†“
-Database + GIS
-    â†“
-Dashboard Updated
+| Risk Score | Severity     | Recommended Action                       |
+| ---------: | ------------ | ---------------------------------------- |
+|       0–25 | 🟢 Low       | Normal monitoring                        |
+|      26–50 | 🟡 Moderate  | Increased monitoring                     |
+|      51–75 | 🟠 High      | Preventive action / field verification   |
+|     76–100 | 🔴 Very High | Immediate warning and emergency response |
+
+> **Note:** These thresholds are configurable and should be calibrated using validated historical data and domain expertise before operational deployment.
+
+---
+
+# 📢 Early Warning Workflow
+
+```text
+Rainfall / Sensor / Satellite Data
+              ↓
+        Real-Time Analysis
+              ↓
+        AI Risk Prediction
+              ↓
+        Risk Score Generated
+              ↓
+        Threshold Evaluation
+              ↓
+       ┌──────┴──────┐
+       │             │
+    Normal        High Risk
+       │             │
+       ▼             ▼
+   Monitoring     Alert Generated
+                     │
+          ┌──────────┼──────────┐
+          │          │          │
+         SMS       Mobile      Web
+          │          │          │
+          └──────────┼──────────┘
+                     ↓
+             Emergency Action
 ```
 
-When connectivity becomes available, queued records are synchronized
-automatically.
+---
 
-------------------------------------------------------------------------
+# 🌐 Technology Stack
 
-## ðŸ“ˆ Key Performance Indicators (KPIs)
+| Layer            | Technology                       |
+| ---------------- | -------------------------------- |
+| Programming      | Python                           |
+| Machine Learning | Scikit-learn, XGBoost, LightGBM  |
+| Deep Learning    | PyTorch                          |
+| Backend          | FastAPI                          |
+| Dashboard        | Streamlit                        |
+| GIS              | GeoPandas, Rasterio              |
+| Database         | MySQL                            |
+| MLOps            | MLflow, DVC                      |
+| Computer Vision  | YOLO-v11                         |
+| Satellite Data   | ISRO / NRSC, Bhuvan, Sentinel    |
+| Weather Data     | IMD / Weather APIs               |
+| Deployment       | Cloud Infrastructure             |
+| Communication    | SMS / Mobile / Web Notifications |
 
-The project can be evaluated using:
+---
 
-### AI/ML KPIs
+# ☁️ Cloud Architecture
 
--   Prediction accuracy
--   Precision
--   Recall
--   F1-score
--   ROC-AUC
--   False alarm rate
--   Missed-event rate
--   Warning lead time
+The system is designed to be cloud-ready and scalable.
 
-### Platform KPIs
+```text
+                 Cloud Infrastructure
+                         │
+            ┌────────────┴────────────┐
+            │                         │
+        FastAPI API              ML Services
+            │                         │
+            ▼                         ▼
+        Database               Prediction Engine
+            │                         │
+            └────────────┬────────────┘
+                         │
+                         ▼
+                  GIS Dashboard
+                         │
+              ┌──────────┴──────────┐
+              │                     │
+         Authorities           Communities
+```
 
--   API response time
--   Data ingestion latency
--   System uptime
--   Alert delivery time
--   Sensor data availability
--   Offline synchronization success rate
+The system can initially be deployed in selected states of NER and gradually expanded across the entire region.
 
-### Disaster-Management KPIs
+---
 
--   Number of vulnerable locations identified
--   Communities reached
--   Alerts successfully delivered
--   Emergency response prioritization time
--   Road/infrastructure incidents monitored
--   Reduction in response delay
+# 👥 Target Users
 
-------------------------------------------------------------------------
+## 🏛️ Government & Administration
 
-## ðŸ” Security & Reliability
+* District administrations
+* State disaster management authorities
+* Government agencies
+* Infrastructure departments
 
-The production system should implement:
+## 🚑 Emergency Services
 
--   Role-based access control
--   Secure API authentication
--   Input validation
--   Encrypted communication
--   Audit logs
--   Backup and recovery
--   Secure media storage
--   Rate limiting
--   Monitoring and health checks
+* Disaster response teams
+* Rescue teams
+* Field officers
+* Road maintenance teams
 
-------------------------------------------------------------------------
+## 👨‍👩‍👧 Local Communities
 
-## ðŸ—‚ï¸ Suggested Project Structure
+* Residents of landslide-prone regions
+* Village authorities
+* Local volunteers
 
-``` text
+## 🔬 Researchers
+
+* Geologists
+* Environmental researchers
+* Climate researchers
+* Disaster management researchers
+
+---
+
+# ⭐ What Makes Our Solution Different?
+
+## 1. Hybrid AI + Physics
+
+Combines machine learning with slope mechanics and Dynamic Factor of Safety.
+
+## 2. Hyper-Local Risk Intelligence
+
+Moves beyond broad regional warnings toward location-specific and potentially slope-level risk assessment.
+
+## 3. Multi-Source Data Fusion
+
+```text
+Satellite
+   +
+Rainfall
+   +
+Terrain
+   +
+Soil
+   +
+IoT Sensors
+   +
+Historical Records
+   +
+Crowdsourced Reports
+```
+
+## 4. Offline Resilience
+
+Designed to remain useful even during network interruptions.
+
+## 5. AI-Verified Crowdsourcing
+
+YOLO-v11 can help verify citizen and field reports and reduce duplicate or irrelevant submissions.
+
+## 6. Explainable Risk Information
+
+The platform is designed to provide understandable risk insights rather than simply generating a warning.
+
+---
+
+# 🔬 Research Gap
+
+Existing research often focuses on:
+
+* Landslide susceptibility mapping
+* Rainfall-based prediction
+* Specific study areas
+* Limited regional validation
+* Limited generalization across different regions
+
+### Identified Gap
+
+There is a need for a unified framework combining:
+
+```text
+Static Susceptibility
+        +
+Dynamic Environmental Triggers
+        +
+Explainable AI
+        +
+GIS-Based Early Warning
+        +
+NER-Wide Validation
+```
+
+### Proposed Research Direction
+
+Our solution aims to bridge this gap through a **spatial-temporal AI framework** capable of combining static terrain susceptibility with dynamic environmental triggers.
+
+---
+
+# 📚 Research Foundation
+
+The proposed solution is informed by existing research and datasets including:
+
+### 1. ISRO / NRSC — Landslide Atlas of India (2023)
+
+Provides a major foundation of mapped landslide information and satellite/remote-sensing-based analysis.
+
+### 2. Chutia et al. — Natural Hazards (2026)
+
+Research on AI-based rainfall-induced landslide prediction in the North Eastern Region, considering:
+
+* Rainfall
+* Soil
+* Topography
+* Land use
+
+### 3. NEHU — Meghalaya Project (2024–26)
+
+Research combining:
+
+* Machine Learning
+* Remote Sensing
+* IoT
+
+for landslide susceptibility and early warning.
+
+### 4. Mihu et al. — Earth Systems & Environment (2026)
+
+Machine learning research using:
+
+* XGBoost
+* LightGBM
+
+for landslide susceptibility analysis in Dibang Valley, Arunachal Pradesh.
+
+---
+
+# 🌱 Impact & Benefits
+
+## Social Impact
+
+* Earlier warnings for vulnerable communities
+* Reduced risk to human life
+* Improved disaster awareness
+* Better identification of landslide-prone areas
+* Support for timely evacuation
+
+## Infrastructure Impact
+
+* Identify threats to roads and bridges
+* Prioritize inspection and maintenance
+* Protect critical infrastructure
+* Reduce transportation disruptions
+
+## Disaster Management Impact
+
+* Faster emergency response
+* Continuous risk monitoring
+* Location-specific intelligence
+* Data-driven decision-making
+
+---
+
+# 🎯 Expected Outcomes
+
+The platform aims to enable:
+
+### Before a Disaster
+
+```text
+Monitor → Predict → Warn → Prepare
+```
+
+### During a Disaster
+
+```text
+Detect → Prioritize → Respond
+```
+
+### After a Disaster
+
+```text
+Report → Assess → Recover → Learn
+```
+
+This creates a continuous disaster-management cycle rather than relying only on post-disaster response.
+
+---
+
+# 🛣️ Emergency Response Prioritization
+
+Emergency response can be prioritized using:
+
+1. Risk severity
+2. Population exposure
+3. Road connectivity
+4. Critical infrastructure
+5. Sensor alerts
+6. Weather conditions
+7. Ground reports
+
+### Example
+
+```text
+VERY HIGH RISK
+      +
+Major Road
+      +
+High Population
+      ↓
+PRIORITY 1
+      ↓
+Immediate Field Verification
+      ↓
+Emergency Response
+```
+
+---
+
+# 🚀 Development Roadmap
+
+## Phase 1 — Data Collection
+
+* Historical landslide records
+* DEM and terrain datasets
+* Rainfall data
+* Satellite imagery
+* Environmental datasets
+
+## Phase 2 — Data Processing
+
+* Data cleaning
+* Spatial processing
+* Terrain feature extraction
+* Rainfall feature engineering
+* Unified training dataset
+
+## Phase 3 — AI Model Development
+
+* Baseline ML models
+* XGBoost / LightGBM
+* Temporal models
+* Risk scoring
+* Model validation
+
+## Phase 4 — GIS Integration
+
+* Risk heatmaps
+* Vulnerable road mapping
+* Village mapping
+* Critical infrastructure mapping
+* Dynamic risk visualization
+
+## Phase 5 — IoT Integration
+
+* Soil moisture sensors
+* Soil-pore pressure sensors
+* Ground vibration sensors
+* Real-time monitoring
+
+## Phase 6 — Application Development
+
+* FastAPI backend
+* Streamlit dashboard
+* Citizen reporting
+* Field reporting
+* Alert management
+
+## Phase 7 — Deployment
+
+* Cloud deployment
+* Model monitoring
+* Offline synchronization
+* SMS/app notification
+* Regional scalability testing
+
+---
+
+# 📁 Suggested Project Structure
+
+```text
 landslide-risk-monitoring/
-â”‚
-â”œâ”€â”€ frontend/
-â”‚   â”œâ”€â”€ src/
-â”‚   â”œâ”€â”€ components/
-â”‚   â”œâ”€â”€ pages/
-â”‚   â”œâ”€â”€ services/
-â”‚   â””â”€â”€ maps/
-â”‚
-â”œâ”€â”€ backend/
-â”‚   â”œâ”€â”€ app/
-â”‚   â”‚   â”œâ”€â”€ api/
-â”‚   â”‚   â”œâ”€â”€ models/
-â”‚   â”‚   â”œâ”€â”€ schemas/
-â”‚   â”‚   â”œâ”€â”€ services/
-â”‚   â”‚   â””â”€â”€ core/
-â”‚   â””â”€â”€ main.py
-â”‚
-â”œâ”€â”€ ml/
-â”‚   â”œâ”€â”€ data/
-â”‚   â”œâ”€â”€ notebooks/
-â”‚   â”œâ”€â”€ preprocessing/
-â”‚   â”œâ”€â”€ training/
-â”‚   â”œâ”€â”€ inference/
-â”‚   â””â”€â”€ models/
-â”‚
-â”œâ”€â”€ data/
-â”‚   â”œâ”€â”€ raw/
-â”‚   â”œâ”€â”€ processed/
-â”‚   â””â”€â”€ metadata/
-â”‚
-â”œâ”€â”€ mobile/
-â”‚   â””â”€â”€ field-reporting-app/
-â”‚
-â”œâ”€â”€ docs/
-â”‚   â”œâ”€â”€ architecture/
-â”‚   â”œâ”€â”€ api/
-â”‚   â””â”€â”€ screenshots/
-â”‚
-â”œâ”€â”€ tests/
-â”‚
-â”œâ”€â”€ docker/
-â”‚
-â”œâ”€â”€ .dvc/
-â”œâ”€â”€ docker-compose.yml
-â”œâ”€â”€ requirements.txt
-â”œâ”€â”€ .env.example
-â”œâ”€â”€ .gitignore
-â””â”€â”€ README.md
+│
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   └── external/
+│
+├── models/
+│   ├── trained_models/
+│   └── preprocessing/
+│
+├── notebooks/
+│   ├── data_analysis.ipynb
+│   ├── feature_engineering.ipynb
+│   └── model_training.ipynb
+│
+├── src/
+│   ├── data_processing/
+│   ├── feature_engineering/
+│   ├── models/
+│   ├── gis/
+│   ├── sensors/
+│   └── alerts/
+│
+├── api/
+│   └── main.py
+│
+├── dashboard/
+│   └── app.py
+│
+├── tests/
+│
+├── requirements.txt
+├── Dockerfile
+├── .gitignore
+├── README.md
+└── LICENSE
 ```
 
-------------------------------------------------------------------------
+---
 
-## ðŸš€ Getting Started
+# ⚙️ Installation
 
-### 1. Clone the Repository
+Clone the repository:
 
-``` bash
-git clone https://github.com/<your-org>/<your-repository>.git
-cd <your-repository>
+```bash
+git clone https://github.com/YOUR_USERNAME/landslide-risk-monitoring.git
+cd landslide-risk-monitoring
 ```
 
-### 2. Create Python Environment
+Create a virtual environment:
 
-``` bash
+```bash
 python -m venv venv
 ```
 
-Activate it:
+### Windows
 
-**Windows**
-
-``` bash
+```bash
 venv\Scripts\activate
 ```
 
-**Linux/macOS**
+### Linux / macOS
 
-``` bash
+```bash
 source venv/bin/activate
 ```
 
-### 3. Install Backend Dependencies
+Install dependencies:
 
-``` bash
+```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure Environment Variables
+---
 
-Create `.env` from `.env.example` and configure:
+# ▶️ Running the Application
 
-``` env
-DATABASE_URL=
-IMD_API_KEY=
-SATELLITE_API_KEY=
-WEATHER_API_KEY=
-SECRET_KEY=
-SMS_PROVIDER_KEY=
+## Start FastAPI Backend
+
+```bash
+uvicorn api.main:app --reload
 ```
 
-> Never commit real API keys, passwords or secrets to GitHub.
+Backend:
 
-### 5. Run FastAPI
-
-``` bash
-uvicorn backend.app.main:app --reload
+```text
+http://127.0.0.1:8000
 ```
 
-### 6. Run Frontend
+## Start Streamlit Dashboard
 
-``` bash
-cd frontend
-npm install
-npm run dev
+```bash
+streamlit run dashboard/app.py
 ```
 
-------------------------------------------------------------------------
+---
 
-## ðŸ§ª Model Training
+# 🔐 Environment Variables
 
-A typical training pipeline:
+Create a `.env` file:
 
-``` bash
-dvc pull
-python ml/preprocessing/preprocess.py
-python ml/training/train.py
-mlflow ui
+```env
+DATABASE_URL=your_database_url
+WEATHER_API_KEY=your_weather_api_key
+SATELLITE_API_KEY=your_satellite_api_key
+SMS_API_KEY=your_sms_api_key
 ```
 
-The model pipeline should record:
+> **Important:** Never commit API keys, passwords, database credentials, or other secrets to GitHub.
 
--   Dataset version
--   Features
--   Model parameters
--   Evaluation metrics
--   Model artifacts
--   Training timestamp
+---
 
-------------------------------------------------------------------------
+# 📈 Future Enhancements
 
-## ðŸŒ Data Sources & Integrations
+Future versions can include:
 
-The platform is designed for integration with authoritative and open
-datasets such as:
+* Advanced LSTM rainfall forecasting
+* Graph Neural Networks for spatial modelling
+* InSAR-based deformation monitoring
+* Additional IoT sensors
+* Multilingual alerts
+* Android/iOS applications
+* Automated SMS and voice alerts
+* Edge AI for remote locations
+* Advanced offline synchronization
+* Explainable AI dashboards
+* Integration with additional government datasets
+* NER-wide deployment and validation
 
--   India Meteorological Department (IMD)
--   Geological Survey of India (GSI)
--   National Centre for Medium Range Weather Forecasting (NCMRWF)
--   NASA Earth observation products
--   ESA Copernicus/Sentinel datasets
--   OpenStreetMap
--   Digital Elevation Models
--   Government GIS datasets
--   IoT sensor networks
+---
 
-Actual API availability, licensing, rate limits and operational
-permissions should be verified before production deployment.
+# 🏆 Project Feasibility
 
-------------------------------------------------------------------------
+## Technical Feasibility
 
-## ðŸ§ª Testing Strategy
+* Open geospatial and environmental datasets can support development.
+* Python, ML, GIS, and web technologies provide a mature development ecosystem.
+* Cloud/GPU resources can support model training and deployment.
+* Most core technologies are open source.
 
-The project should include:
+## Data Feasibility
 
-### Unit Testing
+Potential data sources include:
 
--   API services
--   Feature engineering
--   Model utilities
--   Risk classification
+* Historical landslide inventories
+* DEM
+* Satellite imagery
+* Rainfall
+* Soil information
+* Environmental data
+* IoT sensor data
 
-### Integration Testing
+## Operational Viability
 
--   Database + API
--   API + ML engine
--   Sensor ingestion
--   Alert service
--   GIS layers
+The platform is designed to provide understandable GIS-based risk information and support faster decision-making.
 
-### ML Validation
+## Scalability
 
--   Historical-event backtesting
--   Cross-validation
--   False-alarm analysis
--   Lead-time analysis
+The system can initially focus on selected areas of NER and gradually expand across additional states and regions.
 
-### Field Testing
+---
 
--   Low-network conditions
--   GPS accuracy
--   Offline report submission
--   Sync recovery
--   Alert delivery
+# 🌏 Long-Term Vision
 
-------------------------------------------------------------------------
+Our long-term vision is to develop a **region-wide intelligent disaster management ecosystem** that continuously learns from:
 
-## ðŸ—ºï¸ Implementation Roadmap
+* Environmental data
+* Historical landslide events
+* Satellite observations
+* IoT sensors
+* Weather conditions
+* Field observations
+* Citizen reports
 
-### Phase 1 --- Prototype
+### Continuous Disaster Management Cycle
 
--   Data ingestion
--   Historical dataset preparation
--   Baseline ML model
--   GIS dashboard
--   Risk heatmap
--   Basic alerting
-
-### Phase 2 --- Pilot
-
--   Real-time weather integration
--   Sensor integration
--   Citizen/field reporting
--   Offline-first mobile workflow
--   District-level deployment
-
-### Phase 3 --- Scale
-
--   Multi-state deployment
--   Advanced ML/deep-learning models
--   Automated satellite analysis
--   Expanded sensor network
--   Multilingual alerts
--   Integration with disaster-management workflows
-
-------------------------------------------------------------------------
-
-## ðŸ‘¥ Target Users
-
--   State Disaster Management Authorities
--   District Disaster Management Authorities
--   Government departments
--   Public Works/Road authorities
--   Disaster response teams
--   Field officials
--   Local administration
--   Researchers
--   NGOs
--   Local communities and citizens
-
-------------------------------------------------------------------------
-
-## ðŸŒ± Expected Impact
-
-The proposed system aims to:
-
--   â±ï¸ Increase landslide warning lead time
--   ðŸš¨ Improve early-warning delivery
--   ðŸ—ºï¸ Identify high-risk zones spatially
--   ðŸš‘ Improve emergency response prioritization
--   ðŸ›£ï¸ Protect critical road connectivity
--   ðŸ˜ï¸ Improve community preparedness
--   ðŸ“Š Support evidence-based governance
--   ðŸŒ Strengthen climate-resilient disaster management
-
-------------------------------------------------------------------------
-
-## ðŸ† Smart India Hackathon 2026
-
-This project is proposed as a software solution for the **Smart India
-Hackathon 2026** problem statement:
-
-> **AI-Based Early Warning and Landslide Risk Monitoring System in NER**
-
-The solution follows the SIH requirements by combining AI/ML, GIS,
-real-time monitoring, field reporting, early-warning communication and
-offline functionality into a unified platform.
-
-------------------------------------------------------------------------
-
-## ðŸ“š References & Research
-
-The architecture and proposed methodology are informed by research and
-data initiatives involving:
-
--   Geological Survey of India (GSI) landslide inventories and
-    forecasting initiatives
--   India Meteorological Department (IMD) weather information
--   NCMRWF forecast products
--   NASA precipitation and soil-moisture products
--   ESA/Copernicus satellite data
--   OpenStreetMap geospatial infrastructure data
--   Research literature on machine-learning-based landslide
-    susceptibility and forecasting
--   Common Alerting Protocol (CAP) concepts for interoperable emergency
-    alerts
-
-------------------------------------------------------------------------
-
-## ðŸ¤ Contribution
-
-Contributions are welcome.
-
-``` bash
-git checkout -b feature/your-feature
-git add .
-git commit -m "Add: your feature"
-git push origin feature/your-feature
+```text
+                    DATA
+                     ↓
+                  MONITOR
+                     ↓
+                  ANALYZE
+                     ↓
+                  PREDICT
+                     ↓
+                   WARN
+                     ↓
+                 RESPOND
+                     ↓
+                  RECOVER
+                     ↓
+                  LEARN
+                     │
+                     └──────────► DATA
 ```
 
-Then open a Pull Request describing:
+The ultimate goal is to make landslide management:
 
-1.  What was changed
-2.  Why it was changed
-3.  How it was tested
-4.  Screenshots/demo, if applicable
+> **Predictive • Proactive • Data-Driven • Community-Centric**
 
-------------------------------------------------------------------------
+---
 
-## âš ï¸ Disclaimer
+# 👥 Team
 
-This project is a **prototype/research-oriented disaster-risk
-decision-support system**. AI-generated risk scores should not be
-treated as the sole basis for evacuation or life-safety decisions.
+## TECH SMASH
 
-Production deployment should include:
+**Smart India Hackathon 2026**
 
--   Validation by domain experts
--   Government/agency approval
--   Field calibration
--   Continuous model monitoring
--   Redundant warning mechanisms
--   Human-in-the-loop emergency decision making
+**Problem Statement ID:** 26001
 
-------------------------------------------------------------------------
+**Problem Statement:** AI-Based Early Warning and Landslide Risk Monitoring System in NER
 
-## ðŸ“„ License
+**Theme:** Disaster Management
 
-This project is intended to be released under the **MIT License** unless
-the project team or institution specifies another license.
+**Category:** Software
 
-------------------------------------------------------------------------
+---
 
-## â­ Support the Project
+# 📖 References
 
-If you find this project useful:
+1. ISRO / NRSC — Landslide Atlas of India (2023)
+2. Chutia et al. — AI-based rainfall-induced landslide prediction, *Natural Hazards* (2026)
+3. NEHU — Meghalaya Landslide Monitoring Project (2024–26)
+4. Mihu et al. — Machine Learning-based landslide susceptibility in Dibang Valley, *Earth Systems & Environment* (2026)
+5. Jain et al. (2023) — Landslide Atlas of India, NRSC / ISRO
+6. Ado et al. (2026) — Stacked ML for landslide susceptibility, *Georisk*
 
--   â­ Star the repository
--   ðŸ´ Fork the project
--   ðŸ› Report issues
--   ðŸ’¡ Suggest improvements
--   ðŸ¤ Contribute to development
+---
 
-------------------------------------------------------------------------
+# 📜 Disclaimer
 
-### Built with â¤ï¸ for safer, smarter and more resilient communities in North Eastern India.
+This project is a **Smart India Hackathon 2026 prototype/research-oriented solution**.
+
+Predictions and risk scores should be validated using domain experts, historical data, field observations, and appropriate government/disaster-management authorities before being used for real-world emergency decisions.
+
+---
+
+# ⭐ Support
+
+If you find this project useful or interesting, consider giving this repository a ⭐ on GitHub.
+
+---
+
+## 🚨 From Reactive Response to Proactive Risk Management
+
+> **Predict the Risk. Warn the People. Protect the Region.**
+
+### **TECH SMASH — Smart India Hackathon 2026**
