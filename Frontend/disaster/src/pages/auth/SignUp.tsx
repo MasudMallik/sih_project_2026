@@ -1,14 +1,23 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { SignupForm } from "../../components/signup/SignupForm";
 import { ToastContainer } from "../../components/signup/Toast";
 import { useToast } from "../../hooks/useToast";
 import signupBackground from "../../assets/signup.jpg";
 
-const NAV_LINKS = ["Home", "About", "Safety Tips", "Contact"];
+const NAV_LINKS = [{label:"Home",id:"home"},
+{label:"About",id:"about"},
+{label:"Safety Tips", id: "safety-tips"},
+{label:"Contact",id:"contact"}];
 
 export default function SignUp() {
+  const navigate = useNavigate();
   const { toasts, showToast, dismissToast } = useToast();
   const [submitted, setSubmitted] = useState(false);
+
+  const handleNavClick = (sectionId: string) => {
+    navigate("/", { state: { scrollTo: sectionId } });
+  };
 
   const handleGeoError = (message: string) => {
     showToast("warning", "Location access denied", message);
@@ -27,7 +36,7 @@ export default function SignUp() {
     <div className="relative min-h-screen w-full overflow-x-hidden">
       {/* Background image */}
       <div
-        className="absolute inset-0 bg-cover bg-[position:70%_bottom] max-md:bg-[position:66%_bottom] max-sm:bg-[position:58%_bottom]"
+        className="absolute inset-0 bg-cover bg-position-[70%_bottom] max-md:bg-[position:66%_bottom] max-sm:bg-[position:58%_bottom]"
         style={{ backgroundImage: `url(${signupBackground})` }}
         role="img"
         aria-label="Forest opening toward mountains with the Indian national flag"
@@ -48,23 +57,26 @@ export default function SignUp() {
         {/* Minimal top navigation */}
         <header className="px-6 py-5 sm:px-10">
           <nav className="mx-auto flex max-w-6xl items-center justify-between" aria-label="Primary">
-            <a href="/" className="flex items-center gap-2 group">
+            <button
+              onClick={() => handleNavClick("home")}
+              className="flex items-center gap-2 group hover:opacity-80 transition-opacity"
+            >
               <span className="h-2 w-2 rounded-full bg-[#D9A24B]" aria-hidden="true" />
               <span className="text-sm font-semibold tracking-wide text-[#F4EFE6]">
                 Geo Rakshak
               </span>
-            </a>
+            </button>
             <ul className="hidden sm:flex items-center gap-8">
               {NAV_LINKS.map((link) => (
-                <li key={link}>
-                  <a
-                    href={`/${link.toLowerCase().replace(" ", "-")}`}
+                <li key={link.id}>
+                  <button
+                    onClick={() => handleNavClick(link.id)}
                     className="text-sm text-[#C3D0BE] hover:text-[#F4EFE6]
                       focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D9A24B] rounded
-                      transition-colors"
+                      transition-colors bg-none border-none cursor-pointer p-0"
                   >
-                    {link}
-                  </a>
+                    {link.label}
+                  </button>
                 </li>
               ))}
             </ul>
