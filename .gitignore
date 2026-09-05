@@ -218,7 +218,7 @@ __marimo__/
 .streamlit/secrets.toml
 
 mlartifacts
-Backend/chroma_db/
+chroma_db/
 Ml_models/mlartifacts/
 
 
