@@ -7,6 +7,7 @@ import EmergencyResponse from "../pages/EmergencyResponse";
 import Profile from "../pages/profile.page";
 import LiveRiskMap from "../pages/liveRiskMap.page";
 import AiAnalysisPage from "../pages/aiAnalysis.page";
+import LandslideRiskPage from "../pages/landslide-risk.page";
 import ProtectedRoute from "./ProtectedRoutes";
 
 const Router = createBrowserRouter([
@@ -44,6 +45,10 @@ const Router = createBrowserRouter([
       {
         path: "/ai-analysis",
         element: <AiAnalysisPage />,
+      },
+      {
+        path: "/landslide-risk",
+        element: <LandslideRiskPage />,
       },
     ],
   },
