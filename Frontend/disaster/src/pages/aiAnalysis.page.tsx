@@ -8,16 +8,13 @@ import React, {
   type CSSProperties,
   type PropsWithChildren,
 } from "react";
-import { Send, Mic, X, Keyboard, ArrowLeft, Trash2 } from "lucide-react";
+import { Send, Mic, X, Keyboard, ArrowLeft, Trash2, MicOff } from "lucide-react";
 import { sendChatMessage } from "../services/chat.service";
 import { DashboardHeader } from "../components/dashboard/DashboardHeader";
 import { getCurrentUser } from "../services/auth.service";
 
 /* ============================================================================
    BRAND TOKENS
-   Base brand stays the Geo Rakshak dark-forest palette. The voice
-   assistant's own glow uses a warmer neon violet -> pink -> amber accent,
-   the one "loud" element against an otherwise quiet, dark, editorial page.
 ============================================================================ */
 const BRAND = {
   forest: "#16241C",
@@ -33,8 +30,7 @@ const BRAND = {
 };
 
 /* ============================================================================
-   CHAT CONTEXT - shared between typed chat and the voice popup so a spoken
-   exchange and a typed one land in the same transcript.
+   CHAT CONTEXT
 ============================================================================ */
 type Message = {
   id: string;
@@ -100,7 +96,8 @@ function ChatProvider({ children }: PropsWithChildren) {
       ]);
       return reply;
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Unable to contact the assistant.");
+      const msg = requestError instanceof Error ? requestError.message : "Unable to contact the assistant.";
+      setError(msg);
       return null;
     } finally {
       setIsTyping(false);
@@ -123,8 +120,7 @@ function ChatProvider({ children }: PropsWithChildren) {
 }
 
 /* ============================================================================
-   VOICE ORB - the animated visual, styled after the neon reference image.
-   Purely presentational; state comes from the parent.
+   VOICE ORB
 ============================================================================ */
 type VoiceOrbProps = {
   size?: number;
@@ -150,7 +146,11 @@ function VoiceOrb({ size = 120, state = "idle", showIcon = false }: VoiceOrbProp
       </span>
       {showIcon && (
         <span className="vo-icon">
-          <Mic size={Math.round(size * 0.3)} strokeWidth={1.8} />
+          {state === "listening" ? (
+            <Mic size={Math.round(size * 0.3)} strokeWidth={1.8} className="animate-pulse" />
+          ) : (
+            <Mic size={Math.round(size * 0.3)} strokeWidth={1.8} />
+          )}
         </span>
       )}
     </div>
@@ -167,8 +167,9 @@ type SpeechRecognitionInstance = {
   lang: string;
   start: () => void;
   stop: () => void;
+  abort: () => void;
   onresult: ((event: SpeechRecognitionResultEvent) => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((event: { error: string }) => void) | null;
   onend: (() => void) | null;
 };
 
@@ -180,12 +181,7 @@ type SpeechWindow = Window & {
 };
 
 /* ============================================================================
-   VOICE POPUP - full-screen takeover, styled after the reference: a back
-   arrow top-left, a short line of context in the upper-middle area, and
-   the glowing orb with its two flanking circular controls in the lower
-   third. The orb's own motion (ring glow, spin speed, wave ripples, core
-   pulse) still carries idle / listening / thinking / responding - the
-   caption just gives the person something to read while that happens.
+   VOICE POPUP - Full-screen modal with complete lifecycle management
 ============================================================================ */
 function VoicePopup({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { sendUserMessage } = useChat();
@@ -193,83 +189,177 @@ function VoicePopup({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [caption, setCaption] = useState(
     "Ask me about a village, a route, or a river — I'm listening."
   );
-  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const recognition = useRef<SpeechRecognitionInstance | null>(null);
+  const [micDenied, setMicDenied] = useState(false);
 
-  const clearTimers = () => {
-    timers.current.forEach(clearTimeout);
-    timers.current = [];
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const isStoppingRef = useRef(false);
+  const activeStreamRef = useRef<MediaStream | null>(null);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const clearAllTimers = () => {
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
   };
 
-  const runExchange = useCallback(() => {
-    clearTimers();
-    setStatus("listening");
-    setCaption("Listening…");
+  const stopAudioStreams = useCallback(() => {
+    if (activeStreamRef.current) {
+      activeStreamRef.current.getTracks().forEach((track) => {
+        try {
+          track.stop();
+        } catch {
+          // ignore
+        }
+      });
+      activeStreamRef.current = null;
+    }
+  }, []);
+
+  const cleanUpSpeechRecognition = useCallback(() => {
+    isStoppingRef.current = true;
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onend = null;
+        recognitionRef.current.stop();
+        recognitionRef.current.abort();
+      } catch {
+        // ignore
+      }
+      recognitionRef.current = null;
+    }
+    stopAudioStreams();
+  }, [stopAudioStreams]);
+
+  const handleClose = useCallback(() => {
+    clearAllTimers();
+    cleanUpSpeechRecognition();
+    setStatus("idle");
+    onClose();
+  }, [cleanUpSpeechRecognition, onClose]);
+
+  const startListening = useCallback(() => {
+    clearAllTimers();
+    cleanUpSpeechRecognition();
+    setMicDenied(false);
+    isStoppingRef.current = false;
 
     const speechWindow = window as SpeechWindow;
     const SpeechRecognition = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
+
     if (!SpeechRecognition) {
       setStatus("idle");
-      setCaption("Voice input is not supported in this browser. Use the text box instead.");
+      setCaption("Voice recognition is not supported by your browser. Please use typed input.");
       return;
     }
 
-    const instance = new SpeechRecognition();
-    recognition.current = instance;
-    instance.continuous = false;
-    instance.interimResults = false;
-    instance.lang = "en-IN";
-    instance.onresult = async (event) => {
-      const transcript = event.results[0]?.[0]?.transcript.trim();
-      if (!transcript) return;
-      setStatus("processing");
-      setCaption(`"${transcript}"`);
-      const reply = await sendUserMessage(transcript, true);
-      if (reply) {
-        setStatus("speaking");
-        setCaption(reply);
-      } else {
+    // Request mic stream to ensure permission state and stream track lifecycle
+    navigator.mediaDevices?.getUserMedia({ audio: true })
+      .then((stream) => {
+        activeStreamRef.current = stream;
+        try {
+          const instance = new SpeechRecognition();
+          recognitionRef.current = instance;
+          instance.continuous = false;
+          instance.interimResults = false;
+          instance.lang = "en-IN";
+
+          instance.onresult = async (event) => {
+            if (isStoppingRef.current) return;
+            const transcript = event.results[0]?.[0]?.transcript.trim();
+            cleanUpSpeechRecognition();
+
+            if (!transcript) {
+              setStatus("idle");
+              setCaption("No voice detected. Tap microphone to try again.");
+              return;
+            }
+
+            setStatus("processing");
+            setCaption(`"${transcript}"`);
+
+            try {
+              const reply = await sendUserMessage(transcript, true);
+              if (reply) {
+                setStatus("speaking");
+                setCaption(reply);
+                timersRef.current.push(
+                  setTimeout(() => {
+                    setStatus("idle");
+                  }, 4000)
+                );
+              } else {
+                setStatus("idle");
+                setCaption("Assistant response unavailable. Tap microphone to speak again.");
+              }
+            } catch {
+              setStatus("idle");
+              setCaption("Failed to fetch response. Check network connection.");
+            }
+          };
+
+          instance.onerror = (evt) => {
+            cleanUpSpeechRecognition();
+            setStatus("idle");
+            if (evt.error === "not-allowed" || evt.error === "permission-denied") {
+              setMicDenied(true);
+              setCaption("Microphone access was denied. Please allow microphone access in your browser settings.");
+            } else if (evt.error === "no-speech") {
+              setCaption("No speech detected. Tap orb to try speaking again.");
+            } else {
+              setCaption(`Voice error (${evt.error}). Tap orb to try again.`);
+            }
+          };
+
+          instance.onend = () => {
+            cleanUpSpeechRecognition();
+            if (status === "listening") {
+              setStatus("idle");
+            }
+          };
+
+          instance.start();
+          setStatus("listening");
+          setCaption("Listening… speak now.");
+        } catch {
+          cleanUpSpeechRecognition();
+          setStatus("idle");
+          setCaption("Could not initialize speech recognition. Use text input.");
+        }
+      })
+      .catch((err) => {
         setStatus("idle");
-      }
-    };
-    instance.onerror = () => {
+        setMicDenied(true);
+        setCaption("Microphone permission denied or device unavailable.");
+        console.error("Microphone permission error:", err);
+      });
+  }, [cleanUpSpeechRecognition, sendUserMessage, status]);
+
+  const handleOrbTap = () => {
+    if (status === "listening" || status === "processing" || status === "speaking") {
+      clearAllTimers();
+      cleanUpSpeechRecognition();
       setStatus("idle");
-      setCaption("Voice input could not be started. Use the text box instead.");
-    };
-    instance.onend = () => {
-      recognition.current = null;
-    };
-    instance.start();
-  }, [sendUserMessage]);
+      setCaption("Paused — tap the orb to start speaking.");
+    } else {
+      startListening();
+    }
+  };
 
   useEffect(() => {
     if (open) {
-      clearTimers();
-      timers.current.push(
-        setTimeout(() => {
-          setStatus("idle");
-          setCaption("Ask me about a village, a route, or a river — I'm listening.");
-        }, 0)
-      );
+      startListening();
     } else {
-      clearTimers();
-      recognition.current?.stop();
-      recognition.current = null;
-    }
-    return clearTimers;
-  }, [open]);
-
-  const handleOrbTap = () => {
-    if (status === "idle") {
-      runExchange();
-    } else {
-      clearTimers();
-      recognition.current?.stop();
-      recognition.current = null;
+      clearAllTimers();
+      cleanUpSpeechRecognition();
       setStatus("idle");
-      setCaption("Paused — tap the orb to keep talking.");
     }
-  };
+
+    return () => {
+      clearAllTimers();
+      cleanUpSpeechRecognition();
+    };
+  }, [open, startListening, cleanUpSpeechRecognition]);
 
   if (!open) return null;
 
@@ -283,14 +373,19 @@ function VoicePopup({ open, onClose }: { open: boolean; onClose: () => void }) {
         }}
       />
 
-      <div className="relative flex items-center px-5 pt-5 sm:pt-6">
+      <div className="relative flex items-center justify-between px-5 pt-5 sm:pt-6">
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
           aria-label="Close voice assistant"
         >
           <ArrowLeft size={18} style={{ color: BRAND.cream }} />
         </button>
+        {micDenied && (
+          <span className="flex items-center gap-1 text-xs text-red-400">
+            <MicOff size={14} /> Mic Access Blocked
+          </span>
+        )}
       </div>
 
       <div className="relative flex-1 flex items-center justify-center px-9">
@@ -305,27 +400,29 @@ function VoicePopup({ open, onClose }: { open: boolean; onClose: () => void }) {
 
       <div className="relative flex items-center justify-center gap-9 pb-14 sm:pb-16">
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="w-11 h-11 rounded-full flex items-center justify-center backdrop-blur-sm transition-colors hover:bg-white/10"
           style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.18)" }}
           aria-label="Switch back to typing"
+          title="Switch to typing"
         >
           <Keyboard size={17} style={{ color: BRAND.cream }} />
         </button>
 
         <button
           onClick={handleOrbTap}
-          className="outline-none"
-          aria-label={status === "idle" ? "Resume listening" : "Pause listening"}
+          className="outline-none focus:scale-105 transition-transform"
+          aria-label={status === "idle" ? "Start listening" : "Pause listening"}
         >
           <VoiceOrb size={132} state={status} showIcon />
         </button>
 
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="w-11 h-11 rounded-full flex items-center justify-center backdrop-blur-sm transition-colors hover:bg-white/10"
           style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.18)" }}
           aria-label="Close voice assistant"
+          title="Close voice"
         >
           <X size={16} style={{ color: BRAND.cream }} />
         </button>
@@ -502,7 +599,7 @@ function ChatSection() {
 }
 
 /* ============================================================================
-   HEADER - slim, fixed-height bar; everything else on the page is the chat.
+   HEADER
 ============================================================================ */
 function Nav() {
   const user = getCurrentUser();
@@ -541,7 +638,6 @@ export default function App() {
         }
         .animate-vo-caption { animation: vo-caption-in 0.35s ease-out; }
 
-        /* ---- Voice orb: neon violet -> pink -> amber, dark backdrop ---- */
         .vo-orb {
           position: relative;
           width: var(--vo-size);

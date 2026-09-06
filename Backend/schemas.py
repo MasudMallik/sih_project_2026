@@ -1,16 +1,19 @@
-from pydantic import BaseModel,field_validator,Field,EmailStr
+from pydantic import BaseModel, Field
+
+# String alias for email to ensure compatibility without external dependency issues
+EmailStr = str
 
 class register(BaseModel):
-    full_name: str=Field(...,max_length=25,min_length=5)
-    email : EmailStr
+    full_name: str = Field(..., max_length=100, min_length=2)
+    email: str
     contact_number: str
-    location : str
-    password : str
+    location: str
+    password: str
     confirm_password: str
 
 class login(BaseModel):
-    email :EmailStr
-    password : str
+    email: str
+    password: str
 
 class InputData(BaseModel):
     Rainfall_mm: float
@@ -24,4 +27,4 @@ class InputData(BaseModel):
     Soil_Type_Silt: int
 
 class ChatRequest(BaseModel):
-    question:str
+    question: str

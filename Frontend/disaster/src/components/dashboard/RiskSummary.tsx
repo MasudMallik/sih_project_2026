@@ -27,7 +27,11 @@ export function RiskSummary({ data, isLoading }: RiskSummaryProps) {
     );
   }
 
-  const currentRiskColor = riskColors[data.currentLevel];
+  const safeLevel = (data?.currentLevel && riskColors[data.currentLevel]) ? data.currentLevel : "moderate";
+  const currentRiskColor = riskColors[safeLevel];
+
+  const safeCounts = Array.isArray(data?.counts) ? data.counts : [];
+  const safeZones = Array.isArray(data?.zones) ? data.zones : [];
 
   return (
     <div className="rounded-lg border border-[#223B29] bg-[#16281C] p-6">
@@ -37,7 +41,7 @@ export function RiskSummary({ data, isLoading }: RiskSummaryProps) {
           Live Risk Summary
         </div>
         <div className="text-[13px] font-medium text-[#93A490]">
-          {data.zoneCount} zones near you
+          {data?.zoneCount ?? safeZones.length} zones near you
         </div>
       </div>
 
@@ -48,7 +52,7 @@ export function RiskSummary({ data, isLoading }: RiskSummaryProps) {
             Current area status
           </div>
           <div className={`text-[42px] font-bold leading-none ${currentRiskColor.text}`}>
-            {data.currentLevel.charAt(0).toUpperCase() + data.currentLevel.slice(1)}
+            {safeLevel.charAt(0).toUpperCase() + safeLevel.slice(1)}
           </div>
         </div>
         <div
@@ -56,14 +60,14 @@ export function RiskSummary({ data, isLoading }: RiskSummaryProps) {
           style={{ backgroundColor: `${currentRiskColor.text}15` }}
         >
           <span className="h-1.5 w-1.5 rounded-full" style={{ background: currentRiskColor.text }}></span>
-          {data.message}
+          {data?.message || "Monitoring live risk metrics"}
         </div>
       </div>
 
       {/* Risk Counts */}
       <div className="mb-6 grid grid-cols-4 gap-2.5 max-md:grid-cols-2">
-        {data.counts.map((count) => {
-          const color = riskColors[count.level];
+        {safeCounts.map((count) => {
+          const color = (count?.level && riskColors[count.level]) ? riskColors[count.level] : riskColors.moderate;
           return (
             <div
               key={count.level}
@@ -86,8 +90,8 @@ export function RiskSummary({ data, isLoading }: RiskSummaryProps) {
 
       {/* Risk Zones */}
       <div className="space-y-2.5">
-        {data.zones.map((zone) => {
-          const zoneColor = riskColors[zone.level];
+        {safeZones.map((zone) => {
+          const zoneColor = (zone?.level && riskColors[zone.level]) ? riskColors[zone.level] : riskColors.moderate;
           return (
             <div
               key={zone.id}
