@@ -25,4 +25,4 @@ def decode_token(token: str):
         data = decode(token, key=SECRET_KEY, algorithms=[ALGORITHM])
         return data
     except Exception:
-        return None
+        return None
