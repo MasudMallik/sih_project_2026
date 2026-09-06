@@ -66,9 +66,9 @@ def rag_pipeline(vector_space, question):
     
     # Use valid Groq model name
     try:
-        model = init_chat_model(model="llama-3.3-70b-versatile", model_provider="groq")
+        model = init_chat_model(model="groq:openai/gpt-oss-120b")
     except Exception:
-        model = init_chat_model(model="llama-3.1-8b-instant", model_provider="groq")
+        model = init_chat_model(model="groq:meta-llama/llama-prompt-guard-2-86m")
         
     retriever = vector_space.as_retriever()
     document = retriever.invoke(question)
