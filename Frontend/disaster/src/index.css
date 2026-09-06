@@ -16,5 +16,17 @@
   --color-gold-dark: #b5762f;
 }
 
-html { scroll-behavior: smooth; }
-body { margin: 0; }
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  color: #f4efe4;
+  background-color: #0e1f17;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+

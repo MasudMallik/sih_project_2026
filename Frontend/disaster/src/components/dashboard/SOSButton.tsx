@@ -18,73 +18,78 @@ export function SOSButton({
   const getButtonText = () => {
     if (isSuccess) return "✓";
     if (isError) return "!";
+    if (isLoading) return "";
     return "SOS";
   };
 
   const getCaption = () => {
-    if (isSuccess) return "Calling 1078 — help is on the way";
-    if (isError) return "Error — Please try again or call 1078";
+    if (isSuccess) return "Emergency Dispatched (1078)";
+    if (isError) return "Alert Failed — Call 1078";
     return "Tap for Emergency";
   };
 
-  const getButtonClasses = () => {
-    const base =
-      "h-[204px] w-[204px] rounded-full border-[8px] border-[#713020] text-[38px] font-bold tracking-wide cursor-pointer transition-all";
-
-    if (isSuccess) {
-      return (
-        base + " bg-gradient-to-br from-[#6FAE77] to-[#3F7A48] text-white text-[44px]"
-      );
-    }
-
-    if (isError) {
-      return (
-        base +
-        " bg-gradient-to-br from-[#E9584A] to-[#C0392B] text-white animate-pulse"
-      );
-    }
-
-    if (isLoading) {
-      return (
-        base +
-        " bg-gradient-to-br from-[#E9584A] to-[#C0392B] text-white opacity-75"
-      );
-    }
-
-    return (
-      base +
-      " bg-gradient-to-br from-[#E9584A] to-[#C0392B] text-white animate-pulse shadow-[0_10px_30px_rgba(192,57,43,0.35)]"
-    );
+  const getSubCaption = () => {
+    if (isSuccess)
+      return "Your live coordinates have been transmitted to the nearest response team. Help is on the way.";
+    if (isError)
+      return "Direct transmission failed. Please call 1078 emergency services immediately.";
+    return "Shares your live location with the nearest rescue team the moment you tap";
   };
 
   return (
-    <section className="flex min-h-[370px] w-full flex-col items-center justify-center border-y border-[#223B29] bg-[#102519] px-6 py-8 text-center">
-      <button
-        onClick={onTap}
-        disabled={disabled || isLoading}
-        className={getButtonClasses()}
+    <div className="flex flex-col items-center justify-center py-6 text-center">
+      {/* Glow pulse wrapper */}
+      <div className="relative flex items-center justify-center">
+        {/* Ambient Glow */}
+        <div
+          className={`absolute h-44 w-44 rounded-full blur-2xl transition-all duration-500 ${
+            isSuccess
+              ? "bg-emerald-500/40"
+              : isError
+              ? "bg-red-600/50"
+              : "bg-red-500/45 animate-pulse"
+          }`}
+        />
+
+        {/* Circular SOS Button */}
+        <button
+          type="button"
+          onClick={onTap}
+          disabled={disabled || isLoading}
+          className={`relative z-10 flex h-36 w-36 sm:h-40 sm:w-40 items-center justify-center rounded-full text-3xl sm:text-4xl font-extrabold tracking-wider text-white transition-all duration-300 active:scale-95 disabled:opacity-80 disabled:cursor-not-allowed ${
+            isSuccess
+              ? "bg-gradient-to-b from-[#4CAF6D] to-[#2E7D32] shadow-[0_0_40px_rgba(76,175,109,0.6)]"
+              : isError
+              ? "bg-gradient-to-b from-[#E74C3C] to-[#922B21] shadow-[0_0_40px_rgba(231,76,60,0.6)] animate-bounce"
+              : "bg-gradient-to-b from-[#EB5757] via-[#E14B3C] to-[#C0392B] shadow-[0_0_50px_rgba(225,75,60,0.55)] hover:shadow-[0_0_65px_rgba(225,75,60,0.75)] hover:scale-105"
+          }`}
+          aria-label="Trigger Emergency SOS"
+        >
+          {isLoading ? (
+            <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
+          ) : (
+            getButtonText()
+          )}
+        </button>
+      </div>
+
+      {/* Title */}
+      <h2
+        className={`mt-5 text-lg sm:text-xl font-bold tracking-tight transition-colors ${
+          isSuccess
+            ? "text-emerald-300"
+            : isError
+            ? "text-red-300"
+            : "text-[#F4EFE4]"
+        }`}
       >
-        {isLoading ? (
-          <span className="inline-block animate-spin">⟳</span>
-        ) : (
-          getButtonText()
-        )}
-      </button>
-
-      <div className="mt-4 text-[17px] font-semibold text-[#EAE7DA]">
         {getCaption()}
-      </div>
+      </h2>
 
-      <div className="mt-2 max-w-[460px] text-[14px] leading-5 text-[#93A490]">
-        Shares your live location with the nearest rescue team the moment you
-        tap
-      </div>
-
-      {isError && (
-        <div className="mt-4 text-[12px] text-[#E8756A]">
-          Failed to send SOS. Please call 1078 directly or try again.
-        </div>
-      )}
-    </section>
+      {/* Subtitle */}
+      <p className="mt-2 max-w-md text-sm leading-relaxed text-[#8AA68F]">
+        {getSubCaption()}
+      </p>
+    </div>
   );
 }

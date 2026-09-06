@@ -38,7 +38,7 @@ export default function DisasterDashboard() {
       }
     };
 
-    loadDashboard();
+    void loadDashboard();
   }, []);
 
   const handleIncidentSubmit = async (data: {
@@ -73,14 +73,14 @@ export default function DisasterDashboard() {
 
       if (response.success) {
         setSOSState("success");
-        setTimeout(() => setSOSState("idle"), 4000);
+        setTimeout(() => setSOSState("idle"), 4500);
       } else {
         setSOSState("error");
-        setTimeout(() => setSOSState("idle"), 4000);
+        setTimeout(() => setSOSState("idle"), 4500);
       }
     } catch {
       setSOSState("error");
-      setTimeout(() => setSOSState("idle"), 4000);
+      setTimeout(() => setSOSState("idle"), 4500);
     }
   };
 
@@ -95,12 +95,15 @@ export default function DisasterDashboard() {
           avatar: "—",
         }}
       >
-        <div className="mx-auto max-w-[1200px] px-9 py-8 max-md:px-5">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 w-48 rounded bg-[#2A4632]"></div>
-            <div className="grid grid-cols-[1.65fr_1fr] gap-5">
-              <div className="h-96 rounded bg-[#2A4632]"></div>
-              <div className="h-96 rounded bg-[#2A4632]"></div>
+        <div className="mx-auto max-w-[1200px] px-6 py-8 lg:px-9">
+          <div className="animate-pulse space-y-6">
+            <div className="flex justify-between items-center">
+              <div className="h-10 w-64 rounded-xl bg-[#2A4632]"></div>
+              <div className="h-10 w-40 rounded-xl bg-[#2A4632]"></div>
+            </div>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.55fr_1fr]">
+              <div className="h-96 rounded-2xl bg-[#2A4632]"></div>
+              <div className="h-96 rounded-2xl bg-[#2A4632]"></div>
             </div>
           </div>
         </div>
@@ -119,12 +122,12 @@ export default function DisasterDashboard() {
           avatar: "!",
         }}
       >
-        <div className="mx-auto max-w-[1200px] px-9 py-8 max-md:px-5">
-          <div className="rounded-lg border border-[#C0392B] bg-[rgba(192,57,43,0.1)] p-6">
-            <h2 className="mb-2 text-lg font-semibold text-[#E8756A]">
+        <div className="mx-auto max-w-[1200px] px-6 py-8 lg:px-9">
+          <div className="rounded-2xl border border-red-400/40 bg-red-950/40 p-6 shadow-2xl">
+            <h2 className="mb-2 text-xl font-semibold text-red-200">
               Unable to Load Dashboard
             </h2>
-            <p className="text-[#93A490]">
+            <p className="text-[#8AA68F]">
               {error || "An unknown error occurred. Please refresh the page."}
             </p>
           </div>
@@ -139,44 +142,36 @@ export default function DisasterDashboard() {
       email={authUser?.email}
       onProfileClick={() => navigate("/profile")}
     >
-      <style>{`
-        @keyframes gr-pulse {
-          0% { box-shadow: 0 0 0 0 rgba(92, 151, 100, 0.45); }
-          70% { box-shadow: 0 0 0 7px rgba(92, 151, 100, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(92, 151, 100, 0); }
-        }
-        .animate-gr-pulse {
-          animation: gr-pulse 2.2s infinite;
-        }
-      `}</style>
-
-      {/* SOS Button */}
-      <SOSButton state={sosState} onTap={handleSOS} />
-        {/* AI Prediction Analysis Button */}
-        <div className="mx-auto max-w-[1200px] px-9 py-4 max-md:px-5">
-          <AIPredictionButton disabled={isLoading} />
-        </div>
-
-      {/* Main Content */}
-      <div className="mx-auto max-w-[1200px] px-9 py-8 pb-[60px] max-md:px-5">
-        {/* Location Row */}
-        <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2.5">
+      {/* Main Dashboard Container */}
+      <div className="mx-auto max-w-[1200px] px-6 py-6 pb-[60px] lg:px-9 lg:py-8">
+        {/* Header Row: Greeting, Status, and AI Action */}
+        <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
-            <h1 className="text-[26px] font-semibold tracking-tight text-[#EAE7DA]">
+            <h1 className="font-display text-3xl font-bold tracking-tight text-[#F4EFE4] sm:text-4xl">
               Good morning, {dashboard.user.name.split(" ")[0]}
             </h1>
-            <div className="mt-1 text-[13px] text-[#93A490]">
-              📍 {dashboard.location.name} — {dashboard.location.region}
+            <div className="mt-1.5 flex flex-wrap items-center gap-2.5 text-[13px] text-[#8AA68F]">
+              <span>📍 {dashboard.location.name} — {dashboard.location.region}</span>
+              <span>•</span>
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#B7CBB2]">
+                <span className="h-2 w-2 rounded-full bg-[#4CAF6D] animate-pulse" />
+                Live synced {dashboard.lastSyncMinutesAgo}m ago
+              </span>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 text-[12px] text-[#6C7D6A]">
-            <span className="h-[7px] w-[7px] rounded-full bg-[#5C9764] animate-gr-pulse"></span>
-            Live — synced {dashboard.lastSyncMinutesAgo} min ago
+
+          <div className="flex items-center">
+            <AIPredictionButton disabled={isLoading} />
           </div>
+        </div>
+
+        {/* Circular Emergency SOS Center (matching screenshot without banner header) */}
+        <div className="mb-8">
+          <SOSButton state={sosState} onTap={handleSOS} disabled={isLoading} />
         </div>
 
         {/* Risk & Weather Grid */}
-        <div className="mb-5 grid grid-cols-[1.65fr_1fr] gap-5 max-lg:grid-cols-1">
+        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-[1.55fr_1fr]">
           <RiskSummary data={dashboard.risk} isLoading={isLoading} />
           <WeatherSnapshot data={dashboard.weather} isLoading={isLoading} />
         </div>

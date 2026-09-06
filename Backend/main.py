@@ -200,7 +200,7 @@ async def trigger_sos(data: dict = None):
     response = requests.get("https://ipinfo.io")
     data = response.json()
     message = {
-        "message":f"🚨 SOS ALERT 🚨\nA user has triggered an emergency signal. They are in urgent need of help {data.get("city")} "
+        "message":f"🚨 SOS ALERT 🚨\nA user has triggered an emergency signal. They are in urgent need of help {data.get('city')} "
 ,
     }
     try:

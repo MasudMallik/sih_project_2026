@@ -48,7 +48,7 @@ export function IncidentReportForm({
     if (!onSubmit) {
       setSuccess(true);
       setSuccessMessage(
-        `${selectedType} reported at ${location}. Nearest team notified.`
+        `${selectedType} reported at ${location}. Nearest response team notified.`
       );
       resetForm();
       return;
@@ -98,22 +98,24 @@ export function IncidentReportForm({
   };
 
   return (
-    <div className="rounded-lg border border-[#223B29] bg-[#16281C] p-6">
+    <div className="rounded-2xl border border-white/10 bg-[#102419]/85 p-6 shadow-2xl backdrop-blur-md">
       {/* Header */}
-      <div className="mb-5">
-        <h3 className="mb-1 text-[15px] font-semibold text-[#EAE7DA]">
+      <div className="mb-6">
+        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D9A441]">
+          Community Report
+        </div>
+        <h3 className="mt-1 text-xl font-semibold text-[#F4EFE4]">
           Report an incident
         </h3>
-        <p className="text-[12px] text-[#93A490]">
-          Enter your location, then choose what's happening. It reaches the
-          nearest response team.
+        <p className="mt-1.5 text-[13px] text-[#8AA68F]">
+          Enter your location and hazard type to alert the nearest response team and feed the risk model.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Location Input */}
         <div>
-          <label className="mb-1.5 block text-[11px] text-[#6C7D6A]">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[#B7CBB2]">
             Your location
           </label>
           <input
@@ -122,14 +124,14 @@ export function IncidentReportForm({
             onChange={(e) => setLocation(e.target.value)}
             placeholder="e.g. Sonapur Ridge, Guwahati"
             disabled={isLoading || submitting}
-            className={`w-full rounded border bg-[#1D3423] px-3.5 py-3 text-[13px] text-[#EAE7DA] placeholder-[#6C7D6A] outline-none transition-colors ${
+            className={`w-full rounded-xl border bg-[#173123]/90 px-4 py-3 text-[13px] text-[#F4EFE4] placeholder-[#8AA68F]/60 outline-none transition-all ${
               getFieldError("location")
-                ? "border-[#C0392B]"
-                : "border-[#2A4632] focus:border-[#E08A3E]"
+                ? "border-red-500/70"
+                : "border-white/10 focus:border-[#E08A3E] focus:bg-[#1A3828]"
             }`}
           />
           {getFieldError("location") && (
-            <p className="mt-1 text-[11px] text-[#E8756A]">
+            <p className="mt-1 text-[11px] font-medium text-red-300">
               {getFieldError("location")}
             </p>
           )}
@@ -137,29 +139,32 @@ export function IncidentReportForm({
 
         {/* Disaster Type Selection */}
         <div>
-          <label className="mb-1.5 block text-[11px] text-[#6C7D6A]">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[#B7CBB2]">
             Disaster type
           </label>
-          <div className="grid grid-cols-4 gap-2 max-md:grid-cols-2">
-            {disasterTypes.map((dtype) => (
-              <button
-                key={dtype.type}
-                type="button"
-                onClick={() => setSelectedType(dtype.type)}
-                disabled={isLoading || submitting}
-                className={`rounded border p-3 text-center transition-all ${
-                  selectedType === dtype.type
-                    ? "border-[#E08A3E] bg-[rgba(224,138,62,0.15)] text-[#E08A3E]"
-                    : "border-[#2A4632] bg-[#1D3423] text-[#93A490] hover:border-[#E08A3E] hover:text-[#E08A3E]"
-                } disabled:opacity-50`}
-              >
-                <div className="mb-1.5 text-[18px]">{dtype.icon}</div>
-                <div className="text-[11px] font-medium">{dtype.type}</div>
-              </button>
-            ))}
+          <div className="grid grid-cols-4 gap-2.5 max-md:grid-cols-2">
+            {disasterTypes.map((dtype) => {
+              const isSelected = selectedType === dtype.type;
+              return (
+                <button
+                  key={dtype.type}
+                  type="button"
+                  onClick={() => setSelectedType(dtype.type)}
+                  disabled={isLoading || submitting}
+                  className={`rounded-xl border p-3 text-center transition-all duration-200 ${
+                    isSelected
+                      ? "border-[#E08A3E] bg-[#E08A3E]/20 text-[#F4EFE4] shadow-md shadow-[#E08A3E]/10"
+                      : "border-white/10 bg-[#173123]/80 text-[#B7CBB2] hover:border-[#E08A3E]/50 hover:bg-[#1C3A29] hover:text-[#F4EFE4]"
+                  } disabled:opacity-50`}
+                >
+                  <div className="mb-1.5 text-[22px]">{dtype.icon}</div>
+                  <div className="text-[12px] font-semibold">{dtype.type}</div>
+                </button>
+              );
+            })}
           </div>
           {getFieldError("disasterType") && (
-            <p className="mt-1 text-[11px] text-[#E8756A]">
+            <p className="mt-1 text-[11px] font-medium text-red-300">
               {getFieldError("disasterType")}
             </p>
           )}
@@ -167,33 +172,33 @@ export function IncidentReportForm({
 
         {/* Description (Optional) */}
         <div>
-          <label className="mb-1.5 block text-[11px] text-[#6C7D6A]">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[#B7CBB2]">
             Additional details (optional)
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe the situation in detail..."
+            placeholder="Describe the hazard conditions, blockage, or urgent requirements..."
             disabled={isLoading || submitting}
             maxLength={500}
             rows={3}
-            className="w-full rounded border border-[#2A4632] bg-[#1D3423] px-3.5 py-3 text-[13px] text-[#EAE7DA] placeholder-[#6C7D6A] outline-none transition-colors focus:border-[#E08A3E]"
+            className="w-full rounded-xl border border-white/10 bg-[#173123]/90 px-4 py-3 text-[13px] text-[#F4EFE4] placeholder-[#8AA68F]/60 outline-none transition-all focus:border-[#E08A3E] focus:bg-[#1A3828]"
           />
-          <div className="mt-1 text-[10px] text-[#6C7D6A]">
+          <div className="mt-1 text-[11px] text-[#8AA68F] text-right">
             {description.length}/500 characters
           </div>
         </div>
 
         {/* Error Message */}
         {errorMessage && (
-          <div className="rounded border border-[#C0392B] bg-[rgba(192,57,43,0.1)] px-3 py-2.5 text-[12px] text-[#E8756A]">
+          <div className="rounded-xl border border-red-400/40 bg-red-950/50 px-4 py-3 text-xs font-medium text-red-200">
             {errorMessage}
           </div>
         )}
 
         {/* Success Message */}
         {success && (
-          <div className="flex items-center gap-2.5 rounded border border-[rgba(92,151,100,0.35)] bg-[rgba(92,151,100,0.1)] px-3 py-2.5 text-[12px] text-[#5C9764]">
+          <div className="flex items-center gap-2.5 rounded-xl border border-emerald-400/40 bg-emerald-950/50 px-4 py-3 text-xs font-medium text-emerald-200">
             <span>✓</span>
             {successMessage}
           </div>
@@ -204,13 +209,13 @@ export function IncidentReportForm({
           <button
             type="submit"
             disabled={isLoading || submitting || !location || !selectedType}
-            className="flex-1 rounded border-none bg-[#E08A3E] px-4.5 py-3 text-[13px] font-semibold text-[#17280F] transition-colors hover:bg-[#ea9950] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 rounded-xl border border-[#E08A3E]/40 bg-gradient-to-r from-[#C98A3C] via-[#E3A63F] to-[#F2A93D] px-5 py-3 text-[13px] font-bold text-[#102419] shadow-lg shadow-[#E3A63F]/20 transition-all hover:scale-[1.01] hover:shadow-[#E3A63F]/35 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? (
-              <>
-                <span className="inline-block animate-spin mr-2">⟳</span>
-                Submitting...
-              </>
+              <span className="inline-flex items-center gap-2">
+                <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#102419] border-t-transparent" />
+                Transmitting report...
+              </span>
             ) : (
               "Submit report"
             )}
@@ -219,7 +224,7 @@ export function IncidentReportForm({
             type="button"
             onClick={handleReset}
             disabled={isLoading || submitting}
-            className="rounded border border-[#2A4632] bg-transparent px-4.5 py-3 text-[13px] font-semibold text-[#93A490] transition-colors hover:border-[#E08A3E] hover:text-[#E08A3E] disabled:opacity-50"
+            className="rounded-xl border border-white/10 bg-[#173123]/80 px-5 py-3 text-[13px] font-semibold text-[#B7CBB2] transition-colors hover:border-white/20 hover:text-[#F4EFE4] hover:bg-[#1C3A29] disabled:opacity-50"
           >
             Clear
           </button>
