@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, Depends, Form, Request, HTTPException, Response
+from fastapi import FastAPI, APIRouter, Depends, Form, Request, HTTPException, Response,WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from Backend.security import check_hash, create_hash
@@ -8,6 +8,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from fastapi.responses import JSONResponse
 from importlib import import_module
+import requests
 import uvicorn
 import os
 
@@ -61,7 +62,7 @@ def get_collection():
         client = MongoClient(mongodb_url, serverSelectionTimeoutMS=2000)
         client.admin.command("ping")
         database = client.get_database("user")
-        return database["users"]
+        return database
     except Exception:
         return None
 
@@ -71,13 +72,13 @@ def home_page(request: Request):
 
 @app.post("/login")
 def login_page(user: login):
-    collection = get_collection()
+    database = get_collection()
     found_user = None
     
-    if collection is not None:
+    if database["user"] is not None:
         try:
             normalized_email = user.email.strip().lower()
-            found_user = collection.find_one({"email": normalized_email})
+            found_user = database["user"].find_one({"email": normalized_email})
         except Exception:
             found_user = in_memory_users.get(normalized_email)
     else:
@@ -106,7 +107,8 @@ def login_page(user: login):
 
 @app.post("/register")
 def register_user(user: register):
-    collection = get_collection()
+    database = get_collection()
+    collection=database["user"]
     
     # Check if user exists
     existing = None
@@ -124,7 +126,7 @@ def register_user(user: register):
 
     if user.password != user.confirm_password:
         raise HTTPException(status_code=400, detail="Passwords do not match")
-
+    else:
         hashed_pw = create_hash(user.password)
         # Ensure the hashed password is stored as bytes for consistency
         if isinstance(hashed_pw, bytes):
@@ -164,24 +166,60 @@ def register_user(user: register):
 
 @app.post("/api/incidents")
 def report_incident(data: dict):
+    database=get_collection()
+    collection=database["disaster_reports"]
     disaster_type = data.get("disasterType", "Disaster")
     location = data.get("location", "specified location")
-    return {
-        "success": True,
-        "message": f"{disaster_type} reported at {location}. Nearest emergency team notified.",
-        "incidentId": f"INC-{int(os.urandom(4).hex(), 16)}",
-        "teamNotified": True
-    }
+    t=len(collection.list_indexes())
+    try:
+        collection.insert_one({"disaster_type":disaster_type,"location":location,"IncidentId":t+100})
+    except Exception as e:
+        return {"success":False}
+    else:
+        return {
+            "success": True,
+            "message": f"{disaster_type} reported at {location}. Nearest emergency team notified.",
+            "incidentId": f"INC-{t+100}",
+            "teamNotified": True
+        }
+
+app = FastAPI()
+connections = []
+
+@app.websocket("/ws")
+async def websocket_endpoint(ws: WebSocket):
+    await ws.accept()
+    connections.append(ws)
+    try:
+        while True:
+            await ws.receive_text()  # keep alive
+    except:
+        connections.remove(ws)
 
 @app.post("/api/sos")
-def trigger_sos(data: dict = None):
-    return {
-        "success": True,
-        "message": "SOS emergency signal received. Rescue team dispatched to your location.",
-    # Retrieve stored password (could be string from DB or bytes from memory)
-        "teamAssigned": True,
-        "eta": "10-15 minutes"
+async def trigger_sos(data: dict = None):
+    response = requests.get("https://ipinfo.io")
+    data = response.json()
+    message = {
+        "message":f"🚨 SOS ALERT 🚨\nA user has triggered an emergency signal. They are in urgent need of help {data.get("city")} "
+,
     }
+    try:
+    # Broadcast to all connected clients
+        for conn in connections:
+            await conn.send_json(message)
+    except Exception as e:
+        return {"success":False}
+    else:
+        return {"success":True,"message_sent":"Succesfully notification send"}
+
+
+@app.get("/location")
+def get_user_location():
+    response = requests.get("https://ipinfo.io")
+    data = response.json()
+    location = data.get("loc") 
+    return {"location":location}
 
 @app.post("/logout")
 def logout(response: Response):
