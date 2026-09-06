@@ -284,7 +284,10 @@ export default function DisasterDashboard() {
           </div>
 
           <div className="flex items-center">
-            <AIPredictionButton disabled={isLoading} />
+            <AIPredictionButton
+              disabled={isLoading}
+              onClick={() => navigate("/landslide-risk")}
+            />
           </div>
         </div>
 
