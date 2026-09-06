@@ -9,7 +9,7 @@ import { SearchBar } from "../components/map/SearchBar";
 import { useMapData } from "../hooks/useMapData";
 import type { LayerKey, LayerState, MapSelection, SearchResult } from "../interfaces/map.interface";
 
-import { DashboardHeader } from "../components/dashboard/DashboardHeader";
+import { DashboardLayout } from "../components/dashboard/DashboardLayout";
 import { getCurrentUser } from "../services/auth.service";
 
 const DEFAULT_LAYERS: LayerState = { heatmap: true, rainfall: false, soilMoisture: false, slope: false, roads: false, villages: false, hospitals: false, sensors: false, satellite: false };
@@ -66,8 +66,15 @@ export default function LiveRiskMap() {
   }, [data]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0F1D14]">
-      <DashboardHeader user={currentUser} />
+    <DashboardLayout
+      user={{
+        id: currentUser.id,
+        name: currentUser.name,
+        role: currentUser.role,
+        avatar: currentUser.avatar,
+      }}
+      email={currentUser.id}
+    >
       <div className="risk-map-shell flex-1 relative">
         {data && <MapView data={data} layers={layers} flyTo={flyTo} onSelect={handleSelect} />}
         <button className="mobile-toggle" onClick={() => setSidebarOpen((open) => !open)} aria-label="Toggle layers panel">☰</button>
@@ -80,6 +87,6 @@ export default function LiveRiskMap() {
         {!isLoading && error && <div className="map-status" role="alert">{error}</div>}
         {!isLoading && !error && data?.zones.length === 0 && <div className="map-status">No risk zones are available.</div>}
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { Send, Mic, X, Keyboard, ArrowLeft, Trash2, MicOff } from "lucide-react";
 import { sendChatMessage } from "../services/chat.service";
-import { DashboardHeader } from "../components/dashboard/DashboardHeader";
+import { DashboardLayout } from "../components/dashboard/DashboardLayout";
 import { getCurrentUser } from "../services/auth.service";
 
 /* ============================================================================
@@ -602,6 +602,14 @@ function ChatSection() {
    HEADER
 ============================================================================ */
 function Nav() {
+  // Header content is now managed by DashboardLayout
+  return null;
+}
+
+/* ============================================================================
+   APP
+============================================================================ */
+export default function App() {
   const user = getCurrentUser();
   const currentUser = {
     id: user?.email || "user@georakshak.org",
@@ -610,140 +618,143 @@ function Nav() {
     avatar: user?.name ? user.name.slice(0, 2).toUpperCase() : "AI",
   };
 
-  return <DashboardHeader user={currentUser} />;
-}
-
-/* ============================================================================
-   APP
-============================================================================ */
-export default function App() {
   return (
-    <ChatProvider>
-      <style>{`
-        @keyframes vo-typing {
-          0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
-          30% { opacity: 1; transform: translateY(-2px); }
-        }
-        .animate-vo-typing { animation: vo-typing 1.1s infinite; }
+    <DashboardLayout
+      user={{
+        id: currentUser.id,
+        name: currentUser.name,
+        role: currentUser.role,
+        avatar: currentUser.avatar,
+      }}
+      email={currentUser.id}
+    >
+      <ChatProvider>
+        <style>{`
+          @keyframes vo-typing {
+            0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+            30% { opacity: 1; transform: translateY(-2px); }
+          }
+          .animate-vo-typing { animation: vo-typing 1.1s infinite; }
 
-        @keyframes vo-pop {
-          from { opacity: 0; transform: translateY(10px) scale(0.98); }
-          to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .animate-vo-pop { animation: vo-pop 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
+          @keyframes vo-pop {
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+          }
+          .animate-vo-pop { animation: vo-pop 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
 
-        @keyframes vo-caption-in {
-          from { opacity: 0; transform: translateY(4px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .animate-vo-caption { animation: vo-caption-in 0.35s ease-out; }
+          @keyframes vo-caption-in {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+          .animate-vo-caption { animation: vo-caption-in 0.35s ease-out; }
 
-        .vo-orb {
-          position: relative;
-          width: var(--vo-size);
-          height: var(--vo-size);
-          border-radius: 50%;
-          isolation: isolate;
-        }
-        .vo-ring {
-          position: absolute; inset: 0; border-radius: 50%;
-          border: 1.5px solid rgba(200,140,255,0.85);
-          box-shadow: 0 0 20px rgba(200,120,255,0.4), 0 0 54px rgba(255,140,90,0.18),
-            inset 0 0 18px rgba(200,120,255,0.14);
-          transition: box-shadow 0.4s ease, border-color 0.4s ease;
-        }
-        .vo-orb[data-state="listening"] .vo-ring {
-          border-color: rgba(230,150,255,0.95);
-          box-shadow: 0 0 30px rgba(230,130,255,0.55), 0 0 70px rgba(255,150,90,0.28),
-            inset 0 0 22px rgba(230,130,255,0.2);
-        }
-        .vo-orb[data-state="processing"] .vo-ring {
-          border-color: rgba(180,200,255,0.95);
-          box-shadow: 0 0 26px rgba(160,190,255,0.5), 0 0 60px rgba(160,190,255,0.24),
-            inset 0 0 18px rgba(160,190,255,0.16);
-        }
-        .vo-orb[data-state="speaking"] .vo-ring {
-          border-color: rgba(255,180,120,0.95);
-          box-shadow: 0 0 30px rgba(255,160,100,0.5), 0 0 70px rgba(255,140,80,0.24),
-            inset 0 0 20px rgba(255,160,100,0.16);
-        }
+          .vo-orb {
+            position: relative;
+            width: var(--vo-size);
+            height: var(--vo-size);
+            border-radius: 50%;
+            isolation: isolate;
+          }
+          .vo-ring {
+            position: absolute; inset: 0; border-radius: 50%;
+            border: 1.5px solid rgba(200,140,255,0.85);
+            box-shadow: 0 0 20px rgba(200,120,255,0.4), 0 0 54px rgba(255,140,90,0.18),
+              inset 0 0 18px rgba(200,120,255,0.14);
+            transition: box-shadow 0.4s ease, border-color 0.4s ease;
+          }
+          .vo-orb[data-state="listening"] .vo-ring {
+            border-color: rgba(230,150,255,0.95);
+            box-shadow: 0 0 30px rgba(230,130,255,0.55), 0 0 70px rgba(255,150,90,0.28),
+              inset 0 0 22px rgba(230,130,255,0.2);
+          }
+          .vo-orb[data-state="processing"] .vo-ring {
+            border-color: rgba(180,200,255,0.95);
+            box-shadow: 0 0 26px rgba(160,190,255,0.5), 0 0 60px rgba(160,190,255,0.24),
+              inset 0 0 18px rgba(160,190,255,0.16);
+          }
+          .vo-orb[data-state="speaking"] .vo-ring {
+            border-color: rgba(255,180,120,0.95);
+            box-shadow: 0 0 30px rgba(255,160,100,0.5), 0 0 70px rgba(255,140,80,0.24),
+              inset 0 0 20px rgba(255,160,100,0.16);
+          }
 
-        .vo-wave {
-          position: absolute; inset: 0; border-radius: 50%;
-          border: 1px solid rgba(220,150,255,0.5);
-          opacity: 0;
-          animation: vo-wave-out 3.2s ease-out infinite;
-        }
-        .vo-wave-b { animation-delay: 1.6s; }
-        .vo-orb[data-state="listening"] .vo-wave { animation-duration: 2.2s; }
-        .vo-orb[data-state="listening"] .vo-wave-b { animation-delay: 1.1s; }
-        .vo-orb[data-state="processing"] .vo-wave { animation-duration: 1.4s; }
-        .vo-orb[data-state="processing"] .vo-wave-b { animation-delay: 0.7s; }
-        .vo-orb[data-state="speaking"] .vo-wave { animation-duration: 1.8s; }
-        .vo-orb[data-state="speaking"] .vo-wave-b { animation-delay: 0.9s; }
-        @keyframes vo-wave-out {
-          0%   { transform: scale(0.94); opacity: 0.5; }
-          100% { transform: scale(1.5); opacity: 0; }
-        }
+          .vo-wave {
+            position: absolute; inset: 0; border-radius: 50%;
+            border: 1px solid rgba(220,150,255,0.5);
+            opacity: 0;
+            animation: vo-wave-out 3.2s ease-out infinite;
+          }
+          .vo-wave-b { animation-delay: 1.6s; }
+          .vo-orb[data-state="listening"] .vo-wave { animation-duration: 2.2s; }
+          .vo-orb[data-state="listening"] .vo-wave-b { animation-delay: 1.1s; }
+          .vo-orb[data-state="processing"] .vo-wave { animation-duration: 1.4s; }
+          .vo-orb[data-state="processing"] .vo-wave-b { animation-delay: 0.7s; }
+          .vo-orb[data-state="speaking"] .vo-wave { animation-duration: 1.8s; }
+          .vo-orb[data-state="speaking"] .vo-wave-b { animation-delay: 0.9s; }
+          @keyframes vo-wave-out {
+            0%   { transform: scale(0.94); opacity: 0.5; }
+            100% { transform: scale(1.5); opacity: 0; }
+          }
 
-        .vo-sphere {
-          position: absolute; inset: 8%; border-radius: 50%; overflow: hidden;
-          background: radial-gradient(circle at 48% 42%, #120A18 0%, #050308 78%);
-        }
-        .vo-rotor { position: absolute; inset: 0; animation: vo-spin 14s linear infinite; }
-        .vo-orb[data-state="listening"] .vo-rotor { animation-duration: 5s; }
-        .vo-orb[data-state="processing"] .vo-rotor { animation-duration: 2s; }
-        .vo-orb[data-state="speaking"] .vo-rotor { animation-duration: 3.6s; }
-        @keyframes vo-spin { to { rotate: 360deg; } }
+          .vo-sphere {
+            position: absolute; inset: 8%; border-radius: 50%; overflow: hidden;
+            background: radial-gradient(circle at 48% 42%, #120A18 0%, #050308 78%);
+          }
+          .vo-rotor { position: absolute; inset: 0; animation: vo-spin 14s linear infinite; }
+          .vo-orb[data-state="listening"] .vo-rotor { animation-duration: 5s; }
+          .vo-orb[data-state="processing"] .vo-rotor { animation-duration: 2s; }
+          .vo-orb[data-state="speaking"] .vo-rotor { animation-duration: 3.6s; }
+          @keyframes vo-spin { to { rotate: 360deg; } }
 
-        .vo-blob {
-          position: absolute; width: 62%; height: 62%; top: 19%; left: 19%;
-          filter: blur(9px); mix-blend-mode: screen; opacity: 0.85;
-          border-radius: 42% 58% 55% 45% / 45% 42% 58% 55%;
-          animation: vo-morph 7s ease-in-out infinite;
-        }
-        .vo-blob-violet { background: radial-gradient(circle, #c78bff 0%, #7c3aed 60%, transparent 75%); }
-        .vo-blob-pink   { background: radial-gradient(circle, #ff9fe0 0%, #ec4899 60%, transparent 75%); translate: 11% -5%; animation-delay: -2.3s; }
-        .vo-blob-amber  { background: radial-gradient(circle, #ffcf94 0%, #f97316 60%, transparent 75%); translate: -9% 7%; animation-delay: -4.6s; }
-        @keyframes vo-morph {
-          0%, 100% { border-radius: 42% 58% 55% 45% / 45% 42% 58% 55%; scale: 1; }
-          33%      { border-radius: 58% 42% 45% 55% / 55% 45% 42% 58%; scale: 1.06; }
-          66%      { border-radius: 50% 50% 62% 38% / 40% 62% 38% 60%; scale: 0.95; }
-        }
-        .vo-orb[data-state="listening"] .vo-blob { animation-duration: 2.4s; filter: blur(8px) brightness(1.1); opacity: 0.92; }
-        .vo-orb[data-state="processing"] .vo-blob { animation-duration: 1.3s; filter: blur(7px) brightness(1.02); opacity: 0.85; }
-        .vo-orb[data-state="speaking"] .vo-blob { animation-duration: 1.8s; filter: blur(8px) brightness(1.12); opacity: 0.92; }
+          .vo-blob {
+            position: absolute; width: 62%; height: 62%; top: 19%; left: 19%;
+            filter: blur(9px); mix-blend-mode: screen; opacity: 0.85;
+            border-radius: 42% 58% 55% 45% / 45% 42% 58% 55%;
+            animation: vo-morph 7s ease-in-out infinite;
+          }
+          .vo-blob-violet { background: radial-gradient(circle, #c78bff 0%, #7c3aed 60%, transparent 75%); }
+          .vo-blob-pink   { background: radial-gradient(circle, #ff9fe0 0%, #ec4899 60%, transparent 75%); translate: 11% -5%; animation-delay: -2.3s; }
+          .vo-blob-amber  { background: radial-gradient(circle, #ffcf94 0%, #f97316 60%, transparent 75%); translate: -9% 7%; animation-delay: -4.6s; }
+          @keyframes vo-morph {
+            0%, 100% { border-radius: 42% 58% 55% 45% / 45% 42% 58% 55%; scale: 1; }
+            33%      { border-radius: 58% 42% 45% 55% / 55% 45% 42% 58%; scale: 1.06; }
+            66%      { border-radius: 50% 50% 62% 38% / 40% 62% 38% 60%; scale: 0.95; }
+          }
+          .vo-orb[data-state="listening"] .vo-blob { animation-duration: 2.4s; filter: blur(8px) brightness(1.1); opacity: 0.92; }
+          .vo-orb[data-state="processing"] .vo-blob { animation-duration: 1.3s; filter: blur(7px) brightness(1.02); opacity: 0.85; }
+          .vo-orb[data-state="speaking"] .vo-blob { animation-duration: 1.8s; filter: blur(8px) brightness(1.12); opacity: 0.92; }
 
-        .vo-icon {
-          position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-          color: rgba(255,255,255,0.92);
-          filter: drop-shadow(0 0 6px rgba(255,255,255,0.35));
-          pointer-events: none;
-        }
+          .vo-icon {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.92);
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.35));
+            pointer-events: none;
+          }
 
-        .vo-core {
-          position: absolute; width: 22%; height: 22%; top: 39%; left: 39%; border-radius: 50%;
-          background: radial-gradient(circle, #ffffff 0%, rgba(255,255,255,0.5) 45%, transparent 75%);
-          filter: blur(1.5px); mix-blend-mode: screen;
-          animation: vo-core-breathe 4.2s ease-in-out infinite;
-        }
-        .vo-orb[data-state="idle"] .vo-core { opacity: 0.55; }
-        .vo-orb[data-state="listening"] .vo-core { animation: vo-core-breathe 1.4s ease-in-out infinite; }
-        .vo-orb[data-state="processing"] .vo-core { animation: vo-core-think 0.85s ease-in-out infinite; }
-        .vo-orb[data-state="speaking"] .vo-core { animation: vo-core-talk 0.5s ease-in-out infinite; }
-        @keyframes vo-core-breathe { 0%, 100% { scale: 0.9; opacity: 0.75; } 50% { scale: 1.1; opacity: 1; } }
-        @keyframes vo-core-think   { 0%, 100% { scale: 0.82; } 50% { scale: 1.08; } }
-        @keyframes vo-core-talk    { 0%, 100% { scale: 0.88; } 25% { scale: 1.14; } 50% { scale: 0.95; } 75% { scale: 1.06; } }
+          .vo-core {
+            position: absolute; width: 22%; height: 22%; top: 39%; left: 39%; border-radius: 50%;
+            background: radial-gradient(circle, #ffffff 0%, rgba(255,255,255,0.5) 45%, transparent 75%);
+            filter: blur(1.5px); mix-blend-mode: screen;
+            animation: vo-core-breathe 4.2s ease-in-out infinite;
+          }
+          .vo-orb[data-state="idle"] .vo-core { opacity: 0.55; }
+          .vo-orb[data-state="listening"] .vo-core { animation: vo-core-breathe 1.4s ease-in-out infinite; }
+          .vo-orb[data-state="processing"] .vo-core { animation: vo-core-think 0.85s ease-in-out infinite; }
+          .vo-orb[data-state="speaking"] .vo-core { animation: vo-core-talk 0.5s ease-in-out infinite; }
+          @keyframes vo-core-breathe { 0%, 100% { scale: 0.9; opacity: 0.75; } 50% { scale: 1.1; opacity: 1; } }
+          @keyframes vo-core-think   { 0%, 100% { scale: 0.82; } 50% { scale: 1.08; } }
+          @keyframes vo-core-talk    { 0%, 100% { scale: 0.88; } 25% { scale: 1.14; } 50% { scale: 0.95; } 75% { scale: 1.06; } }
 
-        @media (prefers-reduced-motion: reduce) {
-          .vo-rotor, .vo-blob, .vo-core, .vo-wave { animation: none !important; }
-        }
-      `}</style>
+          @media (prefers-reduced-motion: reduce) {
+            .vo-rotor, .vo-blob, .vo-core, .vo-wave { animation: none !important; }
+          }
+        `}</style>
 
-      <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: BRAND.cream }}>
-        <Nav />
-        <ChatSection />
-      </div>
-    </ChatProvider>
+        <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: BRAND.cream }}>
+          <Nav />
+          <ChatSection />
+        </div>
+      </ChatProvider>
+    </DashboardLayout>
   );
 }

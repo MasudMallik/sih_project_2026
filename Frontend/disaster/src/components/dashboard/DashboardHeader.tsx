@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router";
+import { Bot, Cross, LayoutDashboard, MapPinned } from "lucide-react";
 import type { User } from "../../@types/interface/dashboard";
 
 interface DashboardHeaderProps {
@@ -10,10 +11,10 @@ interface DashboardHeaderProps {
 }
 
 const DASHBOARD_NAV_ITEMS = [
-  { label: "Dashboard", path: "/dashboard" },
-  { label: "Risk Map", path: "/risk-map" },
-  { label: "Emergency Response", path: "/emergency-response" },
-  { label: "AI Assistant", path: "/ai-analysis" },
+  { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+  { label: "Risk Map", path: "/risk-map", icon: MapPinned },
+  { label: "Emergency Response", path: "/emergency-response", icon: Cross },
+  { label: "AI Assistant", path: "/ai-analysis", icon: Bot },
 ];
 
 export function DashboardHeader({
@@ -50,18 +51,21 @@ export function DashboardHeader({
           <nav className="hidden items-center gap-1 md:flex" aria-label="Dashboard navigation">
             {DASHBOARD_NAV_ITEMS.map((item) => {
               const isActive = location.pathname === item.path;
+              const Icon = item.icon;
               return (
                 <button
                   key={item.path}
                   type="button"
                   onClick={() => navigate(item.path)}
-                  className={`rounded-md px-3.5 py-1.5 text-xs font-medium transition-all ${
+                  className={`flex h-9 w-9 items-center justify-center rounded-md transition-all ${
                     isActive
                       ? "border border-[#E3A63F]/40 bg-[#16281C] text-[#E3A63F] shadow-sm"
                       : "text-[#93A490] hover:bg-[#16281C]/50 hover:text-[#EAE7DA]"
                   }`}
+                  aria-label={item.label}
+                  title={item.label}
                 >
-                  {item.label}
+                  <Icon size={18} strokeWidth={1.8} aria-hidden="true" />
                 </button>
               );
             })}
@@ -95,18 +99,21 @@ export function DashboardHeader({
       <div className="flex overflow-x-auto border-t border-[#223B29]/60 px-4 py-2 md:hidden">
         {DASHBOARD_NAV_ITEMS.map((item) => {
           const isActive = location.pathname === item.path;
+          const Icon = item.icon;
           return (
             <button
               key={item.path}
               type="button"
               onClick={() => navigate(item.path)}
-              className={`mr-2 shrink-0 rounded-md px-3 py-1 text-xs font-medium transition-all ${
+              className={`mr-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-md transition-all ${
                 isActive
                   ? "bg-[#16281C] text-[#E3A63F]"
                   : "text-[#93A490]"
               }`}
+              aria-label={item.label}
+              title={item.label}
             >
-              {item.label}
+              <Icon size={18} strokeWidth={1.8} aria-hidden="true" />
             </button>
           );
         })}

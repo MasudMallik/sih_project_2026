@@ -1,0 +1,53 @@
+.shell {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-color: #0f1d14;
+  background-image: linear-gradient(rgba(7, 20, 14, 0.78), rgba(7, 20, 14, 0.9)), url("../../assets/bg3.jpg.jpeg");
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.contentLayer {
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar {
+  width: 76px;
+  background: rgba(11, 22, 16, 0.9);
+  backdrop-filter: blur(12px);
+}
+
+.navButton {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: #93a490;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.navButton:hover {
+  background: rgba(22, 40, 28, 0.75);
+  color: #eae7da;
+  transform: translateY(-1px);
+}
+
+.navButtonActive {
+  border-color: rgba(227, 166, 63, 0.45);
+  background: #16281c;
+  color: #e3a63f;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+}
+
+@media (max-width: 767px) {
+  .shell {
+    background-attachment: scroll;
+  }
+}

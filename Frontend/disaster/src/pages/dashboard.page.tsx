@@ -10,6 +10,7 @@ import { fetchDashboard } from "../services/dashboard.service";
 import { submitIncidentReport } from "../services/incident.service";
 import { sendSOS } from "../services/sos.service";
 import { getCurrentUser } from "../services/auth.service";
+import { AIPredictionButton } from "../components/dashboard/AIPredictionButton";
 
 export default function DisasterDashboard() {
   const navigate = useNavigate();
@@ -151,6 +152,10 @@ export default function DisasterDashboard() {
 
       {/* SOS Button */}
       <SOSButton state={sosState} onTap={handleSOS} />
+        {/* AI Prediction Analysis Button */}
+        <div className="mx-auto max-w-[1200px] px-9 py-4 max-md:px-5">
+          <AIPredictionButton disabled={isLoading} />
+        </div>
 
       {/* Main Content */}
       <div className="mx-auto max-w-[1200px] px-9 py-8 pb-[60px] max-md:px-5">

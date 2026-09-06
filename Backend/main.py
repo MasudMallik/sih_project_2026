@@ -76,11 +76,12 @@ def login_page(user: login):
     
     if collection is not None:
         try:
-            found_user = collection.find_one({"email": user.email})
+            normalized_email = user.email.strip().lower()
+            found_user = collection.find_one({"email": normalized_email})
         except Exception:
-            found_user = in_memory_users.get(user.email)
+            found_user = in_memory_users.get(normalized_email)
     else:
-        found_user = in_memory_users.get(user.email)
+        found_user = in_memory_users.get(normalized_email)
 
     if not found_user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
@@ -90,7 +91,7 @@ def login_page(user: login):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
     token = create_token({
-        "email": user.email,
+        "email": normalized_email,
         "full_name": found_user.get("full_name", ""),
         "contact": found_user.get("contact", ""),
         "location": found_user.get("location", "")
@@ -99,7 +100,7 @@ def login_page(user: login):
     return {
         "login": True,
         "token": token,
-        "email": user.email,
+        "email": normalized_email,
         "full_name": found_user.get("full_name", "")
     }
 
@@ -111,11 +112,12 @@ def register_user(user: register):
     existing = None
     if collection is not None:
         try:
-            existing = collection.find_one({"email": user.email})
+            normalized_email = user.email.strip().lower()
+            existing = collection.find_one({"email": normalized_email})
         except Exception:
-            existing = in_memory_users.get(user.email)
+            existing = in_memory_users.get(normalized_email)
     else:
-        existing = in_memory_users.get(user.email)
+        existing = in_memory_users.get(normalized_email)
 
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -123,26 +125,31 @@ def register_user(user: register):
     if user.password != user.confirm_password:
         raise HTTPException(status_code=400, detail="Passwords do not match")
 
-    hashed_pw = create_hash(user.password)
+        hashed_pw = create_hash(user.password)
+        # Ensure the hashed password is stored as bytes for consistency
+        if isinstance(hashed_pw, bytes):
+            hashed_pw_to_store = hashed_pw.decode('utf-8')
+        else:
+            hashed_pw_to_store = hashed_pw
 
     new_user = {
         "full_name": user.full_name,
-        "email": user.email,
+        "email": normalized_email,
         "contact": user.contact_number,
         "location": user.location,
-        "password": hashed_pw
+            "password": hashed_pw_to_store
     }
 
     if collection is not None:
         try:
             collection.insert_one(new_user)
         except Exception:
-            in_memory_users[user.email] = new_user
+            in_memory_users[normalized_email] = new_user
     else:
-        in_memory_users[user.email] = new_user
+        in_memory_users[normalized_email] = new_user
 
     token = create_token({
-        "email": user.email,
+        "email": normalized_email,
         "full_name": user.full_name,
         "contact": user.contact_number,
         "location": user.location
@@ -151,7 +158,7 @@ def register_user(user: register):
     return {
         "register": True,
         "token": token,
-        "email": user.email,
+        "email": normalized_email,
         "full_name": user.full_name
     }
 
@@ -171,6 +178,7 @@ def trigger_sos(data: dict = None):
     return {
         "success": True,
         "message": "SOS emergency signal received. Rescue team dispatched to your location.",
+    # Retrieve stored password (could be string from DB or bytes from memory)
         "teamAssigned": True,
         "eta": "10-15 minutes"
     }
