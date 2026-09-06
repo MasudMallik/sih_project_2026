@@ -4,17 +4,19 @@ export interface ChatResponse {
   response: string;
 }
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
 export async function sendChatMessage(message: string): Promise<string> {
+  const token = localStorage.getItem("geo-rakshak:access-token");
   const response = await fetch(`${API_BASE_URL}/chatbot`, {
     method: "POST",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     credentials: "include",
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ question: message }),
   });
 
   const payload = (await response.json().catch(() => null)) as ChatResponse | { detail?: string } | null;

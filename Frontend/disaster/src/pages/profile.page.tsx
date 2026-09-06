@@ -19,12 +19,12 @@ export default function Profile() {
 
   // No active session — send them back to log in rather than showing an empty page.
   useEffect(() => {
-    if (!user) navigate("/login");
+    if (!user) navigate("/login", { replace: true });
   }, [user, navigate]);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleLogout = async () => {
+    await logout();
+    navigate("/", { replace: true });
   };
 
   if (!user) return null;

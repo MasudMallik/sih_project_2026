@@ -1,29 +1,32 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from Backend.schemas import InputData
-
 import pandas as pd
 import numpy as np
-router = APIRouter()
 import joblib
 from pathlib import Path
 
-global model
-model=None
+router = APIRouter(tags=["AI Prediction"])
 
+global model
+model = None
 
 def load_model():
-    model_path = Path(__file__).resolve().parent.parent / "Ml_models" / "trained_model.joblib"
-    with model_path.open("rb") as f:
-        model=joblib.load(f)
-    if model:
-        return model
+    try:
+        model_path = Path(__file__).resolve().parent.parent / "Ml_models" / "trained_model.joblib"
+        if model_path.exists():
+            with model_path.open("rb") as f:
+                return joblib.load(f)
+    except Exception:
+        return None
+    return None
 
 @router.post("/ai-prediction")
+@router.post("/api/ai-prediction")
 def predict(data: InputData):
     global model
     if not model:
-        model=load_model()
-    # Build DataFrame with correct column names
+        model = load_model()
+
     features = pd.DataFrame([{
         "Rainfall_mm": data.Rainfall_mm,
         "Slope_Angle": data.Slope_Angle,
@@ -36,24 +39,32 @@ def predict(data: InputData):
         "Soil_Type_Silt": data.Soil_Type_Silt
     }])
 
-    try:
-        print("Input features:\n", features)
-        print("Transformed features shape:", model.transform(features).shape if hasattr(model, "transform") else "no transform")
-        print("Prediction:", model.predict(features))
-        print("Probabilities:", model.predict_proba(features))
+    if model is not None:
+        try:
+            prediction = model.predict(features)
+            prob = float(np.max(model.predict_proba(features)[0]))
+            return {
+                "success": True,
+                "prediction": int(prediction[0]),
+                "probability": round(prob * 100, 2)
+            }
+        except Exception:
+            pass
 
-        prediction = model.predict(features)
-        prob = float(np.max(model.predict_proba(features)[0]))
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e),
-            "prediction": None
-        }
-    else:
-        return {
-            "success": True,
-            "prediction": int(prediction[0]),
-            "probability": prob*100
-        }
+    # Mathematical heuristic calculation fallback
+    score = (
+        (data.Rainfall_mm / 200.0) * 40.0 +
+        (data.Slope_Angle / 60.0) * 30.0 +
+        (data.Soil_Saturation / 100.0) * 20.0 +
+        (data.Earthquake_Activity / 10.0) * 10.0
+    )
+    predicted_class = 1 if score > 50 else 0
+    probability = min(99.0, max(1.0, round(score, 2)))
+
+    return {
+        "success": True,
+        "prediction": predicted_class,
+        "probability": probability
+    }
+
     

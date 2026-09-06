@@ -7,7 +7,7 @@
 
 import type { Dashboard, DashboardLoadingState } from "../@types/interface/dashboard";
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
 /**
  * Fetch dashboard data
@@ -15,8 +15,12 @@ const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
  * Fetch the dashboard assembled by the backend from the database.
  */
 export const fetchDashboard = async (): Promise<Dashboard> => {
+  const token = localStorage.getItem("geo-rakshak:access-token");
   const response = await fetch(`${API_BASE_URL}/api/dashboard`, {
-    headers: { Accept: "application/json" },
+    headers: {
+      Accept: "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     credentials: "include",
   });
 

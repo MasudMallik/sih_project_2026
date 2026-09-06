@@ -5,7 +5,7 @@ import { LoginForm } from "../../components/login/LoginForm";
 import { ResetPasswordForm } from "../../components/login/ResetPasswordForm";
 import { useToast } from "../../hooks/useToast";
 import loginBackground from "../../assets/login.png";
-import { authenticateUser } from "../../services/auth.service";
+import { authenticateUserApi } from "../../services/auth.service";
 
 const NAV_LINKS = [
   ["Home", "home"],
@@ -26,12 +26,16 @@ export default function Login() {
     navigate("/");
   };
 
-  const handleLoginSuccess = (email: string) => {
-    authenticateUser(email);
-    showToast("success", "Logged in successfully", "Welcome back to Geo Rakshak.");
-    setTimeout(() => {
-      navigate("/dashboard");
-    }, 1000);
+  const handleLoginSuccess = async (email: string, password?: string) => {
+    try {
+      await authenticateUserApi(email, password);
+      showToast("success", "Logged in successfully", "Welcome back to Geo Rakshak.");
+      setTimeout(() => {
+        navigate("/dashboard", { replace: true });
+      }, 600);
+    } catch (err) {
+      showToast("error", "Couldn't log in", err instanceof Error ? err.message : "Invalid email or password");
+    }
   };
 
   const handleLoginError = (message: string) => {

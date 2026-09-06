@@ -85,21 +85,35 @@ const sendSOSMock = async (_location: UserLocation): Promise<SOSResponse> => {
  * 3. Send SOS signal to backend (when connected)
  * 4. Return response with team assignment details
  */
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
+
 export const sendSOS = async (): Promise<SOSResponse> => {
   try {
-    // Get location
     const location = await getUserLocation();
 
-    // Initiate phone call to emergency number
-    // This happens regardless of backend response
-    const phoneNumber = "1078";
-    window.location.href = `tel:${phoneNumber}`;
+    // Attempt phone dial link (graceful fallback)
+    try {
+      window.location.href = `tel:1078`;
+    } catch {
+      // ignore in non-mobile environments
+    }
 
-    // Send to backend (MOCK - replace later)
-    const result = await sendSOSMock(location);
+    const token = localStorage.getItem("geo-rakshak:access-token");
+    const response = await fetch(`${API_BASE_URL}/api/sos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ location, timestamp: Date.now() }),
+    });
 
-    // Return response
-    return result;
+    if (response.ok) {
+      return (await response.json()) as SOSResponse;
+    }
+
+    return await sendSOSMock(location);
   } catch (error) {
     return {
       success: false,

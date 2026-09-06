@@ -21,7 +21,7 @@ export function LoginForm({ onForgotPassword, onSuccess, onError }: LoginFormPro
       onError("Check your email and password and try again.");
       return;
     }
-    onSuccess(values.email);
+    onSuccess(values.email, values.password);
   };
 
   return (

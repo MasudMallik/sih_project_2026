@@ -10,6 +10,8 @@ import React, {
 } from "react";
 import { Send, Mic, X, Keyboard, ArrowLeft, Trash2 } from "lucide-react";
 import { sendChatMessage } from "../services/chat.service";
+import { DashboardHeader } from "../components/dashboard/DashboardHeader";
+import { getCurrentUser } from "../services/auth.service";
 
 /* ============================================================================
    BRAND TOKENS
@@ -503,25 +505,15 @@ function ChatSection() {
    HEADER - slim, fixed-height bar; everything else on the page is the chat.
 ============================================================================ */
 function Nav() {
-  return (
-    <header
-      className="shrink-0 flex items-center justify-between px-4 sm:px-6 md:px-10 py-3.5 border-b"
-      style={{ backgroundColor: BRAND.forest, borderColor: BRAND.forestLine }}
-    >
-      <div className="flex items-center gap-2.5">
-        <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ backgroundColor: BRAND.amber }} />
-        <span className="text-[16px] font-semibold tracking-tight" style={{ color: BRAND.cream }}>
-          Geo Rakshak
-        </span>
-        <span
-          className="hidden sm:inline text-xs pl-3 ml-1 border-l"
-          style={{ color: BRAND.amberSoft, borderColor: BRAND.forestLine }}
-        >
-          Live monitoring · North Eastern Region
-        </span>
-      </div>
-    </header>
-  );
+  const user = getCurrentUser();
+  const currentUser = {
+    id: user?.email || "user@georakshak.org",
+    name: user?.name || "Citizen",
+    role: "AI Assistant",
+    avatar: user?.name ? user.name.slice(0, 2).toUpperCase() : "AI",
+  };
+
+  return <DashboardHeader user={currentUser} />;
 }
 
 /* ============================================================================

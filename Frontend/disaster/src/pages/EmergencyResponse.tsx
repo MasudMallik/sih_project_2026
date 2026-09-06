@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { LocateFixed, Shield } from "lucide-react";
 import backgroundImage from "../assets/bg2.jpg";
-import { Brand } from "../components/GeoRakshakHeader";
 import { ActivityFeed } from "../components/emergency/ActivityFeed";
 import { IncidentList } from "../components/emergency/IncidentList";
 import { NearestHelp } from "../components/emergency/NearestHelp";
@@ -10,7 +9,17 @@ import { VillageCards } from "../components/emergency/VillageCards";
 import type { EmergencyResponseData } from "../@types/interface/emergencyResponse";
 import { fetchEmergencyResponse } from "../services/emergencyResponse.service";
 
+import { DashboardHeader } from "../components/dashboard/DashboardHeader";
+import { getCurrentUser } from "../services/auth.service";
+
 export default function EmergencyResponse() {
+  const user = getCurrentUser();
+  const currentUser = {
+    id: user?.email || "user@georakshak.org",
+    name: user?.name || "Citizen",
+    role: "Responder",
+    avatar: user?.name ? user.name.slice(0, 2).toUpperCase() : "GR",
+  };
   const [data, setData] = useState<EmergencyResponseData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,11 +49,7 @@ export default function EmergencyResponse() {
   return (
     <div className="min-h-screen bg-[#0b1810] bg-cover bg-center bg-fixed font-body text-cream" style={{ backgroundImage: `url(${backgroundImage})` }}>
       <div className="min-h-screen bg-[#07140c]/85">
-        <header className="border-b border-[rgba(244,239,228,0.16)] bg-[rgba(14,31,23,0.92)]">
-          <div className="mx-auto max-w-[1180px] px-8 py-[18px] max-[520px]:px-5">
-            <Brand />
-          </div>
-        </header>
+        <DashboardHeader user={currentUser} />
         <main className="mx-auto max-w-[1180px] px-5 py-8 lg:px-8 lg:py-12">
           <section className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <div><p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-gold"><LocateFixed size={14} /> Northeast India response network</p><h1 className="font-display text-4xl leading-tight text-white sm:text-5xl">Emergency response center</h1><p className="mt-4 max-w-2xl text-sm leading-6 text-cream-dim">Coordinate verified emergency information and monitor the response network from one place.</p></div>

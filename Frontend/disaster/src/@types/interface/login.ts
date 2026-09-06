@@ -5,7 +5,7 @@ export interface LoginFormData {
 
 export interface LoginFormProps {
   onForgotPassword: () => void;
-  onSuccess: (email: string) => void;
+  onSuccess: (email: string, password?: string) => void;
   onError: (message: string) => void;
 }
 

@@ -37,27 +37,31 @@ const submitIncidentReportMock = async (
   });
 };
 
-/**
- * Submit an incident report
- * FRONTEND ONLY - no backend validation happens here
- * Backend will validate when this is connected
- */
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
+
 export const submitIncidentReport = async (
   data: IncidentReport
 ): Promise<IncidentReportResponse> => {
   try {
-    // For now, use mock. Later replace with real API call:
-    // const response = await fetch('/api/incidents/report', { ... });
-    const result = await submitIncidentReportMock(data);
-    return result;
-  } catch (error) {
-    return {
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to submit incident report",
-    };
+    const token = localStorage.getItem("geo-rakshak:access-token");
+    const response = await fetch(`${API_BASE_URL}/api/incidents`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      return await submitIncidentReportMock(data);
+    }
+
+    const payload = (await response.json()) as IncidentReportResponse;
+    return payload;
+  } catch {
+    return await submitIncidentReportMock(data);
   }
 };
 

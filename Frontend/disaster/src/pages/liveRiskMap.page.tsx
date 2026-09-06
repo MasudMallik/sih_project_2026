@@ -9,9 +9,19 @@ import { SearchBar } from "../components/map/SearchBar";
 import { useMapData } from "../hooks/useMapData";
 import type { LayerKey, LayerState, MapSelection, SearchResult } from "../interfaces/map.interface";
 
+import { DashboardHeader } from "../components/dashboard/DashboardHeader";
+import { getCurrentUser } from "../services/auth.service";
+
 const DEFAULT_LAYERS: LayerState = { heatmap: true, rainfall: false, soilMoisture: false, slope: false, roads: false, villages: false, hospitals: false, sensors: false, satellite: false };
 
 export default function LiveRiskMap() {
+  const user = getCurrentUser();
+  const currentUser = {
+    id: user?.email || "user@georakshak.org",
+    name: user?.name || "Citizen",
+    role: "Analyst",
+    avatar: user?.name ? user.name.slice(0, 2).toUpperCase() : "RM",
+  };
   const { data, isLoading, error } = useMapData();
   const [layers, setLayers] = useState(DEFAULT_LAYERS);
   const [selected, setSelected] = useState<MapSelection | null>(null);
@@ -55,16 +65,21 @@ export default function LiveRiskMap() {
     if (record) setSelected({ kind: item.kind, data: record } as MapSelection);
   }, [data]);
 
-  return <div className="risk-map-shell">
-    {data && <MapView data={data} layers={layers} flyTo={flyTo} onSelect={handleSelect} />}
-    <button className="mobile-toggle" onClick={() => setSidebarOpen((open) => !open)} aria-label="Toggle layers panel">☰</button>
-    <div className="top-search"><SearchBar items={searchables} onSelect={handleSearchSelect} /></div>
-    <LayerPanel layers={layers} open={sidebarOpen} onToggle={toggleLayer} onClose={() => setSidebarOpen(false)} />
-    <Legend />
-    {data && <div className="updated-chip"><span className="updated-chip__dot" />Updated {updatedLabel}</div>}
-    {selected && <InfoPanel selection={selected} onClose={() => setSelected(null)} />}
-    {isLoading && <div className="map-status">Loading live risk data...</div>}
-    {!isLoading && error && <div className="map-status" role="alert">{error}</div>}
-    {!isLoading && !error && data?.zones.length === 0 && <div className="map-status">No risk zones are available.</div>}
-  </div>;
+  return (
+    <div className="flex flex-col min-h-screen bg-[#0F1D14]">
+      <DashboardHeader user={currentUser} />
+      <div className="risk-map-shell flex-1 relative">
+        {data && <MapView data={data} layers={layers} flyTo={flyTo} onSelect={handleSelect} />}
+        <button className="mobile-toggle" onClick={() => setSidebarOpen((open) => !open)} aria-label="Toggle layers panel">☰</button>
+        <div className="top-search"><SearchBar items={searchables} onSelect={handleSearchSelect} /></div>
+        <LayerPanel layers={layers} open={sidebarOpen} onToggle={toggleLayer} onClose={() => setSidebarOpen(false)} />
+        <Legend />
+        {data && <div className="updated-chip"><span className="updated-chip__dot" />Updated {updatedLabel}</div>}
+        {selected && <InfoPanel selection={selected} onClose={() => setSelected(null)} />}
+        {isLoading && <div className="map-status">Loading live risk data...</div>}
+        {!isLoading && error && <div className="map-status" role="alert">{error}</div>}
+        {!isLoading && !error && data?.zones.length === 0 && <div className="map-status">No risk zones are available.</div>}
+      </div>
+    </div>
+  );
 }

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import type { SignupFormData, SignupFormProps } from "../../@types/interface/signup";
 import { validateSignup, type SignupErrors } from "../../validations/signup.validation";
-import { registerUser } from "../../services/auth.service";
+import { registerUserApi } from "../../services/auth.service";
 
 const initialValues: SignupFormData = {
   name: "",
@@ -41,18 +41,24 @@ export function SignupForm({ onGeoError, onSuccess }: SignupFormProps) {
     );
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const validationErrors = validateSignup(values);
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length === 0) {
-      registerUser({
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        location: values.location,
-      });
-      onSuccess();
+      try {
+        await registerUserApi({
+          name: values.name,
+          email: values.email,
+          phone: values.phone,
+          location: values.location,
+          password: values.password,
+          confirmPassword: values.confirmPassword,
+        });
+        onSuccess();
+      } catch (err) {
+        onGeoError(err instanceof Error ? err.message : "Failed to register");
+      }
     }
   };
 
