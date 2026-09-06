@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import { DashboardHeader } from "../components/dashboard/DashboardHeader";
 import { RiskSummary } from "../components/dashboard/RiskSummary";
 import { WeatherSnapshot } from "../components/dashboard/WeatherSnapshot";
@@ -10,6 +11,7 @@ import { submitIncidentReport } from "../services/incident.service";
 import { sendSOS } from "../services/sos.service";
 
 export default function DisasterDashboard() {
+  const navigate = useNavigate();
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -146,7 +148,7 @@ export default function DisasterDashboard() {
       <DashboardHeader
         user={dashboard.user}
         onNotificationClick={() => console.log("Notifications")}
-        onProfileClick={() => console.log("Profile")}
+        onProfileClick={() => navigate("/profile")}
       />
 
       {/* SOS Button */}

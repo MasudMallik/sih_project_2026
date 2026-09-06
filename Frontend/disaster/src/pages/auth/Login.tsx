@@ -5,6 +5,7 @@ import { LoginForm } from "../../components/login/LoginForm";
 import { ResetPasswordForm } from "../../components/login/ResetPasswordForm";
 import { useToast } from "../../hooks/useToast";
 import loginBackground from "../../assets/login.png";
+import { authenticateUser } from "../../services/auth.service";
 
 const NAV_LINKS = [
   ["Home", "home"],
@@ -25,11 +26,11 @@ export default function Login() {
     navigate("/");
   };
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (email: string) => {
+    authenticateUser(email);
     showToast("success", "Logged in successfully", "Welcome back to Geo Rakshak.");
-    // Simulated redirect — replace with real router navigation / auth session once a backend exists.
     setTimeout(() => {
-      console.log("Navigating to /dashboard…");
+      navigate("/dashboard");
     }, 1000);
   };
 
@@ -57,8 +58,8 @@ export default function Login() {
       <div className="absolute inset-0 bg-[#050B08]/10" />
 
       <div className="relative z-10 flex min-h-screen flex-col">
-        {/* Minimal transparent navigation */}
-        <header className="px-6 py-5 sm:px-10">
+        {/* Solid dark-green top navigation */}
+        <header className="bg-[#0B1A12] border-b border-white/[0.08] px-6 py-5 sm:px-10">
           <nav className="mx-auto flex max-w-7xl items-center justify-between" aria-label="Primary">
             <Link to="/" className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[#E3A63F]" aria-hidden="true" />
