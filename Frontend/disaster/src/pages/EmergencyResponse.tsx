@@ -7,7 +7,7 @@ import { ResourceAllocation } from "../components/emergency/ResourceAllocation";
 import { VillageCards } from "../components/emergency/VillageCards";
 import type { EmergencyResponseData } from "../@types/interface/emergencyResponse";
 import { fetchEmergencyResponse } from "../services/emergencyResponse.service";
-
+import bg2Image from "../assets/bg2.jpg";
 import { DashboardLayout } from "../components/dashboard/DashboardLayout";
 import { getCurrentUser } from "../services/auth.service";
 
@@ -55,22 +55,32 @@ export default function EmergencyResponse() {
       }}
       email={currentUser.id}
     >
-      <main className="mx-auto max-w-[1180px] px-5 py-8 lg:px-8 lg:py-12">
-        <section className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <div><p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-gold"><LocateFixed size={14} /> Northeast India response network</p><h1 className="font-display text-4xl leading-tight text-white sm:text-5xl">Emergency response center</h1><p className="mt-4 max-w-2xl text-sm leading-6 text-cream-dim">Coordinate verified emergency information and monitor the response network from one place.</p></div>
-        </section>
+      <div
+        className="min-h-[calc(100vh-60px)] relative"
+        style={{
+          backgroundImage: `linear-gradient(rgba(7, 20, 14, 0.76), rgba(7, 20, 14, 0.90)), url(${bg2Image})`,
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          backgroundAttachment: "fixed",
+        }}
+      >
+        <main className="mx-auto max-w-[1180px] px-5 py-8 lg:px-8 lg:py-12">
+          <section className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <div><p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-gold"><LocateFixed size={14} /> Northeast India response network</p><h1 className="font-display text-4xl leading-tight text-white sm:text-5xl">Emergency response center</h1><p className="mt-4 max-w-2xl text-sm leading-6 text-cream-dim">Coordinate verified emergency information and monitor the response network from one place.</p></div>
+          </section>
 
-        {isLoading && <div className="rounded-2xl border border-white/10 bg-[#102419]/85 p-8 text-sm text-moss shadow-2xl">Loading emergency response data...</div>}
-        {!isLoading && error && <div className="rounded-2xl border border-red-400/30 bg-red-950/40 p-8 shadow-2xl"><h2 className="font-display text-xl text-white">Response data unavailable</h2><p className="mt-2 text-sm leading-6 text-[#f0a69e]">{error}</p></div>}
-        {!isLoading && !error && data && <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-          <div className="space-y-6">
-            <IncidentList incidents={sortedIncidents} sortDescending={sortDescending} onToggleSort={() => setSortDescending((value) => !value)} />
-            <section className="rounded-2xl border border-white/10 bg-[#102419]/85 p-5 shadow-2xl backdrop-blur-md lg:p-6"><div className="flex items-start gap-3"><div className="rounded-lg bg-gold/10 p-2 text-gold"><Shield size={20} /></div><div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Response information</p><h2 className="mt-1 text-xl font-semibold text-cream">Emergency Dispatch</h2><p className="mt-2 text-sm leading-6 text-moss">Coordinate the nearest response team and broadcast a verified alert to affected communities.</p></div></div><div className="mt-5 grid gap-3 sm:grid-cols-2">{data.infrastructure.length === 0 ? <p className="text-sm text-moss">No response status records are available.</p> : data.infrastructure.map((item) => <div key={item.id} className="rounded-xl border border-white/10 bg-[#173123]/80 p-4"><div className="flex items-center justify-between gap-3"><h3 className="text-sm font-semibold text-cream">{item.name}</h3><span className="text-xs text-gold">{item.status}</span></div><p className="mt-1 text-xs text-moss">{item.location}</p><p className="mt-3 text-xs text-cream-dim">{item.statusDetail}</p></div>)}</div></section>
-            <VillageCards villages={data.villages} />
-          </div>
-          <div className="space-y-6"><NearestHelp entries={data.helpEntries} /><ResourceAllocation resources={data.resources} /><ActivityFeed items={data.feed} isLoading={isLoading} error={error} /></div>
-        </div>}
-      </main>
+          {isLoading && <div className="rounded-2xl border border-white/10 bg-[#102419]/85 p-8 text-sm text-moss shadow-2xl">Loading emergency response data...</div>}
+          {!isLoading && error && <div className="rounded-2xl border border-red-400/30 bg-red-950/40 p-8 shadow-2xl"><h2 className="font-display text-xl text-white">Response data unavailable</h2><p className="mt-2 text-sm leading-6 text-[#f0a69e]">{error}</p></div>}
+          {!isLoading && !error && data && <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
+            <div className="space-y-6">
+              <IncidentList incidents={sortedIncidents} sortDescending={sortDescending} onToggleSort={() => setSortDescending((value) => !value)} />
+              <section className="rounded-2xl border border-white/10 bg-[#102419]/85 p-5 shadow-2xl backdrop-blur-md lg:p-6"><div className="flex items-start gap-3"><div className="rounded-lg bg-gold/10 p-2 text-gold"><Shield size={20} /></div><div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Response information</p><h2 className="mt-1 text-xl font-semibold text-cream">Emergency Dispatch</h2><p className="mt-2 text-sm leading-6 text-moss">Coordinate the nearest response team and broadcast a verified alert to affected communities.</p></div></div><div className="mt-5 grid gap-3 sm:grid-cols-2">{data.infrastructure.length === 0 ? <p className="text-sm text-moss">No response status records are available.</p> : data.infrastructure.map((item) => <div key={item.id} className="rounded-xl border border-white/10 bg-[#173123]/80 p-4"><div className="flex items-center justify-between gap-3"><h3 className="text-sm font-semibold text-cream">{item.name}</h3><span className="text-xs text-gold">{item.status}</span></div><p className="mt-1 text-xs text-moss">{item.location}</p><p className="mt-3 text-xs text-cream-dim">{item.statusDetail}</p></div>)}</div></section>
+              <VillageCards villages={data.villages} />
+            </div>
+            <div className="space-y-6"><NearestHelp entries={data.helpEntries} /><ResourceAllocation resources={data.resources} /><ActivityFeed items={data.feed} isLoading={isLoading} error={error} /></div>
+          </div>}
+        </main>
+      </div>
     </DashboardLayout>
   );
 }

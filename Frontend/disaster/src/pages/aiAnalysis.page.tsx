@@ -8,10 +8,11 @@ import React, {
   type CSSProperties,
   type PropsWithChildren,
 } from "react";
-import { Send, Mic, X, Keyboard, ArrowLeft, Trash2, MicOff } from "lucide-react";
+import { Send, Mic, X, Keyboard, ArrowLeft, Trash2, MicOff, Sparkles, Bot } from "lucide-react";
 import { sendChatMessage } from "../services/chat.service";
 import { DashboardLayout } from "../components/dashboard/DashboardLayout";
 import { getCurrentUser } from "../services/auth.service";
+import bg3Image from "../assets/bg3.jpg";
 
 /* ============================================================================
    BRAND TOKENS
@@ -437,24 +438,27 @@ function VoicePopup({ open, onClose }: { open: boolean; onClose: () => void }) {
 function MessageBubble({ msg }: { msg: Message }) {
   const isUser = msg.sender === "user";
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"} items-start gap-2.5`}>
+      {!isUser && (
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#C98A3C] to-[#E08A3E] text-xs font-bold text-[#102419] shadow-sm mt-0.5">
+          <Bot size={14} />
+        </div>
+      )}
       <div className="max-w-[82%]">
         <div
-          className={`px-4 py-3 text-[13.5px] leading-relaxed ${
-            isUser ? "rounded-2xl rounded-br-sm" : "rounded-2xl rounded-bl-sm"
+          className={`px-4 py-3 text-[13.5px] leading-relaxed shadow-lg ${
+            isUser
+              ? "rounded-2xl rounded-tr-sm bg-gradient-to-r from-[#C98A3C] via-[#E3A63F] to-[#F2A93D] font-medium text-[#102419]"
+              : "rounded-2xl rounded-tl-sm border border-white/10 bg-[#173123]/95 text-[#F4EFE4]"
           }`}
-          style={{
-            backgroundColor: isUser ? BRAND.amber : "#FFFFFF",
-            color: isUser ? BRAND.forest : BRAND.ink,
-            border: isUser ? "none" : "1px solid #E7DFCB",
-          }}
         >
           {msg.text}
         </div>
         {msg.viaVoice && (
           <div
-            className={`flex items-center gap-1 mt-1 text-[10.5px] ${isUser ? "justify-end" : ""}`}
-            style={{ color: BRAND.inkSoft }}
+            className={`flex items-center gap-1 mt-1 text-[10.5px] ${
+              isUser ? "justify-end text-[#8AA68F]" : "text-[#8AA68F]"
+            }`}
           >
             <Mic size={10} />
             spoken
@@ -467,16 +471,16 @@ function MessageBubble({ msg }: { msg: Message }) {
 
 function TypingIndicator() {
   return (
-    <div className="flex justify-start">
-      <div
-        className="rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1"
-        style={{ backgroundColor: "#FFFFFF", border: "1px solid #E7DFCB" }}
-      >
+    <div className="flex items-start gap-2.5 justify-start">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#C98A3C] to-[#E08A3E] text-xs font-bold text-[#102419] shadow-sm mt-0.5">
+        <Bot size={14} />
+      </div>
+      <div className="rounded-2xl rounded-tl-sm border border-white/10 bg-[#173123]/95 px-4 py-3.5 flex items-center gap-1.5 shadow-lg">
         {[0, 1, 2].map((i) => (
           <span
             key={i}
-            className="w-1.5 h-1.5 rounded-full animate-vo-typing"
-            style={{ backgroundColor: BRAND.amberDeep, animationDelay: `${i * 0.15}s` }}
+            className="w-1.5 h-1.5 rounded-full bg-[#E08A3E] animate-vo-typing"
+            style={{ animationDelay: `${i * 0.15}s` }}
           />
         ))}
       </div>
@@ -500,9 +504,10 @@ function ChatSection() {
     if (clearArmTimer.current) clearTimeout(clearArmTimer.current);
   }, []);
 
-  const handleSend = () => {
-    if (!draft.trim()) return;
-    sendUserMessage(draft.trim());
+  const handleSend = (textToSend?: string) => {
+    const text = textToSend || draft;
+    if (!text.trim()) return;
+    sendUserMessage(text.trim());
     setDraft("");
   };
 
@@ -517,38 +522,43 @@ function ChatSection() {
     clearArmTimer.current = setTimeout(() => setConfirmingClear(false), 3000);
   };
 
+  const SUGGESTED_PROMPTS = [
+    { label: "🚨 Critical risk zones", prompt: "What are the current critical risk zones and their status?" },
+    { label: "🌧 Rainfall warnings", prompt: "Are there heavy rainfall alerts active right now in the region?" },
+    { label: "🏥 Emergency help units", prompt: "Show nearest hospitals and response teams available." },
+    { label: "🛣 Safe evacuation routes", prompt: "What are the safe evacuation routes and current road conditions?" },
+  ];
+
   return (
-    <section id="chat" className="flex-1 min-h-0 flex flex-col" style={{ backgroundColor: BRAND.cream }}>
+    <section id="chat" className="flex-1 min-h-0 flex flex-col bg-transparent">
       <div className="flex-1 min-h-0 w-full max-w-3xl mx-auto flex flex-col px-3 sm:px-6 py-3 sm:py-5">
-        <div
-          className="relative flex-1 min-h-0 rounded-3xl border overflow-hidden flex flex-col"
-          style={{ borderColor: "#DED4BB", backgroundColor: BRAND.creamDim }}
-        >
-          <div
-            className="flex items-center gap-3 px-5 py-4 border-b"
-            style={{ backgroundColor: BRAND.forest, borderColor: BRAND.forestLine }}
-          >
+        <div className="relative flex-1 min-h-0 rounded-3xl border border-white/10 bg-[#102419]/90 shadow-2xl backdrop-blur-xl overflow-hidden flex flex-col">
+          {/* Card Header */}
+          <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10 bg-[#162E20]/95 backdrop-blur-md">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#C98A3C] to-[#E08A3E] text-[#102419] shadow-sm">
+              <Sparkles size={16} />
+            </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium" style={{ color: BRAND.cream }}>
-                Geo Rakshak Assistant
+              <p className="text-sm font-semibold text-[#F4EFE4]">
+                Geo Rakshak AI Assistant
               </p>
-              <p className="text-[11px] flex items-center gap-1.5" style={{ color: BRAND.amberSoft }}>
-                <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                Watching your region in real time
+              <p className="text-[11px] flex items-center gap-1.5 font-medium text-[#D9A441]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4CAF6D] animate-pulse" />
+                Watching regional telemetry & hazard grids in real time
               </p>
             </div>
             {confirmingClear && (
-              <span className="text-[11px] whitespace-nowrap" style={{ color: BRAND.amberSoft }}>
+              <span className="text-[11px] whitespace-nowrap font-medium text-[#F2C14E]">
                 Tap again to clear
               </span>
             )}
             <button
               onClick={handleClearClick}
-              className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center transition-colors"
-              style={{
-                color: confirmingClear ? BRAND.forest : BRAND.amberSoft,
-                backgroundColor: confirmingClear ? BRAND.amber : "transparent",
-              }}
+              className={`w-9 h-9 shrink-0 rounded-full flex items-center justify-center transition-all ${
+                confirmingClear
+                  ? "bg-[#D9A441] text-[#102419]"
+                  : "text-[#8AA68F] hover:text-[#F4EFE4] hover:bg-white/10"
+              }`}
               aria-label={confirmingClear ? "Confirm clear chat" : "Clear chat"}
               title={confirmingClear ? "Tap again to clear" : "Clear chat"}
             >
@@ -556,38 +566,69 @@ function ChatSection() {
             </button>
           </div>
 
+          {/* Messages or Welcome Starter */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
-            {messages.map((m) => (
-              <MessageBubble key={m.id} msg={m} />
-            ))}
+            {messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center px-4 py-8">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-[#173123]/80 text-[#D9A441] shadow-lg mb-3">
+                  <Sparkles size={24} />
+                </div>
+                <h3 className="text-base font-semibold text-[#F4EFE4]">
+                  How can I assist your regional safety today?
+                </h3>
+                <p className="mt-1 max-w-sm text-xs leading-relaxed text-[#8AA68F]">
+                  Ask about active slope stability, rainfall warnings, disaster response teams, or road conditions.
+                </p>
+
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-md">
+                  {SUGGESTED_PROMPTS.map((item) => (
+                    <button
+                      key={item.label}
+                      type="button"
+                      onClick={() => handleSend(item.prompt)}
+                      className="rounded-xl border border-white/10 bg-[#173123]/70 px-3.5 py-2.5 text-left text-xs font-medium text-[#B7CBB2] transition-all hover:border-[#D9A441]/50 hover:bg-[#1C3A29] hover:text-[#F4EFE4] shadow-sm"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              messages.map((m) => <MessageBubble key={m.id} msg={m} />)
+            )}
             {isTyping && <TypingIndicator />}
-            {error && <p className="text-center text-xs text-red-700">{error}</p>}
+            {error && (
+              <div className="rounded-xl border border-red-400/30 bg-red-950/50 p-3 text-center text-xs font-medium text-red-200">
+                {error}
+              </div>
+            )}
           </div>
 
-          <div className="relative p-3 border-t flex items-center gap-2" style={{ borderColor: "#DED4BB" }}>
+          {/* Input Bar */}
+          <div className="relative p-3.5 border-t border-white/10 bg-[#162E20]/95 backdrop-blur-md flex items-center gap-2">
             <input
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              placeholder="Ask about a village, river, or route…"
-              className="flex-1 px-4 py-2.5 rounded-full text-sm outline-none border"
-              style={{ borderColor: "#DED4BB", backgroundColor: "#FFFDF8", color: BRAND.ink }}
+              placeholder="Ask about a village, river, slope, or route…"
+              className="flex-1 px-4 py-2.5 rounded-full text-sm outline-none border border-white/15 bg-[#173123]/80 text-[#F4EFE4] placeholder-[#8AA68F] transition-all focus:border-[#D9A441] focus:bg-[#1A3828]"
             />
             <button
               onClick={() => setVoiceOpen(true)}
-              className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center border transition-transform hover:scale-105 active:scale-95"
-              style={{ borderColor: "#DED4BB", backgroundColor: "#FFFDF8" }}
+              className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center border border-white/15 bg-[#173123]/80 text-[#D9A441] transition-transform hover:scale-105 active:scale-95 hover:border-[#D9A441]"
               aria-label="Ask by voice"
+              title="Ask by voice"
             >
-              <Mic size={16} style={{ color: BRAND.amberDeep }} />
+              <Mic size={16} />
             </button>
             <button
-              onClick={handleSend}
-              className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
-              style={{ backgroundColor: BRAND.amber }}
+              onClick={() => handleSend()}
+              disabled={!draft.trim()}
+              className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center bg-gradient-to-r from-[#C98A3C] via-[#E3A63F] to-[#F2A93D] text-[#102419] font-bold transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-[#E3A63F]/20"
               aria-label="Send message"
+              title="Send message"
             >
-              <Send size={16} style={{ color: BRAND.forest }} />
+              <Send size={16} />
             </button>
           </div>
 
@@ -750,7 +791,15 @@ export default function App() {
           }
         `}</style>
 
-        <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: BRAND.cream }}>
+        <div
+          className="h-[calc(100vh-60px)] flex flex-col overflow-hidden relative"
+          style={{
+            backgroundImage: `linear-gradient(rgba(7, 20, 14, 0.72), rgba(7, 20, 14, 0.86)), url(${bg3Image})`,
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundAttachment: "fixed",
+          }}
+        >
           <Nav />
           <ChatSection />
         </div>
