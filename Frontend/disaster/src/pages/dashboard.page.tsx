@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { DashboardHeader } from "../components/dashboard/DashboardHeader";
+import { DashboardLayout } from "../components/dashboard/DashboardLayout";
 import { RiskSummary } from "../components/dashboard/RiskSummary";
 import { WeatherSnapshot } from "../components/dashboard/WeatherSnapshot";
 import { IncidentReportForm } from "../components/dashboard/IncidentReportForm";
@@ -9,6 +9,7 @@ import type { Dashboard, DisasterType, SOSState } from "../@types/interface/dash
 import { fetchDashboard } from "../services/dashboard.service";
 import { submitIncidentReport } from "../services/incident.service";
 import { sendSOS } from "../services/sos.service";
+import { getCurrentUser } from "../services/auth.service";
 
 export default function DisasterDashboard() {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ export default function DisasterDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sosState, setSOSState] = useState<SOSState>("idle");
+
+  const authUser = getCurrentUser();
 
   // Load dashboard data on mount
   useEffect(() => {
@@ -83,15 +86,14 @@ export default function DisasterDashboard() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0F1D14] bg-gradient-to-br from-[#0F1D14] via-[#0F1D14] to-[#0F1D14]">
-        <DashboardHeader
-          user={{
-            id: "loading",
-            name: "Loading...",
-            role: "Loading...",
-            avatar: "—",
-          }}
-        />
+      <DashboardLayout
+        user={{
+          id: "loading",
+          name: "Loading...",
+          role: "Loading...",
+          avatar: "—",
+        }}
+      >
         <div className="mx-auto max-w-[1200px] px-9 py-8 max-md:px-5">
           <div className="animate-pulse space-y-4">
             <div className="h-8 w-48 rounded bg-[#2A4632]"></div>
@@ -101,22 +103,21 @@ export default function DisasterDashboard() {
             </div>
           </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   // Error state
   if (error || !dashboard) {
     return (
-      <div className="min-h-screen bg-[#0F1D14] bg-gradient-to-br from-[#0F1D14] via-[#0F1D14] to-[#0F1D14]">
-        <DashboardHeader
-          user={{
-            id: "error",
-            name: "Error",
-            role: "Unable to load",
-            avatar: "!",
-          }}
-        />
+      <DashboardLayout
+        user={{
+          id: "error",
+          name: "Error",
+          role: "Unable to load",
+          avatar: "!",
+        }}
+      >
         <div className="mx-auto max-w-[1200px] px-9 py-8 max-md:px-5">
           <div className="rounded-lg border border-[#C0392B] bg-[rgba(192,57,43,0.1)] p-6">
             <h2 className="mb-2 text-lg font-semibold text-[#E8756A]">
@@ -127,12 +128,16 @@ export default function DisasterDashboard() {
             </p>
           </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0F1D14] bg-gradient-to-br from-[#0F1D14] via-[#0F1D14] to-[#0F1D14] pb-[60px]">
+    <DashboardLayout
+      user={dashboard.user}
+      email={authUser?.email}
+      onProfileClick={() => navigate("/profile")}
+    >
       <style>{`
         @keyframes gr-pulse {
           0% { box-shadow: 0 0 0 0 rgba(92, 151, 100, 0.45); }
@@ -144,18 +149,11 @@ export default function DisasterDashboard() {
         }
       `}</style>
 
-      {/* Header */}
-      <DashboardHeader
-        user={dashboard.user}
-        onNotificationClick={() => console.log("Notifications")}
-        onProfileClick={() => navigate("/profile")}
-      />
-
       {/* SOS Button */}
       <SOSButton state={sosState} onTap={handleSOS} />
 
       {/* Main Content */}
-      <div className="mx-auto max-w-[1200px] px-9 py-8 max-md:px-5">
+      <div className="mx-auto max-w-[1200px] px-9 py-8 pb-[60px] max-md:px-5">
         {/* Location Row */}
         <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2.5">
           <div>
@@ -185,6 +183,6 @@ export default function DisasterDashboard() {
           isLoading={isLoading}
         />
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

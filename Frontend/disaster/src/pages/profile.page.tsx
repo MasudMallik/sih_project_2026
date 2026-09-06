@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { DashboardHeader } from "../components/dashboard/DashboardHeader";
+import { DashboardLayout } from "../components/dashboard/DashboardLayout";
 import { ProfileSummaryCard } from "../components/profile/ProfileSummaryCard";
 import { PersonalInformationCard } from "../components/profile/PersonalInformationCard";
 import { AlertAreaCard } from "../components/profile/AlertAreaCard";
@@ -30,40 +30,39 @@ export default function Profile() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-forest-dark pb-16">
-      {/* Reused global app header — same one the dashboard uses */}
-      <DashboardHeader
-        user={{
-          id: user.email,
-          name: user.name.trim() || user.email,
-          // Role isn't collected anywhere in signup today, so it isn't shown
-          // in the profile content below — this is just the header's label.
-          role: "Citizen",
-          avatar: getInitials(user.name || user.email),
-        }}
-        onNotificationClick={() => console.log("Notifications")}
-        onProfileClick={() => navigate("/profile")}
-      />
+    <DashboardLayout
+      user={{
+        id: user.email,
+        name: user.name.trim() || user.email,
+        // Role isn't collected anywhere in signup today, so it isn't shown
+        // in the profile content below — this is just the header's label.
+        role: "Citizen",
+        avatar: getInitials(user.name || user.email),
+      }}
+      email={user.email}
+      onProfileClick={() => navigate("/profile")}
+    >
+      <div className="pb-16">
+        <div className="mx-auto max-w-[1000px] px-9 py-8 max-md:px-5">
+          {/* Page-level header: title + logout, per the reference layout */}
+          <div className="mb-6 flex items-center justify-between border-b border-[#223B29] pb-5">
+            <h1 className="text-2xl font-semibold tracking-tight text-cream">My Profile</h1>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="rounded-md border border-[#2A4632] bg-[#16281C] px-4 py-2 text-sm font-medium text-cream transition-colors hover:border-gold hover:text-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            >
+              Logout
+            </button>
+          </div>
 
-      <div className="mx-auto max-w-[1000px] px-9 py-8 max-md:px-5">
-        {/* Page-level header: title + logout, per the reference layout */}
-        <div className="mb-6 flex items-center justify-between border-b border-[#223B29] pb-5">
-          <h1 className="text-2xl font-semibold tracking-tight text-cream">My Profile</h1>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="rounded-md border border-[#2A4632] bg-[#16281C] px-4 py-2 text-sm font-medium text-cream transition-colors hover:border-gold hover:text-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-          >
-            Logout
-          </button>
-        </div>
-
-        <div className="space-y-5">
-          <ProfileSummaryCard user={user} />
-          <PersonalInformationCard user={user} />
-          <AlertAreaCard user={user} />
+          <div className="space-y-5">
+            <ProfileSummaryCard user={user} />
+            <PersonalInformationCard user={user} />
+            <AlertAreaCard user={user} />
+          </div>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
