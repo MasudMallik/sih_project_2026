@@ -6,6 +6,7 @@ import SignUp from "../pages/auth/SignUp";
 import DisasterDashboard from "../pages/dashboard.page";
 import EmergencyResponse from "../pages/EmergencyResponse";
 import Profile from "../pages/profile.page";
+import LiveRiskMap from "../pages/liveRiskMap.page";
 
 const Router = createBrowserRouter([
     {
@@ -31,6 +32,10 @@ const Router = createBrowserRouter([
     {
         path:"/profile",
         element:<Profile />
+    },
+    {
+        path:"/risk-map",
+        element:<LiveRiskMap />
     }
 ]);
 export default Router;
