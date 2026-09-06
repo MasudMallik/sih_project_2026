@@ -3,21 +3,66 @@ from fastapi.security import OAuth2PasswordBearer
 from Backend.token_create import decode_token
 from Backend.ai_prediction import predict
 from Backend.schemas import InputData
+import requests
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login", auto_error=False)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login", auto_error=False)
 
 dashboard_router = APIRouter(
     prefix="/api/dashboard",
     tags=["Dashboard"],
 )
 
-def get_current_user(token: str = Depends(oauth2_scheme), authorization: str = Header(None)):
-    actual_token = token
-    if not actual_token and authorization and authorization.startswith("Bearer "):
-        actual_token = authorization.split(" ")[1]
+
+@dashboard_router.get("/earth_quakes")
+def get_nearby_earthquakes(radius_km=500, min_magnitude=3.0):
+    location=requests.get("https://ipinfo.io")
+    data=location.json()
+    lat,lon=data.get("loc").split(",")
+    url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
+    params = {
+        "format": "geojson",
+        "latitude": lat,
+        "longitude": lon,
+        "maxradiuskm": radius_km,
+        "minmagnitude": min_magnitude,
+        "orderby": "time"
+    }
     
+    response = requests.get(url, params=params).json()
+    events = response["features"]
+    if not events:
+        return {"reports":"No recent earthquakes detected in this radius."}
+    places={}
+    for event in events[:5]:  # Display top 5
+        props = event["properties"]
+        place = props["place"]
+        mag = props["mag"]
+        places[place]=mag
+    return ({"reports":places})
+
+@dashboard_router.get("/weather")
+def get_severe_weather():
+    location=requests.get("https://ipinfo.io")
+    data=location.json()
+    lat,lon=data.get("loc").split(",")
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "current": ["temperature_2m", "precipitation", "rain", "showers", "wind_speed_10m", "wind_gusts_10m"],
+        "forecast_days": 1
+    }
+    
+    res = requests.get(url, params=params).json()
+    current = res.get("current", {})
+    return {"Current_weather":current}
+
+
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    actual_token = token
     if not actual_token:
-        return {"email": "guest@georakshak.org", "full_name": "Citizen User"}
+        return {"email": "guest@georakshak.org", "full_name": "Citizen User(No user login)"}
 
     payload = decode_token(actual_token)
     if not payload:
@@ -27,7 +72,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), authorization: str = H
 @dashboard_router.get("")
 @dashboard_router.get("/")
 def dashboard_home(current_user: dict = Depends(get_current_user)):
-    user_name = current_user.get("full_name") or current_user.get("email", "Citizen").split("@")[0].capitalize()
+    user_name = current_user.get("full_name") 
     user_email = current_user.get("email", "user@georakshak.org")
     
     name_parts = [p for p in user_name.split() if p]

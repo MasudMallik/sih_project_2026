@@ -18,10 +18,9 @@ router = APIRouter(
     tags=["Chat_Bot"]
 )
 
-@router.post("/chatbot")
-@router.post("/chatbot/")
+
 @router.post("/api/chatbot")
-@router.post("/api/chat")
+
 def chatbot(data: ChatRequest):
     question_lower = data.question.lower()
     
@@ -71,7 +70,7 @@ def chatbot(data: ChatRequest):
     elif any(k in question_lower for k in ["rain", "flood", "water", "weather"]):
         reply = "Current conditions: Heavy rainfall (84.5mm/24h) with 89% humidity across Kamrup and East Sikkim districts."
     else:
-        reply = f"Geo Rakshak AI Assistant: Monitoring active risk sectors for '{data.question}'. Emergency personnel are tracking live sensor data. Contact 1078 for urgent help."
+        reply = f"Geo Rakshak AI Assistant: Monitoring active risk sectors for Land slide only it cannot give answer for'{data.question}'. Emergency personnel are tracking live sensor data. Contact 1078 for urgent help."
 
     return {
         "success": True,

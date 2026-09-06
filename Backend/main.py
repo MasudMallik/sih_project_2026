@@ -53,9 +53,9 @@ app.include_router(emergency_router)
 
 # In-memory user fallback if MongoDB is not reachable
 in_memory_users = {}
-
+print(os.getenv("mongo_db"))
 def get_collection():
-    mongodb_url = os.getenv("mongodb_url")
+    mongodb_url = os.getenv("mongo_db")
     if not mongodb_url:
         return None
     try:
@@ -74,7 +74,7 @@ def home_page(request: Request):
 def login_page(user: login):
     database = get_collection()
     found_user = None
-    
+    normalized_email = user.email.strip().lower()
     if database is not None:
         try:
             normalized_email = user.email.strip().lower()
@@ -224,6 +224,9 @@ def get_user_location():
 def logout(response: Response):
     response.delete_cookie("access_token")
     return JSONResponse(content={"logout": True, "message": "Logged out successfully"})
+
+
+
 
 if __name__ == "__main__":
     uvicorn.run("Backend.main:app", host="127.0.0.1", port=8000, reload=True)
