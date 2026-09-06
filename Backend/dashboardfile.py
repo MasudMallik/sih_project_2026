@@ -83,6 +83,19 @@ def dashboard_home(current_user: dict = Depends(get_current_user)):
     else:
         initials = "GR"
 
+    user_location = current_user.get("location")
+    if user_location and user_location.strip():
+        loc_name = user_location.strip()
+        loc_region = "Registered Sector"
+    else:
+        try:
+            loc_data = requests.get("https://ipinfo.io", timeout=3).json()
+            loc_name = loc_data.get("city", "Live Location")
+            loc_region = f"{loc_data.get('region', '')}, {loc_data.get('country', '')}".strip(", ") or "Monitored Sector"
+        except Exception:
+            loc_name = "Live Location"
+            loc_region = "Monitored Sector"
+
     # Telemetry data for live ML inference
     telemetry = InputData(
         Rainfall_mm=124.5,
@@ -120,8 +133,8 @@ def dashboard_home(current_user: dict = Depends(get_current_user)):
             "avatar": initials
         },
         "location": {
-            "name": "Guwahati",
-            "region": "Kamrup Metropolitan, Assam"
+            "name": loc_name,
+            "region": loc_region
         },
         "risk": {
             "currentLevel": current_level,

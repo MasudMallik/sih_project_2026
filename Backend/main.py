@@ -55,7 +55,7 @@ app.include_router(emergency_router)
 in_memory_users = {}
 print(os.getenv("mongo_db"))
 def get_collection():
-    mongodb_url = os.getenv("mongo_db")
+    mongodb_url = os.getenv("mongo_db") or os.getenv("mongodb_url")
     if not mongodb_url:
         return None
     try:
@@ -215,10 +215,30 @@ async def trigger_sos(data: dict = None):
 
 @app.get("/location")
 def get_user_location():
-    response = requests.get("https://ipinfo.io")
-    data = response.json()
-    location = data.get("loc") 
-    return {"location":location}
+    try:
+        response = requests.get("https://ipinfo.io", timeout=5)
+        data = response.json()
+        location = data.get("loc", "")
+        city = data.get("city", "")
+        region = data.get("region", "")
+        country = data.get("country", "")
+        return {
+            "location": location,
+            "city": city,
+            "region": region,
+            "country": country,
+            "name": city or "Current Location",
+            "full_region": f"{region}, {country}" if region and country else (region or country or "")
+        }
+    except Exception:
+        return {
+            "location": "22.5626,88.3630",
+            "city": "Current Location",
+            "region": "Monitored Zone",
+            "country": "IN",
+            "name": "Current Location",
+            "full_region": "Monitored Zone"
+        }
 
 @app.post("/logout")
 def logout(response: Response):

@@ -3,9 +3,12 @@ import { emergencyResponseSchema } from "../validations/emergencyResponseValidat
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
-export async function fetchEmergencyResponse(): Promise<EmergencyResponseData> {
+export async function fetchEmergencyResponse(location?: string): Promise<EmergencyResponseData> {
   const token = localStorage.getItem("geo-rakshak:access-token");
-  const response = await fetch(`${API_BASE_URL}/api/emergency-response`, {
+  const url = location
+    ? `${API_BASE_URL}/api/emergency-response?location=${encodeURIComponent(location)}`
+    : `${API_BASE_URL}/api/emergency-response`;
+  const response = await fetch(url, {
     headers: {
       Accept: "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),

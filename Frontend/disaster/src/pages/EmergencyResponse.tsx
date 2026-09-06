@@ -7,6 +7,7 @@ import { ResourceAllocation } from "../components/emergency/ResourceAllocation";
 import { VillageCards } from "../components/emergency/VillageCards";
 import type { EmergencyResponseData } from "../@types/interface/emergencyResponse";
 import { fetchEmergencyResponse } from "../services/emergencyResponse.service";
+import { fetchLiveLocation } from "../services/dashboard.service";
 import bg2Image from "../assets/bg2.jpg";
 import { DashboardLayout } from "../components/dashboard/DashboardLayout";
 import { getCurrentUser } from "../services/auth.service";
@@ -20,6 +21,7 @@ export default function EmergencyResponse() {
     avatar: user?.name ? user.name.slice(0, 2).toUpperCase() : "GR",
   };
   const [data, setData] = useState<EmergencyResponseData | null>(null);
+  const [userLocationName, setUserLocationName] = useState<string>(user?.location || "Live Sector");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortDescending, setSortDescending] = useState(true);
@@ -28,7 +30,16 @@ export default function EmergencyResponse() {
     let active = true;
     const loadData = async () => {
       try {
-        const responseData = await fetchEmergencyResponse();
+        setIsLoading(true);
+        // Get live location first
+        const locData = await fetchLiveLocation();
+        const detectedLoc = user?.location || locData?.city || locData?.name;
+        if (detectedLoc && active) {
+          setUserLocationName(detectedLoc);
+        }
+
+        // Fetch location-aware emergency response
+        const responseData = await fetchEmergencyResponse(detectedLoc);
         if (active) setData(responseData);
       } catch (requestError) {
         if (active) setError(requestError instanceof Error ? requestError.message : "Unable to load response data");
@@ -38,7 +49,7 @@ export default function EmergencyResponse() {
     };
     void loadData();
     return () => { active = false; };
-  }, []);
+  }, [user?.location]);
 
   const sortedIncidents = useMemo(() => {
     if (!data) return [];
@@ -66,7 +77,7 @@ export default function EmergencyResponse() {
       >
         <main className="mx-auto max-w-[1180px] px-5 py-8 lg:px-8 lg:py-12">
           <section className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-            <div><p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-gold"><LocateFixed size={14} /> Northeast India response network</p><h1 className="font-display text-4xl leading-tight text-white sm:text-5xl">Emergency response center</h1><p className="mt-4 max-w-2xl text-sm leading-6 text-cream-dim">Coordinate verified emergency information and monitor the response network from one place.</p></div>
+            <div><p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-gold"><LocateFixed size={14} /> {userLocationName} response network</p><h1 className="font-display text-4xl leading-tight text-white sm:text-5xl">Emergency response center</h1><p className="mt-4 max-w-2xl text-sm leading-6 text-cream-dim">Coordinate verified emergency information and monitor the response network from one place.</p></div>
           </section>
 
           {isLoading && <div className="rounded-2xl border border-white/10 bg-[#102419]/85 p-8 text-sm text-moss shadow-2xl">Loading emergency response data...</div>}

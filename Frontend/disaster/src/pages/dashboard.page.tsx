@@ -6,7 +6,12 @@ import { WeatherSnapshot } from "../components/dashboard/WeatherSnapshot";
 import { IncidentReportForm } from "../components/dashboard/IncidentReportForm";
 import { SOSButton } from "../components/dashboard/SOSButton";
 import type { Dashboard, DisasterType, SOSState } from "../@types/interface/dashboard";
-import { fetchDashboard } from "../services/dashboard.service";
+import {
+  fetchDashboard,
+  fetchLiveWeather,
+  fetchLiveEarthquakes,
+  fetchLiveLocation,
+} from "../services/dashboard.service";
 import { submitIncidentReport } from "../services/incident.service";
 import { sendSOS } from "../services/sos.service";
 import { getCurrentUser } from "../services/auth.service";
@@ -21,24 +26,140 @@ export default function DisasterDashboard() {
 
   const authUser = getCurrentUser();
 
-  // Load dashboard data on mount
+  // Load dashboard data and live endpoints on mount & poll in real time
   useEffect(() => {
-    const loadDashboard = async () => {
+    let isMounted = true;
+
+    const loadDashboard = async (isBackground = false) => {
       try {
-        setIsLoading(true);
-        setError(null);
-        const data = await fetchDashboard();
-        setDashboard(data);
+        if (!isBackground) {
+          setIsLoading(true);
+          setError(null);
+        }
+
+        // Connect main dashboard, @dashboard_router.get("/weather"), @dashboard_router.get("/earth_quakes"), and /location
+        const [baseData, weatherData, earthquakesData, locationData] =
+          await Promise.all([
+            fetchDashboard(),
+            fetchLiveWeather(),
+            fetchLiveEarthquakes(),
+            fetchLiveLocation(),
+          ]);
+
+        const mergedDashboard: Dashboard = {
+          ...baseData,
+          weather: {
+            ...baseData.weather,
+            stats: { ...baseData.weather.stats },
+            forecast: [...(baseData.weather.forecast || [])],
+          },
+          risk: {
+            ...baseData.risk,
+            counts: [...(baseData.risk.counts || [])],
+            zones: [...(baseData.risk.zones || [])],
+          },
+        };
+
+        // 1. Connect live weather data from /api/dashboard/weather
+        if (weatherData?.Current_weather) {
+          const cw = weatherData.Current_weather;
+          if (typeof cw.temperature_2m === "number") {
+            mergedDashboard.weather.temperature = Math.round(cw.temperature_2m);
+          }
+
+          const rainAmount = cw.rain ?? cw.precipitation ?? cw.showers ?? 0;
+          mergedDashboard.weather.stats.rainfall = `${rainAmount.toFixed(1)} mm`;
+
+          const windAmount = cw.wind_gusts_10m ?? cw.wind_speed_10m ?? 0;
+          mergedDashboard.weather.stats.windGust = `${Math.round(windAmount)} km/h`;
+
+          mergedDashboard.weather.currentDay = `Today · Live Sensor Feed`;
+
+          if (rainAmount > 10) {
+            mergedDashboard.weather.condition = "Heavy Rainfall";
+            mergedDashboard.weather.conditionIcon = "🌧";
+          } else if (rainAmount > 2) {
+            mergedDashboard.weather.condition = "Moderate Rainfall";
+            mergedDashboard.weather.conditionIcon = "🌧";
+          } else if (rainAmount > 0) {
+            mergedDashboard.weather.condition = "Light Rain / Showers";
+            mergedDashboard.weather.conditionIcon = "🌦";
+          } else if ((cw.wind_speed_10m ?? 0) > 25 || windAmount > 35) {
+            mergedDashboard.weather.condition = "High Wind / Gusty";
+            mergedDashboard.weather.conditionIcon = "💨";
+          } else if (mergedDashboard.weather.temperature >= 30) {
+            mergedDashboard.weather.condition = "Warm & Clear";
+            mergedDashboard.weather.conditionIcon = "☀️";
+          } else if (mergedDashboard.weather.temperature >= 20) {
+            mergedDashboard.weather.condition = "Partly Cloudy";
+            mergedDashboard.weather.conditionIcon = "⛅";
+          } else {
+            mergedDashboard.weather.condition = "Clear & Mild";
+            mergedDashboard.weather.conditionIcon = "🌤";
+          }
+        }
+
+        // 2. Connect live earthquake reports from /api/dashboard/earth_quakes
+        if (earthquakesData?.reports) {
+          const reports = earthquakesData.reports;
+          if (
+            typeof reports === "object" &&
+            reports !== null &&
+            Object.keys(reports).length > 0
+          ) {
+            const topEvent = Object.entries(reports)[0];
+            mergedDashboard.weather.stormAlert = `🚨 Live USGS Alert: M${topEvent[1]} earthquake recorded near ${topEvent[0]}`;
+            mergedDashboard.risk.message = `Active USGS seismic event (M${topEvent[1]}) in monitored perimeter`;
+          } else {
+            mergedDashboard.weather.stormAlert = `USGS Seismic Monitor: No recent earthquakes detected in 500km radius`;
+          }
+        }
+
+        // 3. Connect live location from backend /location
+        if (locationData?.name || locationData?.city) {
+          const locCity = locationData.city || locationData.name || mergedDashboard.location.name;
+          const locRegion = locationData.full_region || locationData.region || mergedDashboard.location.region;
+          mergedDashboard.location.name = locCity;
+          mergedDashboard.location.region = locRegion;
+          mergedDashboard.weather.location = `${locCity}, ${locRegion}`;
+        }
+
+        if (locationData?.location) {
+          const [latStr, lngStr] = locationData.location.split(",");
+          const lat = parseFloat(latStr);
+          const lng = parseFloat(lngStr);
+          if (!isNaN(lat) && !isNaN(lng)) {
+            mergedDashboard.location.coordinates = { lat, lng };
+          }
+        }
+
+        if (isMounted) {
+          setDashboard(mergedDashboard);
+        }
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to load dashboard"
-        );
+        if (isMounted && !isBackground) {
+          setError(
+            err instanceof Error ? err.message : "Failed to load dashboard"
+          );
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted && !isBackground) {
+          setIsLoading(false);
+        }
       }
     };
 
-    void loadDashboard();
+    void loadDashboard(false);
+
+    // Refresh every 20 seconds for live updates
+    const interval = setInterval(() => {
+      void loadDashboard(true);
+    }, 20000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const handleIncidentSubmit = async (data: {
@@ -151,7 +272,9 @@ export default function DisasterDashboard() {
               Good morning, {dashboard.user.name.split(" ")[0]}
             </h1>
             <div className="mt-1.5 flex flex-wrap items-center gap-2.5 text-[13px] text-[#8AA68F]">
-              <span>📍 {dashboard.location.name} — {dashboard.location.region}</span>
+              <span>
+                📍 {dashboard.location.name} — {dashboard.location.region}
+              </span>
               <span>•</span>
               <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#B7CBB2]">
                 <span className="h-2 w-2 rounded-full bg-[#4CAF6D] animate-pulse" />
