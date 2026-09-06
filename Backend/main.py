@@ -75,7 +75,7 @@ def login_page(user: login):
     database = get_collection()
     found_user = None
     
-    if database["user"] is not None:
+    if database is not None:
         try:
             normalized_email = user.email.strip().lower()
             found_user = database["user"].find_one({"email": normalized_email})
@@ -170,7 +170,7 @@ def report_incident(data: dict):
     collection=database["disaster_reports"]
     disaster_type = data.get("disasterType", "Disaster")
     location = data.get("location", "specified location")
-    t=len(collection.list_indexes())
+    t=len(list(collection.list_indexes()))
     try:
         collection.insert_one({"disaster_type":disaster_type,"location":location,"IncidentId":t+100})
     except Exception as e:
@@ -183,7 +183,6 @@ def report_incident(data: dict):
             "teamNotified": True
         }
 
-app = FastAPI()
 connections = []
 
 @app.websocket("/ws")
