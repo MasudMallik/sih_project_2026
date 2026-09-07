@@ -333,7 +333,7 @@ export default function LandslideRiskPage() {
               Predict Landslide Vulnerability
             </h1>
             <p className="mt-3 text-sm leading-relaxed text-[#B7CBB2] sm:text-base">
-              Submit geological, seismic, and hydrological telemetry to run real-time inference through the trained Random Forest AI early warning model.
+              Submit geological, seismic, and hydrological telemetry to run real-time inference.
             </p>
           </div>
         </section>
@@ -373,9 +373,6 @@ export default function LandslideRiskPage() {
                   <h2 className="font-display text-lg font-bold text-[#F4EFE4]">
                     Geotechnical & Climate Parameters
                   </h2>
-                  <p className="text-xs text-[#8AA68F]">
-                    All 9 parameters are strictly required by the Random Forest model
-                  </p>
                 </div>
                 <button
                   type="button"
@@ -482,7 +479,7 @@ export default function LandslideRiskPage() {
                   {isPredicting ? (
                     <>
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#09170E] border-t-transparent" />
-                      <span>Running Random Forest Model Inference...</span>
+                      <span>AI Predicting in Progress...</span>
                     </>
                   ) : (
                     <>
@@ -579,10 +576,6 @@ export default function LandslideRiskPage() {
 
                     {/* Model Metadata */}
                     <div className="rounded-2xl border border-[#223B29] bg-[#0E1F17]/60 p-4">
-                      <div className="flex items-center justify-between text-xs text-[#8AA68F]">
-                        <span>Model Classifier</span>
-                        <span className="font-semibold text-[#F4EFE4]">RandomForestClassifier</span>
-                      </div>
                       <div className="mt-2 flex items-center justify-between text-xs text-[#8AA68F]">
                         <span>Evaluated At</span>
                         <span className="font-semibold text-[#F4EFE4]">{assessment.evaluatedAt}</span>
