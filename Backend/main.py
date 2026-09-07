@@ -21,6 +21,7 @@ from Backend.risk_map import router as riskmap_router
 from Backend.ai_prediction import router as prediction_router
 
 emergency_router = import_module("Backend.emergency-response").router
+from Backend.govt_routes import router as govt_router
 
 app = FastAPI(title="Geo Rakshak API")
 
@@ -50,6 +51,7 @@ app.include_router(profile_router)
 app.include_router(riskmap_router)
 app.include_router(prediction_router)
 app.include_router(emergency_router)
+app.include_router(govt_router)
 
 # In-memory user fallback if MongoDB is not reachable
 in_memory_users = {}

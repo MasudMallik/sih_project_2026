@@ -52,10 +52,17 @@ export function GeoRakshakHeader({ activeItem }: GeoRakshakHeaderProps) {
         <nav className="hidden ml-auto items-center gap-[34px] min-[861px]:flex">
           {navItems.map(([label, id]) => <a key={id} href={`#${id}`} onClick={(event) => handleSectionClick(event, id)} className="text-[15px] font-medium text-moss transition-colors duration-200 hover:text-cream">{label}</a>)}
           {activeItem === "response" && <span className="border-b border-gold pb-1 text-[15px] font-semibold text-cream">Response Center</span>}
+          <a
+            href="/govt/login"
+            className="ml-2 flex items-center gap-1.5 rounded-full border border-[rgba(74,222,128,0.4)] bg-[rgba(74,222,128,0.08)] px-4 py-1.5 text-[13px] font-semibold text-[#4ade80] transition-all hover:border-[#4ade80] hover:bg-[rgba(74,222,128,0.15)]"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-[#4ade80]" />
+            Govt Official
+          </a>
         </nav>
         <button type="button" aria-label="Toggle navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)} className="hidden text-2xl text-cream max-[860px]:block">{menuOpen ? "×" : "☰"}</button>
       </div>
-      {menuOpen && <nav className="border-t border-[rgba(244,239,228,0.12)] px-8 py-4 min-[861px]:hidden">{navItems.map(([label, id]) => <a key={id} href={`#${id}`} onClick={(event) => handleSectionClick(event, id)} className="block py-2 text-moss hover:text-cream">{label}</a>)}</nav>}
+      {menuOpen && <nav className="border-t border-[rgba(244,239,228,0.12)] px-8 py-4 min-[861px]:hidden">{navItems.map(([label, id]) => <a key={id} href={`#${id}`} onClick={(event) => handleSectionClick(event, id)} className="block py-2 text-moss hover:text-cream">{label}</a>)}<a href="/govt/login" className="mt-3 block py-2 font-semibold text-[#4ade80] hover:text-green-300">🏛 Govt Official Portal</a></nav>}
     </header>
   );
 }

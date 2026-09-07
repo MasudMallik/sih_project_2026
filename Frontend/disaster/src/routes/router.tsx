@@ -9,6 +9,12 @@ import LiveRiskMap from "../pages/liveRiskMap.page";
 import AiAnalysisPage from "../pages/aiAnalysis.page";
 import LandslideRiskPage from "../pages/landslide-risk.page";
 import ProtectedRoute from "./ProtectedRoutes";
+import GovtLogin from "../pages/govt/GovtLogin";
+import GovtSignup from "../pages/govt/GovtSignup";
+import GovtDashboard from "../pages/govt/GovtDashboard";
+import GovtProfile from "../pages/govt/GovtProfile";
+import GovtReports from "../pages/govt/GovtReports";
+import ProtectedGovtRoute from "./ProtectedGovtRoute";
 
 const Router = createBrowserRouter([
   {
@@ -22,6 +28,14 @@ const Router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/govt/login",
+    element: <GovtLogin />,
+  },
+  {
+    path: "/govt/signup",
+    element: <GovtSignup />,
   },
   {
     element: <ProtectedRoute />,
@@ -49,6 +63,23 @@ const Router = createBrowserRouter([
       {
         path: "/landslide-risk",
         element: <LandslideRiskPage />,
+      },
+    ],
+  },
+  {
+    element: <ProtectedGovtRoute />,
+    children: [
+      {
+        path: "/govt/dashboard",
+        element: <GovtDashboard />,
+      },
+      {
+        path: "/govt/profile",
+        element: <GovtProfile />,
+      },
+      {
+        path: "/govt/reports",
+        element: <GovtReports />,
       },
     ],
   },
