@@ -115,6 +115,26 @@ export const fetchLiveLocation = async (): Promise<LiveLocationResponse> => {
 };
 
 /**
+ * Fetch live nearby diseases & health metrics: @dashboard_router.get("/diseases") -> /api/dashboard/diseases
+ */
+export const fetchLiveDiseases = async (): Promise<any> => {
+  const token = localStorage.getItem("geo-rakshak:access-token");
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/dashboard/diseases`, {
+      headers: {
+        Accept: "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      credentials: "include",
+    });
+    if (!response.ok) return {};
+    return await response.json();
+  } catch {
+    return {};
+  }
+};
+
+/**
  * Create initial loading state
  */
 export const createLoadingState = (): DashboardLoadingState => ({

@@ -29,7 +29,7 @@ export function getAuthToken(): string | null {
 
 export async function registerUserApi(data: RegisterPayload): Promise<AuthResponse> {
   const normalizedEmail = data.email.trim().toLowerCase();
-  
+
   try {
     const response = await fetch(`${API_BASE_URL}/register`, {
       method: "POST",
@@ -84,7 +84,7 @@ export async function registerUserApi(data: RegisterPayload): Promise<AuthRespon
     if (err instanceof Error && err.message.includes("Registration failed")) {
       throw err;
     }
-    
+
     return {
       success: true,
       email: normalizedEmail,

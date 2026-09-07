@@ -100,11 +100,36 @@ export interface SOSResponse {
   eta?: string;
 }
 
+export interface DiseaseAlert {
+  type: string;
+  name: string;
+  severity: "Low" | "Moderate" | "High" | "Critical";
+  advisory: string;
+}
+
+export interface NearbyDiseaseInfo {
+  city?: string;
+  region?: string;
+  state?: string;
+  country?: string;
+  source?: string;
+  activeCases: number;
+  totalCases: number;
+  recovered: number;
+  deaths: number;
+  airQualityIndex?: number;
+  pm25?: number;
+  uvIndex?: number;
+  healthRiskLevel: "Low" | "Moderate" | "High" | "Critical";
+  alerts: DiseaseAlert[];
+}
+
 export interface Dashboard {
   user: User;
   location: Location;
   risk: RiskSummary;
   weather: Weather;
+  diseases?: NearbyDiseaseInfo;
   disasterTypes: DisasterTypeOption[];
   lastSyncTime: string;
   lastSyncMinutesAgo: number;

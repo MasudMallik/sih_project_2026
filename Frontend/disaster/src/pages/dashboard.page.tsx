@@ -11,6 +11,7 @@ import {
   fetchLiveWeather,
   fetchLiveEarthquakes,
   fetchLiveLocation,
+  fetchLiveDiseases,
 } from "../services/dashboard.service";
 import { submitIncidentReport } from "../services/incident.service";
 import { sendSOS } from "../services/sos.service";
@@ -37,17 +38,19 @@ export default function DisasterDashboard() {
           setError(null);
         }
 
-        // Connect main dashboard, @dashboard_router.get("/weather"), @dashboard_router.get("/earth_quakes"), and /location
-        const [baseData, weatherData, earthquakesData, locationData] =
+        // Connect main dashboard, @dashboard_router.get("/weather"), @dashboard_router.get("/earth_quakes"), @dashboard_router.get("/diseases"), and /location
+        const [baseData, weatherData, earthquakesData, locationData, diseaseData] =
           await Promise.all([
             fetchDashboard(),
             fetchLiveWeather(),
             fetchLiveEarthquakes(),
             fetchLiveLocation(),
+            fetchLiveDiseases(),
           ]);
 
         const mergedDashboard: Dashboard = {
           ...baseData,
+          diseases: diseaseData?.activeCases !== undefined ? diseaseData : baseData.diseases,
           weather: {
             ...baseData.weather,
             stats: { ...baseData.weather.stats },
@@ -151,10 +154,10 @@ export default function DisasterDashboard() {
 
     void loadDashboard(false);
 
-    // Refresh every 20 seconds for live updates
+    // Refresh every 8 seconds for live real-time continuous updates
     const interval = setInterval(() => {
       void loadDashboard(true);
-    }, 20000);
+    }, 8000);
 
     return () => {
       isMounted = false;

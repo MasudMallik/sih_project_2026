@@ -21,6 +21,12 @@ const riskColors: Record<
     text: "text-[#F2C14E]",
     border: "border-[#F2C14E]/40",
   },
+  medium: {
+    hex: "#F2C14E",
+    bg: "bg-[#F2C14E]/15",
+    text: "text-[#F2C14E]",
+    border: "border-[#F2C14E]/40",
+  },
   high: {
     hex: "#EF8A3D",
     bg: "bg-[#EF8A3D]/15",
