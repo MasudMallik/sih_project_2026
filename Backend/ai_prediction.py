@@ -58,8 +58,10 @@ def predict(data: InputData):
         try:
             prediction = model.predict(features)
             prob_arr = model.predict_proba(features)[0]
+            total_prob = float(np.sum(prob_arr))
+            norm_prob = (prob_arr / total_prob) if total_prob > 0 else prob_arr
             # Class 1 is the landslide risk probability
-            hazard_prob = float(prob_arr[1] if len(prob_arr) > 1 else prob_arr[0]) * 100.0
+            hazard_prob = float(norm_prob[1] if len(norm_prob) > 1 else norm_prob[0]) * 100.0
             pred_class = int(prediction[0])
 
             # Classify severity

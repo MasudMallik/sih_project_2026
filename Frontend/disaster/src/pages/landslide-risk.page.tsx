@@ -163,14 +163,14 @@ const FIELDS: FieldConfig[] = [
 ];
 
 const DEFAULT_VALUES: LandslideRiskFormData = {
-  rainfall: 160,
-  slopeAngle: 54,
-  soilSaturation: 0.65,
-  vegetationCover: 0.45,
-  earthquakeActivity: 2.8,
-  proximityToWater: 0.9,
+  rainfall: 0,
+  slopeAngle: 0,
+  soilSaturation: 0,
+  vegetationCover: 0,
+  earthquakeActivity: 0,
+  proximityToWater: 0,
   soilGravel: 0,
-  soilSand: 1,
+  soilSand: 0,
   soilSilt: 0,
 };
 
@@ -234,22 +234,32 @@ export default function LandslideRiskPage() {
       [key]: Number.isNaN(parsed) ? 0 : parsed,
     };
     setValues(updatedValues);
-
-    // Run real-time Zod validation on change
-    const validation = validateLandslideRiskForm(updatedValues);
-    setErrors(validation.errors ?? {});
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
   };
 
   const applyPreset = (presetValues: LandslideRiskFormData) => {
-    setValues(presetValues);
-    const validation = validateLandslideRiskForm(presetValues);
-    setErrors(validation.errors ?? {});
+    setValues({ ...presetValues });
+    setErrors({});
     setAssessment(null);
     setServerError(null);
   };
 
   const handleReset = () => {
-    setValues(DEFAULT_VALUES);
+    setValues({
+      rainfall: 0,
+      slopeAngle: 0,
+      soilSaturation: 0,
+      vegetationCover: 0,
+      earthquakeActivity: 0,
+      proximityToWater: 0,
+      soilGravel: 0,
+      soilSand: 0,
+      soilSilt: 0,
+    });
     setErrors({});
     setAssessment(null);
     setServerError(null);
@@ -434,7 +444,7 @@ export default function LandslideRiskPage() {
                             min={field.min}
                             max={field.max}
                             step={field.step}
-                            value={value === 0 && errors[field.key] ? "" : value}
+                            value={value}
                             onChange={(e) => updateField(field.key, e.target.value)}
                             className={`w-full rounded-xl border bg-[#0E1F17] px-3.5 py-2.5 text-sm text-[#F4EFE4] placeholder-[#4F6854] outline-none transition-all focus:border-[#38E07B] focus:ring-2 focus:ring-[#38E07B]/20 ${
                               error ? "border-red-500/70 bg-red-950/20" : "border-[#223B29]"

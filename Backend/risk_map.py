@@ -60,8 +60,10 @@ def compute_zone_ml_risk(telemetry: dict) -> dict:
             pred = model.predict(features)
             predicted_class = int(pred[0])
             prob_arr = model.predict_proba(features)[0]
+            total_prob = float(np.sum(prob_arr))
+            norm_prob = (prob_arr / total_prob) if total_prob > 0 else prob_arr
             # Class 1 is landslide risk
-            probability = float(prob_arr[1] if len(prob_arr) > 1 else prob_arr[0]) * 100.0
+            probability = float(norm_prob[1] if len(norm_prob) > 1 else norm_prob[0]) * 100.0
         except Exception as e:
             # Fallback heuristic
             score = (
