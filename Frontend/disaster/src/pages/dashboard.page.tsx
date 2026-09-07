@@ -219,7 +219,7 @@ export default function DisasterDashboard() {
           avatar: "—",
         }}
       >
-        <div className="mx-auto max-w-[1200px] px-6 py-8 lg:px-9">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 py-8 lg:px-9">
           <div className="animate-pulse space-y-6">
             <div className="flex justify-between items-center">
               <div className="h-10 w-64 rounded-xl bg-[#2A4632]"></div>
@@ -246,7 +246,7 @@ export default function DisasterDashboard() {
           avatar: "!",
         }}
       >
-        <div className="mx-auto max-w-[1200px] px-6 py-8 lg:px-9">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 py-8 lg:px-9">
           <div className="rounded-2xl border border-red-400/40 bg-red-950/40 p-6 shadow-2xl">
             <h2 className="mb-2 text-xl font-semibold text-red-200">
               Unable to Load Dashboard
@@ -267,7 +267,7 @@ export default function DisasterDashboard() {
       onProfileClick={() => navigate("/profile")}
     >
       {/* Main Dashboard Container */}
-      <div className="mx-auto max-w-[1200px] px-6 py-6 pb-[60px] lg:px-9 lg:py-8">
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 py-6 pb-[60px] lg:px-9 lg:py-8">
         {/* Header Row: Greeting, Status, and AI Action */}
         <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>

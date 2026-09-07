@@ -205,7 +205,7 @@ export function IncidentReportForm({
         )}
 
         {/* Action Buttons */}
-        <div className="flex gap-3 pt-2">
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
             type="submit"
             disabled={isLoading || submitting || !location || !selectedType}

@@ -75,7 +75,7 @@ export default function EmergencyResponse() {
           backgroundAttachment: "fixed",
         }}
       >
-        <main className="mx-auto max-w-[1180px] px-5 py-8 lg:px-8 lg:py-12">
+        <main className="mx-auto max-w-[1180px] px-4 sm:px-5 py-6 sm:py-8 lg:px-8 lg:py-12">
           <section className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <div><p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-gold"><LocateFixed size={14} /> {userLocationName} response network</p><h1 className="font-display text-4xl leading-tight text-white sm:text-5xl">Emergency response center</h1><p className="mt-4 max-w-2xl text-sm leading-6 text-cream-dim">Coordinate verified emergency information and monitor the response network from one place.</p></div>
           </section>

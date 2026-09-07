@@ -296,7 +296,7 @@ export default function LandslideRiskPage() {
     <div className="min-h-screen bg-[#0E1F17] font-body text-[#F4EFE4] antialiased selection:bg-[#C98A3C]/30 selection:text-[#F4EFE4]">
       {/* Top Navigation Header */}
       <header className="sticky top-0 z-40 border-b border-[#223B29] bg-[#0E1F17]/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1240px] items-center justify-between px-6 py-4 lg:px-9">
+        <div className="mx-auto flex max-w-[1240px] items-center justify-between px-4 sm:px-6 py-4 lg:px-9">
           <div className="flex items-center gap-6">
             <Brand />
           </div>
@@ -314,10 +314,10 @@ export default function LandslideRiskPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1240px] px-6 py-8 lg:px-9 lg:py-10">
+      <main className="mx-auto max-w-[1240px] px-4 sm:px-6 py-8 lg:px-9 lg:py-10">
         {/* Hero Section Banner */}
         <section
-          className="relative mb-8 overflow-hidden rounded-3xl border border-[#223B29] bg-[#132A1C] p-8 shadow-2xl lg:p-10"
+          className="relative mb-8 overflow-hidden rounded-3xl border border-[#223B29] bg-[#132A1C] p-6 sm:p-8 shadow-2xl lg:p-10"
           style={{
             backgroundImage: `linear-gradient(105deg, rgba(14,31,23,0.96) 0%, rgba(14,31,23,0.85) 50%, rgba(14,31,23,0.4) 100%), url(${backgroundImage})`,
             backgroundSize: "cover",
@@ -367,7 +367,7 @@ export default function LandslideRiskPage() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           {/* Parameter Inputs Area */}
           <div className="lg:col-span-7">
-            <div className="rounded-3xl border border-[#223B29] bg-[#132A1C]/90 p-6 shadow-xl sm:p-8">
+            <div className="rounded-3xl border border-[#223B29] bg-[#132A1C]/90 p-5 sm:p-6 shadow-xl lg:p-8">
               <div className="mb-6 flex items-center justify-between border-b border-[#223B29] pb-4">
                 <div>
                   <h2 className="font-display text-lg font-bold text-[#F4EFE4]">
@@ -495,7 +495,7 @@ export default function LandslideRiskPage() {
           {/* Real-Time Assessment Results Area */}
           <div className="lg:col-span-5">
             <div className="sticky top-24 space-y-6">
-              <div className="overflow-hidden rounded-3xl border border-[#223B29] bg-[#132A1C]/90 p-6 shadow-xl sm:p-8">
+              <div className="overflow-hidden rounded-3xl border border-[#223B29] bg-[#132A1C]/90 p-5 sm:p-6 shadow-xl lg:p-8">
                 <div className="mb-6 flex items-center justify-between border-b border-[#223B29] pb-4">
                   <h3 className="font-display text-lg font-bold text-[#F4EFE4]">
                     AI Risk Diagnosis
