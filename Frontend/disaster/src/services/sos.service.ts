@@ -9,11 +9,7 @@ interface UserLocation {
 const getUserLocation = async (): Promise<UserLocation> => {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
-      resolve({
-        lat: 26.1445,
-        lng: 91.7362,
-        accuracy: 50,
-      });
+      resolve({ lat: 26.1445, lng: 91.7362, accuracy: 50 });
       return;
     }
 
@@ -26,11 +22,7 @@ const getUserLocation = async (): Promise<UserLocation> => {
         });
       },
       () => {
-        resolve({
-          lat: 26.1445,
-          lng: 91.7362,
-          accuracy: 50,
-        });
+        resolve({ lat: 26.1445, lng: 91.7362, accuracy: 50 });
       }
     );
   });
@@ -41,13 +33,6 @@ const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").r
 export const sendSOS = async (): Promise<SOSResponse> => {
   try {
     const location = await getUserLocation();
-
-    try {
-      window.location.href = `tel:1078`;
-    } catch {
-      // ignore
-    }
-
     const token = localStorage.getItem("geo-rakshak:access-token");
     const response = await fetch(`${API_BASE_URL}/api/sos`, {
       method: "POST",
@@ -77,16 +62,10 @@ export const sendSOS = async (): Promise<SOSResponse> => {
 
 export const cancelSOS = async (_sosId: string): Promise<SOSResponse> => {
   void _sosId;
-  return {
-    success: false,
-    message: "SOS cancellation not supported by server",
-  };
+  return { success: false, message: "SOS cancellation not supported by server" };
 };
 
 export const getSOSStatus = async (_sosId: string): Promise<SOSResponse> => {
   void _sosId;
-  return {
-    success: false,
-    message: "SOS status check not supported by server",
-  };
+  return { success: false, message: "SOS status check not supported by server" };
 };

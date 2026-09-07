@@ -200,17 +200,38 @@ async def trigger_sos(data: dict = None):
     response = requests.get("https://ipinfo.io")
     data = response.json()
     message = {
-        "message":f"🚨 SOS ALERT 🚨\nA user has triggered an emergency signal. They are in urgent need of help {data.get('city')} "
-,
+        "type": "sos",
+        "message": f"🚨 SOS ALERT 🚨\nA user has triggered an emergency signal. They are in urgent need of help {data.get('city')}"
     }
     try:
-    # Broadcast to all connected clients
+        # Broadcast to all connected clients
         for conn in connections:
             await conn.send_json(message)
     except Exception as e:
-        return {"success":False}
+        return {"success": False}
     else:
-        return {"success":True,"message_sent":"Succesfully notification send"}
+        return {"success": True, "message_sent": "Successfully notification sent"}
+
+@app.post("/api/notify-disaster")
+async def notify_disaster(data: dict):
+    """Endpoint to send disaster alerts to all connected clients via WebSocket.
+    Expected JSON payload: {"disasterType": "Flood", "location": "City Center"}
+    """
+    disaster_type = data.get("disasterType", "Disaster")
+    location = data.get("location", "unknown")
+    alert_message = {
+        "type": "disaster",
+        "disasterType": disaster_type,
+        "location": location,
+        "message": f"⚠️ {disaster_type} reported at {location}. Immediate attention required."
+    }
+    try:
+        for conn in connections:
+            await conn.send_json(alert_message)
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+    else:
+        return {"success": True, "detail": "Disaster alert broadcasted"}
 
 
 @app.get("/location")
