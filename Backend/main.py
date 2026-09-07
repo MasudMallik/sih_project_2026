@@ -55,7 +55,7 @@ app.include_router(govt_router)
 
 # In-memory user fallback if MongoDB is not reachable
 in_memory_users = {}
-print(os.getenv("mongo_db"))
+
 def get_collection():
     mongodb_url = os.getenv("mongo_db") or os.getenv("mongodb_url")
     if not mongodb_url:
@@ -63,7 +63,7 @@ def get_collection():
     try:
         client = MongoClient(mongodb_url, serverSelectionTimeoutMS=2000)
         client.admin.command("ping")
-        database = client.get_database("user")
+        database = client.get_database("user_db")
         return database
     except Exception:
         return None
@@ -172,9 +172,11 @@ def report_incident(data: dict):
     collection=database["disaster_reports"]
     disaster_type = data.get("disasterType", "Disaster")
     location = data.get("location", "specified location")
-    t=len(list(collection.list_indexes()))
+    t = collection.count_documents({})
+    incident_id = f"INC-{t+100}"
+
     try:
-        collection.insert_one({"disaster_type":disaster_type,"location":location,"IncidentId":t+100})
+        collection.insert_one({"disaster_type":disaster_type,"location":location,"IncidentId":incident_id})
     except Exception as e:
         return {"success":False}
     else:

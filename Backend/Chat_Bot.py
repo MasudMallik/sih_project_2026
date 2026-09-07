@@ -24,6 +24,8 @@ router = APIRouter(
     tags=["Chat_Bot"]
 )
 
+
+
 @router.post("/chatbot")
 @router.post("/api/chatbot")
 @router.post("/voice")

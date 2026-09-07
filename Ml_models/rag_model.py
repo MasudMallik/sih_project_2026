@@ -210,6 +210,8 @@ def query_groq_rag(query: str, context_text: str) -> str | None:
         "2. If the user's query is unrelated, out-of-domain, or general trivia (e.g., cooking, movies, coding other software, sports, general chat), you MUST politely refuse and state: "
         "'I am the Geo Rakshak AI Assistant. I can only assist with landslide risk monitoring, disaster management, geological safety, and the Geo Rakshak platform.'\n"
         "3. Use the provided context documents to provide accurate, concise, and structured safety advisories."
+        "Answer clearly in plain text, using simple sentences and paragraphs only.\n"
+        "Do not use markdown, tables, bullet points, or special formatting."
     )
 
     user_prompt = f"Context from Landslide Documents & Geo Rakshak System:\n{context_text}\n\nUser Question: {query}\nAnswer:"
