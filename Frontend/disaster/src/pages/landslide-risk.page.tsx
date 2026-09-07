@@ -162,78 +162,78 @@ const FIELDS: FieldConfig[] = [
   },
 ];
 
-const DEFAULT_VALUES: LandslideRiskFormData = {
-  rainfall: 0,
-  slopeAngle: 0,
-  soilSaturation: 0,
-  vegetationCover: 0,
-  earthquakeActivity: 0,
-  proximityToWater: 0,
-  soilGravel: 0,
-  soilSand: 0,
-  soilSilt: 0,
+type FormValues = Record<FieldKey, string>;
+
+const DEFAULT_FORM_VALUES: FormValues = {
+  rainfall: "",
+  slopeAngle: "",
+  soilSaturation: "",
+  vegetationCover: "",
+  earthquakeActivity: "",
+  proximityToWater: "",
+  soilGravel: "0",
+  soilSand: "0",
+  soilSilt: "0",
 };
 
-const PRESETS = [
+const PRESETS: { name: string; values: FormValues }[] = [
   {
     name: "🌧️ High Hazard Scenario",
     values: {
-      rainfall: 260,
-      slopeAngle: 58,
-      soilSaturation: 0.95,
-      vegetationCover: 0.12,
-      earthquakeActivity: 5.4,
-      proximityToWater: 0.3,
-      soilGravel: 0,
-      soilSand: 0,
-      soilSilt: 1,
+      rainfall: "260",
+      slopeAngle: "58",
+      soilSaturation: "0.95",
+      vegetationCover: "0.12",
+      earthquakeActivity: "5.4",
+      proximityToWater: "0.3",
+      soilGravel: "0",
+      soilSand: "0",
+      soilSilt: "1",
     },
   },
   {
     name: "⚠️ Moderate Slope Scenario",
     values: {
-      rainfall: 160,
-      slopeAngle: 54,
-      soilSaturation: 0.65,
-      vegetationCover: 0.45,
-      earthquakeActivity: 2.8,
-      proximityToWater: 0.9,
-      soilGravel: 0,
-      soilSand: 1,
-      soilSilt: 0,
+      rainfall: "160",
+      slopeAngle: "54",
+      soilSaturation: "0.65",
+      vegetationCover: "0.45",
+      earthquakeActivity: "2.8",
+      proximityToWater: "0.9",
+      soilGravel: "0",
+      soilSand: "1",
+      soilSilt: "0",
     },
   },
   {
     name: "🛡️ Stable Terrain Scenario",
     values: {
-      rainfall: 60,
-      slopeAngle: 51,
-      soilSaturation: 0.15,
-      vegetationCover: 0.90,
-      earthquakeActivity: 0.4,
-      proximityToWater: 1.8,
-      soilGravel: 1,
-      soilSand: 0,
-      soilSilt: 0,
+      rainfall: "60",
+      slopeAngle: "51",
+      soilSaturation: "0.15",
+      vegetationCover: "0.90",
+      earthquakeActivity: "0.4",
+      proximityToWater: "1.8",
+      soilGravel: "1",
+      soilSand: "0",
+      soilSilt: "0",
     },
   },
 ];
 
 export default function LandslideRiskPage() {
   const navigate = useNavigate();
-  const [values, setValues] = useState<LandslideRiskFormData>(DEFAULT_VALUES);
+  const [values, setValues] = useState<FormValues>(DEFAULT_FORM_VALUES);
   const [errors, setErrors] = useState<LandslideRiskFormErrors>({});
   const [isPredicting, setIsPredicting] = useState(false);
   const [assessment, setAssessment] = useState<LandslideRiskAssessment | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
 
   const updateField = (key: FieldKey, raw: string) => {
-    const parsed = raw === "" ? 0 : Number(raw);
-    const updatedValues = {
-      ...values,
-      [key]: Number.isNaN(parsed) ? 0 : parsed,
-    };
-    setValues(updatedValues);
+    setValues((prev) => ({
+      ...prev,
+      [key]: raw,
+    }));
     setErrors((prev) => {
       const next = { ...prev };
       delete next[key];
@@ -241,7 +241,7 @@ export default function LandslideRiskPage() {
     });
   };
 
-  const applyPreset = (presetValues: LandslideRiskFormData) => {
+  const applyPreset = (presetValues: FormValues) => {
     setValues({ ...presetValues });
     setErrors({});
     setAssessment(null);
@@ -249,17 +249,7 @@ export default function LandslideRiskPage() {
   };
 
   const handleReset = () => {
-    setValues({
-      rainfall: 0,
-      slopeAngle: 0,
-      soilSaturation: 0,
-      vegetationCover: 0,
-      earthquakeActivity: 0,
-      proximityToWater: 0,
-      soilGravel: 0,
-      soilSand: 0,
-      soilSilt: 0,
-    });
+    setValues({ ...DEFAULT_FORM_VALUES });
     setErrors({});
     setAssessment(null);
     setServerError(null);
@@ -268,8 +258,20 @@ export default function LandslideRiskPage() {
   const handlePredict = async () => {
     setServerError(null);
 
+    const parsedData = {
+      rainfall: values.rainfall === "" ? Number.NaN : Number(values.rainfall),
+      slopeAngle: values.slopeAngle === "" ? Number.NaN : Number(values.slopeAngle),
+      soilSaturation: values.soilSaturation === "" ? Number.NaN : Number(values.soilSaturation),
+      vegetationCover: values.vegetationCover === "" ? Number.NaN : Number(values.vegetationCover),
+      earthquakeActivity: values.earthquakeActivity === "" ? Number.NaN : Number(values.earthquakeActivity),
+      proximityToWater: values.proximityToWater === "" ? Number.NaN : Number(values.proximityToWater),
+      soilGravel: values.soilGravel === "" ? 0 : Number(values.soilGravel),
+      soilSand: values.soilSand === "" ? 0 : Number(values.soilSand),
+      soilSilt: values.soilSilt === "" ? 0 : Number(values.soilSilt),
+    };
+
     // Validate all fields strictly via Zod schema
-    const validation = validateLandslideRiskForm(values);
+    const validation = validateLandslideRiskForm(parsedData);
     if (!validation.valid || !validation.data) {
       setErrors(validation.errors ?? {});
       return;
@@ -427,7 +429,7 @@ export default function LandslideRiskPage() {
                               type="button"
                               onClick={() => updateField(field.key, String(opt.val))}
                               className={`rounded-xl border py-2 text-xs font-semibold transition-all cursor-pointer ${
-                                value === opt.val
+                                Number(value) === opt.val
                                   ? "border-[#38E07B] bg-[#38E07B]/15 text-[#38E07B] shadow-inner"
                                   : "border-[#223B29] bg-[#0E1F17] text-[#8AA68F] hover:bg-[#162D1F]"
                               }`}
@@ -445,6 +447,7 @@ export default function LandslideRiskPage() {
                             max={field.max}
                             step={field.step}
                             value={value}
+                            onFocus={(e) => e.target.select()}
                             onChange={(e) => updateField(field.key, e.target.value)}
                             className={`w-full rounded-xl border bg-[#0E1F17] px-3.5 py-2.5 text-sm text-[#F4EFE4] placeholder-[#4F6854] outline-none transition-all focus:border-[#38E07B] focus:ring-2 focus:ring-[#38E07B]/20 ${
                               error ? "border-red-500/70 bg-red-950/20" : "border-[#223B29]"

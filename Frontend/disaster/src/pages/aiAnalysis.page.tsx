@@ -232,8 +232,45 @@ function VoicePopup({ open, onClose }: { open: boolean; onClose: () => void }) {
     stopAudioStreams();
   }, [stopAudioStreams]);
 
+  const cancelSpeech = () => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch {
+        // ignore
+      }
+    }
+  };
+
+  const speakReply = (text: string) => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      cancelSpeech();
+      const cleanText = text
+        .replace(/[*#_`~>[\]]/g, "")
+        .replace(/\n+/g, ". ")
+        .trim();
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = "en-IN";
+      utterance.rate = 1.05;
+      utterance.onend = () => {
+        setStatus("idle");
+      };
+      utterance.onerror = () => {
+        setStatus("idle");
+      };
+      window.speechSynthesis.speak(utterance);
+    } else {
+      timersRef.current.push(
+        setTimeout(() => {
+          setStatus("idle");
+        }, 5000)
+      );
+    }
+  };
+
   const handleClose = useCallback(() => {
     clearAllTimers();
+    cancelSpeech();
     cleanUpSpeechRecognition();
     setStatus("idle");
     onClose();
@@ -241,6 +278,7 @@ function VoicePopup({ open, onClose }: { open: boolean; onClose: () => void }) {
 
   const startListening = useCallback(() => {
     clearAllTimers();
+    cancelSpeech();
     cleanUpSpeechRecognition();
     setMicDenied(false);
     isStoppingRef.current = false;
@@ -250,95 +288,81 @@ function VoicePopup({ open, onClose }: { open: boolean; onClose: () => void }) {
 
     if (!SpeechRecognition) {
       setStatus("idle");
-      setCaption("Voice recognition is not supported by your browser. Please use typed input.");
+      setCaption("Voice recognition is not supported in this browser. Please use Chrome, Edge, or text chat.");
       return;
     }
 
-    // Request mic stream to ensure permission state and stream track lifecycle
-    navigator.mediaDevices?.getUserMedia({ audio: true })
-      .then((stream) => {
-        activeStreamRef.current = stream;
-        try {
-          const instance = new SpeechRecognition();
-          recognitionRef.current = instance;
-          instance.continuous = false;
-          instance.interimResults = false;
-          instance.lang = "en-IN";
+    try {
+      const instance = new SpeechRecognition();
+      recognitionRef.current = instance;
+      instance.continuous = false;
+      instance.interimResults = false;
+      instance.lang = "en-IN";
 
-          instance.onresult = async (event) => {
-            if (isStoppingRef.current) return;
-            const transcript = event.results[0]?.[0]?.transcript.trim();
-            cleanUpSpeechRecognition();
+      instance.onresult = async (event) => {
+        if (isStoppingRef.current) return;
+        const transcript = event.results[0]?.[0]?.transcript?.trim();
+        cleanUpSpeechRecognition();
 
-            if (!transcript) {
-              setStatus("idle");
-              setCaption("No voice detected. Tap microphone to try again.");
-              return;
-            }
-
-            setStatus("processing");
-            setCaption(`"${transcript}"`);
-
-            try {
-              const reply = await sendUserMessage(transcript, true);
-              if (reply) {
-                setStatus("speaking");
-                setCaption(reply);
-                timersRef.current.push(
-                  setTimeout(() => {
-                    setStatus("idle");
-                  }, 4000)
-                );
-              } else {
-                setStatus("idle");
-                setCaption("Assistant response unavailable. Tap microphone to speak again.");
-              }
-            } catch {
-              setStatus("idle");
-              setCaption("Failed to fetch response. Check network connection.");
-            }
-          };
-
-          instance.onerror = (evt) => {
-            cleanUpSpeechRecognition();
-            setStatus("idle");
-            if (evt.error === "not-allowed" || evt.error === "permission-denied") {
-              setMicDenied(true);
-              setCaption("Microphone access was denied. Please allow microphone access in your browser settings.");
-            } else if (evt.error === "no-speech") {
-              setCaption("No speech detected. Tap orb to try speaking again.");
-            } else {
-              setCaption(`Voice error (${evt.error}). Tap orb to try again.`);
-            }
-          };
-
-          instance.onend = () => {
-            cleanUpSpeechRecognition();
-            if (status === "listening") {
-              setStatus("idle");
-            }
-          };
-
-          instance.start();
-          setStatus("listening");
-          setCaption("Listening… speak now.");
-        } catch {
-          cleanUpSpeechRecognition();
+        if (!transcript) {
           setStatus("idle");
-          setCaption("Could not initialize speech recognition. Use text input.");
+          setCaption("No speech detected. Tap the orb to try speaking again.");
+          return;
         }
-      })
-      .catch((err) => {
+
+        setStatus("processing");
+        setCaption(`"${transcript}"`);
+
+        try {
+          const reply = await sendUserMessage(transcript, true);
+          if (reply) {
+            setStatus("speaking");
+            setCaption(reply);
+            speakReply(reply);
+          } else {
+            setStatus("idle");
+            setCaption("Assistant response unavailable. Tap microphone to speak again.");
+          }
+        } catch {
+          setStatus("idle");
+          setCaption("Failed to connect to assistant. Please check backend connection.");
+        }
+      };
+
+      instance.onerror = (evt) => {
+        cleanUpSpeechRecognition();
         setStatus("idle");
-        setMicDenied(true);
-        setCaption("Microphone permission denied or device unavailable.");
-        console.error("Microphone permission error:", err);
-      });
+        if (evt.error === "not-allowed" || evt.error === "permission-denied") {
+          setMicDenied(true);
+          setCaption("Microphone access was denied. Please allow microphone permissions in browser settings.");
+        } else if (evt.error === "no-speech") {
+          setCaption("No voice detected. Tap the orb to speak.");
+        } else {
+          setCaption(`Voice error (${evt.error}). Tap the orb to try again.`);
+        }
+      };
+
+      instance.onend = () => {
+        cleanUpSpeechRecognition();
+        if (status === "listening") {
+          setStatus("idle");
+        }
+      };
+
+      instance.start();
+      setStatus("listening");
+      setCaption("Listening… speak now.");
+    } catch {
+      cleanUpSpeechRecognition();
+      setStatus("idle");
+      setCaption("Could not initialize voice recognition. Please use text chat.");
+    }
   }, [cleanUpSpeechRecognition, sendUserMessage, status]);
 
   const handleOrbTap = () => {
     if (status === "listening" || status === "processing" || status === "speaking") {
       clearAllTimers();
+      cancelSpeech();
       cleanUpSpeechRecognition();
       setStatus("idle");
       setCaption("Paused — tap the orb to start speaking.");
