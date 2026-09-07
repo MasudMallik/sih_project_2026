@@ -287,11 +287,6 @@ export default function LandslideRiskPage() {
         <div className="mx-auto flex max-w-[1240px] items-center justify-between px-6 py-4 lg:px-9">
           <div className="flex items-center gap-6">
             <Brand />
-            <span className="hidden h-5 w-[1px] bg-[#223B29] sm:inline-block" />
-            <span className="hidden items-center gap-2 rounded-full border border-[#C98A3C]/30 bg-[#C98A3C]/10 px-3 py-1 text-xs font-semibold text-[#E3A63F] sm:inline-flex">
-              <BrainCircuit size={13} />
-              AI Risk Engine v2.4 (Zod Validated)
-            </span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -325,11 +320,6 @@ export default function LandslideRiskPage() {
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#F4EFE4] sm:text-3xl lg:text-4xl">
               Geotechnical Inference Model
             </h1>
-            <p className="mt-3 text-sm leading-relaxed text-[#B7CBB2] sm:text-base">
-              Enter the validated environmental and geological metrics below. All inputs default to{" "}
-              <code className="rounded bg-black/40 px-1.5 py-0.5 text-xs text-[#E3A63F]">0</code> and
-              are strictly enforced with Zod schemas.
-            </p>
 
             {/* Quick Presets */}
             <div className="mt-6 flex flex-wrap items-center gap-2.5">
@@ -369,9 +359,6 @@ export default function LandslideRiskPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-[#F4EFE4]">Input Parameters</h2>
-                  <p className="text-xs text-[#8AA68F]">
-                    Strict Zod validation enforces permissible value boundaries
-                  </p>
                 </div>
               </div>
             </div>
