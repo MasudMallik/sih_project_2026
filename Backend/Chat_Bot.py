@@ -26,6 +26,8 @@ router = APIRouter(
 
 @router.post("/chatbot")
 @router.post("/api/chatbot")
+@router.post("/voice")
+@router.post("/api/voice")
 def chatbot(data: ChatRequest):
     if not data.question or not data.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty")

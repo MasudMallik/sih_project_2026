@@ -6,7 +6,7 @@ export interface ChatResponse {
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
-export async function sendChatMessage(message: string): Promise<string> {
+async function postToApi(endpoints: string[], message: string): Promise<string> {
   const token = localStorage.getItem("geo-rakshak:access-token");
   const headers = {
     Accept: "application/json",
@@ -14,7 +14,6 @@ export async function sendChatMessage(message: string): Promise<string> {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
-  const endpoints = [`${API_BASE_URL}/api/chatbot`, `${API_BASE_URL}/chatbot`];
   let lastError: Error | null = null;
 
   for (const endpoint of endpoints) {
@@ -41,4 +40,23 @@ export async function sendChatMessage(message: string): Promise<string> {
   }
 
   throw lastError || new Error("The assistant returned an invalid response.");
+}
+
+export async function sendChatMessage(message: string): Promise<string> {
+  const endpoints = [
+    `${API_BASE_URL}/api/chatbot`,
+    `${API_BASE_URL}/chatbot`,
+    `${API_BASE_URL}/api/voice`,
+  ];
+  return postToApi(endpoints, message);
+}
+
+export async function sendVoiceMessage(message: string): Promise<string> {
+  const endpoints = [
+    `${API_BASE_URL}/api/voice`,
+    `${API_BASE_URL}/voice`,
+    `${API_BASE_URL}/api/chatbot`,
+    `${API_BASE_URL}/chatbot`,
+  ];
+  return postToApi(endpoints, message);
 }
