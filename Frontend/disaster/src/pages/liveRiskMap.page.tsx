@@ -83,12 +83,23 @@ export default function LiveRiskMap() {
         kind: "sensor" as const,
         coordinate: sensor.coordinate,
       })),
-      ...data.roads.map((road) => ({
-        id: road.id,
-        name: road.name,
-        type: "Road",
-        kind: "road" as const,
-      })),
+      ...data.roads.map((road) => {
+        let midCoord: { lat: number; lng: number } | undefined = undefined;
+        if (road.geometry?.coordinates && Array.isArray(road.geometry.coordinates) && road.geometry.coordinates.length > 0) {
+          const coords = road.geometry.coordinates as number[][];
+          const mid = coords[Math.floor(coords.length / 2)];
+          if (Array.isArray(mid) && mid.length >= 2) {
+            midCoord = { lat: mid[1], lng: mid[0] };
+          }
+        }
+        return {
+          id: road.id,
+          name: road.name,
+          type: `${road.riskLevel ?? "Monitored"} Corridor`,
+          kind: "road" as const,
+          coordinate: midCoord,
+        };
+      }),
     ];
   }, [data]);
 

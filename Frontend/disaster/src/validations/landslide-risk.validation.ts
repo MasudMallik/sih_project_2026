@@ -6,32 +6,32 @@ export const landslideRiskFormSchema = z.object({
     .number({ message: "Rainfall must be a valid number" })
     .min(50, "Rainfall must be between 50 and 300 mm")
     .max(300, "Rainfall must be between 50 and 300 mm")
-    .default(0),
+    .default(160),
   slopeAngle: z.coerce
     .number({ message: "Slope angle must be a valid number" })
     .min(50, "Slope angle must be between 50 and 60°")
     .max(60, "Slope angle must be between 50 and 60°")
-    .default(0),
+    .default(54),
   soilSaturation: z.coerce
     .number({ message: "Soil saturation must be a valid number" })
     .min(0, "Soil saturation must be between 0 and 1")
     .max(1, "Soil saturation must be between 0 and 1")
-    .default(0),
+    .default(0.65),
   vegetationCover: z.coerce
     .number({ message: "Vegetation cover must be a valid number" })
     .min(0, "Vegetation cover must be between 0 and 1")
     .max(1, "Vegetation cover must be between 0 and 1")
-    .default(0),
+    .default(0.45),
   earthquakeActivity: z.coerce
     .number({ message: "Earthquake activity must be a valid number" })
     .min(0, "Earthquake activity must be between 0 and 7")
     .max(7, "Earthquake activity must be between 0 and 7")
-    .default(0),
+    .default(2.8),
   proximityToWater: z.coerce
     .number({ message: "Proximity to water must be a valid number" })
     .min(0, "Proximity to water must be between 0 and 2")
     .max(2, "Proximity to water must be between 0 and 2")
-    .default(0),
+    .default(0.9),
   soilGravel: z.coerce
     .number({ message: "Soil Type Gravel must be 0 or 1" })
     .refine((val) => val === 0 || val === 1, "Soil Type Gravel must be 0 or 1")
@@ -39,7 +39,7 @@ export const landslideRiskFormSchema = z.object({
   soilSand: z.coerce
     .number({ message: "Soil Type Sand must be 0 or 1" })
     .refine((val) => val === 0 || val === 1, "Soil Type Sand must be 0 or 1")
-    .default(0),
+    .default(1),
   soilSilt: z.coerce
     .number({ message: "Soil Type Silt must be 0 or 1" })
     .refine((val) => val === 0 || val === 1, "Soil Type Silt must be 0 or 1")
@@ -62,6 +62,8 @@ export const aiPredictionResponseSchema = z.object({
   success: z.boolean(),
   prediction: z.number().int(),
   probability: z.number(),
+  riskLevel: z.enum(["Critical", "High", "Moderate", "Low"]).optional(),
+  recommendation: z.string().optional(),
   message: z.string().optional(),
 });
 

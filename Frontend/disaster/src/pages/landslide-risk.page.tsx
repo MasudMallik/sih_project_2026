@@ -113,7 +113,7 @@ const FIELDS: FieldConfig[] = [
     key: "proximityToWater",
     label: "Proximity to Water",
     unit: "km",
-    validRangeText: "0 – 2",
+    validRangeText: "0 – 2 km",
     icon: Waves,
     iconClass: "text-[#6FA8DC]",
     min: 0,
@@ -163,14 +163,14 @@ const FIELDS: FieldConfig[] = [
 ];
 
 const DEFAULT_VALUES: LandslideRiskFormData = {
-  rainfall: 0,
-  slopeAngle: 0,
-  soilSaturation: 0,
-  vegetationCover: 0,
-  earthquakeActivity: 0,
-  proximityToWater: 0,
+  rainfall: 160,
+  slopeAngle: 54,
+  soilSaturation: 0.65,
+  vegetationCover: 0.45,
+  earthquakeActivity: 2.8,
+  proximityToWater: 0.9,
   soilGravel: 0,
-  soilSand: 0,
+  soilSand: 1,
   soilSilt: 0,
 };
 
@@ -318,295 +318,279 @@ export default function LandslideRiskPage() {
               AI-Based Landslide Risk Assessment
             </div>
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#F4EFE4] sm:text-3xl lg:text-4xl">
-              Geotechnical Inference Model
+              Predict Landslide Vulnerability
             </h1>
-
-            {/* Quick Presets */}
-            <div className="mt-6 flex flex-wrap items-center gap-2.5">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#8AA68F]">
-                Quick Scenarios:
-              </span>
-              {PRESETS.map((preset) => (
-                <button
-                  key={preset.name}
-                  type="button"
-                  onClick={() => applyPreset(preset.values)}
-                  className="rounded-lg border border-[#2A4632] bg-[#162D1F]/90 px-3 py-1.5 text-xs font-semibold text-[#E5ECE3] shadow-sm transition-all hover:border-[#C98A3C] hover:bg-[#1E3B29] cursor-pointer"
-                >
-                  {preset.name}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={handleReset}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[#2A4632] bg-[#162D1F]/60 px-3 py-1.5 text-xs font-medium text-[#8AA68F] transition-colors hover:border-red-400/40 hover:bg-red-950/20 hover:text-red-300 cursor-pointer"
-              >
-                <RotateCcw size={12} />
-                Reset (Default: 0)
-              </button>
-            </div>
+            <p className="mt-3 text-sm leading-relaxed text-[#B7CBB2] sm:text-base">
+              Submit geological, seismic, and hydrological telemetry to run real-time inference through the trained Random Forest AI early warning model.
+            </p>
           </div>
         </section>
 
-        {/* Form and AI Result Display */}
+        {/* Preset Scenarios */}
+        <section className="mb-8">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#8AA68F]">
+              Quick Load Preset Hazard Scenarios
+            </h2>
+            <span className="text-xs text-[#8AA68F]/70">Click to autofill valid telemetry</span>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {PRESETS.map((preset) => (
+              <button
+                key={preset.name}
+                type="button"
+                onClick={() => applyPreset(preset.values)}
+                className="flex items-center justify-between rounded-2xl border border-[#223B29] bg-[#132A1C]/80 px-4 py-3 text-left transition-all hover:border-[#C98A3C]/50 hover:bg-[#1A3624] hover:shadow-lg cursor-pointer"
+              >
+                <span className="text-sm font-semibold text-[#F4EFE4]">{preset.name}</span>
+                <span className="rounded-md bg-[#0E1F17] px-2 py-0.5 text-[10px] font-bold text-[#C98A3C]">
+                  LOAD
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Input Form & Results Grid */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          {/* Input Form */}
-          <section className="rounded-3xl border border-[#223B29] bg-[#132A1C]/90 p-6 shadow-xl backdrop-blur-md sm:p-8 lg:col-span-7">
-            <div className="mb-6 flex items-center justify-between border-b border-[#223B29] pb-4">
-              <div className="flex items-center gap-3">
-                <div className="rounded-xl bg-[#C98A3C]/15 p-2.5 text-[#E3A63F]">
-                  <FileText size={20} />
-                </div>
+          {/* Parameter Inputs Area */}
+          <div className="lg:col-span-7">
+            <div className="rounded-3xl border border-[#223B29] bg-[#132A1C]/90 p-6 shadow-xl sm:p-8">
+              <div className="mb-6 flex items-center justify-between border-b border-[#223B29] pb-4">
                 <div>
-                  <h2 className="text-lg font-bold text-[#F4EFE4]">Input Parameters</h2>
+                  <h2 className="font-display text-lg font-bold text-[#F4EFE4]">
+                    Geotechnical & Climate Parameters
+                  </h2>
+                  <p className="text-xs text-[#8AA68F]">
+                    All 9 parameters are strictly required by the Random Forest model
+                  </p>
                 </div>
-              </div>
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                void handlePredict();
-              }}
-              noValidate
-            >
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                {FIELDS.map(
-                  ({
-                    key,
-                    label,
-                    unit,
-                    validRangeText,
-                    icon: Icon,
-                    iconClass,
-                    step,
-                    tooltip,
-                  }) => {
-                    const hasError = Boolean(errors[key]);
-                    return (
-                      <div key={key} className="flex flex-col">
-                        <div className="mb-1.5 flex items-center justify-between">
-                          <label
-                            htmlFor={key}
-                            className="flex items-center gap-1.5 text-xs font-semibold text-[#E5ECE3]"
-                          >
-                            <Icon size={14} className={iconClass} aria-hidden="true" />
-                            <span>{label}</span>
-                            <span className="font-normal text-[#8AA68F]">({unit})</span>
-                          </label>
-                          <span
-                            className="cursor-help text-xs font-semibold text-[#E3A63F]/90 hover:text-[#E3A63F]"
-                            title={tooltip}
-                          >
-                            [{validRangeText}]
-                          </span>
-                        </div>
-
-                        <div className="relative">
-                          <input
-                            id={key}
-                            name={key}
-                            type="number"
-                            step={step}
-                            value={values[key]}
-                            onChange={(event) => updateField(key, event.target.value)}
-                            className={`w-full rounded-xl border bg-[#0E1F17]/80 px-3.5 py-2.5 text-sm font-medium text-[#F4EFE4] outline-none transition-all ${
-                              hasError
-                                ? "border-red-500/80 bg-red-950/30 text-red-100 focus:border-red-400"
-                                : "border-[#2A4632] focus:border-[#C98A3C] focus:bg-[#0E1F17]"
-                            }`}
-                            placeholder="0"
-                          />
-                        </div>
-
-                        {hasError && (
-                          <span className="mt-1 flex items-center gap-1 text-[11px] font-medium text-red-400">
-                            <AlertTriangle size={11} className="shrink-0" />
-                            {errors[key]}
-                          </span>
-                        )}
-                      </div>
-                    );
-                  }
-                )}
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#223B29] px-3 py-1.5 text-xs font-medium text-[#8AA68F] transition-colors hover:bg-[#1A3624] hover:text-[#F4EFE4] cursor-pointer"
+                >
+                  <RotateCcw size={13} />
+                  <span>Reset</span>
+                </button>
               </div>
 
               {serverError && (
-                <div className="mt-6 flex items-center gap-2.5 rounded-xl border border-red-500/40 bg-red-950/30 p-4 text-xs font-medium text-red-200">
-                  <AlertOctagon size={18} className="shrink-0 text-red-400" />
-                  <span>{serverError}</span>
+                <div className="mb-6 flex items-start gap-3 rounded-2xl border border-red-500/40 bg-red-950/40 p-4 text-xs text-red-200">
+                  <AlertOctagon size={16} className="mt-0.5 shrink-0 text-red-400" />
+                  <div>
+                    <strong className="font-semibold text-red-300">Assessment Error: </strong>
+                    {serverError}
+                  </div>
                 </div>
               )}
 
-              <button
-                type="submit"
-                disabled={isPredicting}
-                className="mt-8 flex w-full items-center justify-center gap-2.5 rounded-xl border border-[#E08A3E]/50 bg-gradient-to-r from-[#C98A3C] via-[#E3A63F] to-[#F2A93D] px-6 py-3.5 text-sm font-bold text-[#102419] shadow-lg shadow-[#E3A63F]/20 transition-all hover:scale-[1.01] hover:shadow-[#E3A63F]/35 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
-              >
-                {isPredicting ? (
-                  <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#102419] border-t-transparent" />
-                    <span>Validating & Running Prediction…</span>
-                  </>
-                ) : (
-                  <>
-                    <BrainCircuit size={19} className="text-[#102419]" />
-                    <span>Predict Landslide Risk</span>
-                  </>
-                )}
-              </button>
-            </form>
-          </section>
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                {FIELDS.map((field) => {
+                  const Icon = field.icon;
+                  const error = errors[field.key];
+                  const value = values[field.key];
 
-          {/* Assessment & AI Results Card */}
-          <section className="flex flex-col gap-6 lg:col-span-5">
-            {assessment ? (
-              <div
-                className={`overflow-hidden rounded-3xl border p-6 shadow-2xl transition-all sm:p-8 ${
-                  assessment.riskLevel === "High"
-                    ? "border-red-500/40 bg-[#2A1111]/90 shadow-red-950/30"
-                    : assessment.riskLevel === "Moderate"
-                    ? "border-amber-500/40 bg-[#29200F]/90 shadow-amber-950/30"
-                    : "border-emerald-500/40 bg-[#0F2618]/90 shadow-emerald-950/30"
-                }`}
-              >
-                {/* Result Status Header */}
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`rounded-2xl p-3 ${
-                        assessment.riskLevel === "High"
-                          ? "bg-red-500/20 text-red-400"
-                          : assessment.riskLevel === "Moderate"
-                          ? "bg-amber-500/20 text-amber-400"
-                          : "bg-emerald-500/20 text-emerald-400"
-                      }`}
-                    >
-                      {assessment.riskLevel === "High" ? (
-                        <AlertOctagon size={28} />
-                      ) : assessment.riskLevel === "Moderate" ? (
-                        <AlertTriangle size={28} />
+                  return (
+                    <div key={field.key} className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label
+                          htmlFor={field.key}
+                          className="flex items-center gap-1.5 text-xs font-semibold text-[#D3E0D0]"
+                        >
+                          <Icon size={14} className={field.iconClass} />
+                          <span>{field.label}</span>
+                        </label>
+                        <span className="text-[11px] text-[#8AA68F]/80">
+                          {field.validRangeText}
+                        </span>
+                      </div>
+
+                      {field.isBinary ? (
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            { label: "0 — No", val: 0 },
+                            { label: "1 — Yes", val: 1 },
+                          ].map((opt) => (
+                            <button
+                              key={opt.val}
+                              type="button"
+                              onClick={() => updateField(field.key, String(opt.val))}
+                              className={`rounded-xl border py-2 text-xs font-semibold transition-all cursor-pointer ${
+                                value === opt.val
+                                  ? "border-[#38E07B] bg-[#38E07B]/15 text-[#38E07B] shadow-inner"
+                                  : "border-[#223B29] bg-[#0E1F17] text-[#8AA68F] hover:bg-[#162D1F]"
+                              }`}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
                       ) : (
-                        <ShieldCheck size={28} />
+                        <div className="relative">
+                          <input
+                            id={field.key}
+                            type="number"
+                            min={field.min}
+                            max={field.max}
+                            step={field.step}
+                            value={value === 0 && errors[field.key] ? "" : value}
+                            onChange={(e) => updateField(field.key, e.target.value)}
+                            className={`w-full rounded-xl border bg-[#0E1F17] px-3.5 py-2.5 text-sm text-[#F4EFE4] placeholder-[#4F6854] outline-none transition-all focus:border-[#38E07B] focus:ring-2 focus:ring-[#38E07B]/20 ${
+                              error ? "border-red-500/70 bg-red-950/20" : "border-[#223B29]"
+                            }`}
+                            placeholder={`e.g. ${field.min}`}
+                          />
+                          <span className="pointer-events-none absolute right-3.5 top-2.5 text-xs text-[#8AA68F]">
+                            {field.unit}
+                          </span>
+                        </div>
+                      )}
+
+                      {error && (
+                        <p className="flex items-center gap-1 text-[11px] font-medium text-red-400">
+                          <AlertTriangle size={11} />
+                          <span>{error}</span>
+                        </p>
                       )}
                     </div>
-                    <div>
-                      <span className="text-xs font-semibold uppercase tracking-wider text-[#8AA68F]">
-                        Inference Result
-                      </span>
-                      <h3 className="text-2xl font-bold text-[#F4EFE4]">
-                        {assessment.riskLevel} Risk
-                      </h3>
-                    </div>
-                  </div>
+                  );
+                })}
+              </div>
 
-                  <span className="rounded-lg border border-white/10 bg-black/30 px-2.5 py-1 text-[11px] font-semibold text-[#B7CBB2]">
-                    {assessment.evaluatedAt}
+              {/* Action Submit Button */}
+              <div className="mt-8">
+                <button
+                  type="button"
+                  onClick={handlePredict}
+                  disabled={isPredicting}
+                  className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#38E07B] to-[#25B55E] px-6 py-4 text-sm font-bold text-[#09170E] shadow-xl transition-all hover:opacity-95 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                >
+                  {isPredicting ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#09170E] border-t-transparent" />
+                      <span>Running Random Forest Model Inference...</span>
+                    </>
+                  ) : (
+                    <>
+                      <BrainCircuit size={18} />
+                      <span>Run AI Risk Assessment</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Real-Time Assessment Results Area */}
+          <div className="lg:col-span-5">
+            <div className="sticky top-24 space-y-6">
+              <div className="overflow-hidden rounded-3xl border border-[#223B29] bg-[#132A1C]/90 p-6 shadow-xl sm:p-8">
+                <div className="mb-6 flex items-center justify-between border-b border-[#223B29] pb-4">
+                  <h3 className="font-display text-lg font-bold text-[#F4EFE4]">
+                    AI Risk Diagnosis
+                  </h3>
+                  <span className="rounded-full bg-[#38E07B]/15 px-2.5 py-0.5 text-[10px] font-bold text-[#38E07B]">
+                    LIVE MODEL
                   </span>
                 </div>
 
-                {/* Probability Meter */}
-                <div className="mt-6 rounded-2xl border border-white/10 bg-black/25 p-5">
-                  <div className="flex items-center justify-between text-xs font-bold">
-                    <span className="text-[#8AA68F]">AI Probability Score</span>
-                    <span
-                      className={`text-base font-extrabold ${
-                        assessment.riskLevel === "High"
-                          ? "text-red-400"
+                {!assessment ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-[#223B29] bg-[#0E1F17] text-[#8AA68F]">
+                      <FileText size={24} />
+                    </div>
+                    <h4 className="text-sm font-semibold text-[#F4EFE4]">
+                      Awaiting Input Telemetry
+                    </h4>
+                    <p className="mt-1 max-w-xs text-xs text-[#8AA68F]">
+                      Fill in the 9 parameters or select a quick preset scenario to trigger the ML classification engine.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {/* Severity Card */}
+                    <div
+                      className={`rounded-2xl border p-5 ${
+                        assessment.riskLevel === "Critical"
+                          ? "border-red-500/50 bg-red-950/30 text-red-200"
+                          : assessment.riskLevel === "High"
+                          ? "border-orange-500/50 bg-orange-950/30 text-orange-200"
                           : assessment.riskLevel === "Moderate"
-                          ? "text-amber-400"
-                          : "text-emerald-400"
+                          ? "border-amber-500/50 bg-amber-950/30 text-amber-200"
+                          : "border-emerald-500/50 bg-emerald-950/30 text-emerald-200"
                       }`}
                     >
-                      {assessment.probability.toFixed(1)}%
-                    </span>
-                  </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider opacity-80">
+                          Assessed Risk Level
+                        </span>
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-extrabold uppercase tracking-wider ${
+                            assessment.riskLevel === "Critical"
+                              ? "bg-red-500 text-black"
+                              : assessment.riskLevel === "High"
+                              ? "bg-orange-500 text-black"
+                              : assessment.riskLevel === "Moderate"
+                              ? "bg-amber-400 text-black"
+                              : "bg-emerald-400 text-black"
+                          }`}
+                        >
+                          {assessment.riskLevel}
+                        </span>
+                      </div>
 
-                  <div className="mt-3 h-3.5 w-full overflow-hidden rounded-full bg-[#162D1F]">
-                    <div
-                      className={`h-full rounded-full transition-all duration-700 ease-out ${
-                        assessment.riskLevel === "High"
-                          ? "bg-gradient-to-r from-orange-500 to-red-500"
-                          : assessment.riskLevel === "Moderate"
-                          ? "bg-gradient-to-r from-amber-500 to-orange-400"
-                          : "bg-gradient-to-r from-teal-500 to-emerald-400"
-                      }`}
-                      style={{ width: `${Math.min(100, Math.max(5, assessment.probability))}%` }}
-                    />
-                  </div>
+                      <div className="mt-4 flex items-baseline gap-2">
+                        <span className="font-display text-4xl font-extrabold tracking-tight text-[#F4EFE4]">
+                          {assessment.riskLevel === "Critical"
+                            ? "Hazard Alert"
+                            : assessment.riskLevel === "High"
+                            ? "Elevated Risk"
+                            : assessment.riskLevel === "Moderate"
+                            ? "Moderate Alert"
+                            : "Stable Terrain"}
+                        </span>
+                      </div>
+                    </div>
 
-                  <div className="mt-2 flex justify-between text-[10px] font-semibold text-[#6C7D6A]">
-                    <span>0% (Safe)</span>
-                    <span>50% (Hazard Threshold)</span>
-                    <span>100% (Critical)</span>
-                  </div>
-                </div>
+                    {/* Operational Safety Recommendation */}
+                    <div className="rounded-2xl border border-[#223B29] bg-[#0E1F17] p-4.5">
+                      <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#38E07B]">
+                        <ShieldCheck size={14} />
+                        Operational Action Directive
+                      </div>
+                      <p className="text-xs leading-relaxed text-[#D3E0D0]">
+                        {assessment.recommendation}
+                      </p>
+                    </div>
 
-                {/* Recommendation */}
-                <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <div className="mb-2 flex items-center gap-2 text-xs font-bold text-[#F4EFE4]">
-                    <Zap size={14} className="text-[#E3A63F]" />
-                    <span>Tactical Recommendation</span>
+                    {/* Model Metadata */}
+                    <div className="rounded-2xl border border-[#223B29] bg-[#0E1F17]/60 p-4">
+                      <div className="flex items-center justify-between text-xs text-[#8AA68F]">
+                        <span>Model Classifier</span>
+                        <span className="font-semibold text-[#F4EFE4]">RandomForestClassifier</span>
+                      </div>
+                      <div className="mt-2 flex items-center justify-between text-xs text-[#8AA68F]">
+                        <span>Evaluated At</span>
+                        <span className="font-semibold text-[#F4EFE4]">{assessment.evaluatedAt}</span>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-xs leading-relaxed text-[#D6DFD4]">
-                    {assessment.recommendation}
-                  </p>
-                </div>
-
-                {/* Direct Action Links */}
-                <div className="mt-6 flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => navigate("/risk-map")}
-                    className="flex-1 rounded-xl border border-[#2A4632] bg-[#162D1F] py-2.5 text-center text-xs font-bold text-[#E5ECE3] transition-colors hover:border-[#C98A3C] hover:bg-[#1E3B29] cursor-pointer"
-                  >
-                    View Live Risk Map
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => navigate("/emergency-response")}
-                    className="flex-1 rounded-xl border border-red-500/30 bg-red-950/40 py-2.5 text-center text-xs font-bold text-red-200 transition-colors hover:bg-red-900/50 cursor-pointer"
-                  >
-                    Response Center
-                  </button>
-                </div>
+                )}
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-[#223B29] bg-[#132A1C]/50 p-8 text-center sm:p-12">
-                <div className="mb-4 rounded-2xl bg-[#1E3B29] p-4 text-[#8AA68F]">
-                  <BrainCircuit size={40} strokeWidth={1.5} />
+
+              {/* Protocol Note */}
+              <div className="rounded-2xl border border-[#223B29] bg-[#0E1F17] p-5 text-xs text-[#8AA68F]">
+                <div className="mb-1 flex items-center gap-1.5 font-semibold text-[#F4EFE4]">
+                  <CheckCircle2 size={13} className="text-[#38E07B]" />
+                  <span>Verified Geotechnical Envelope</span>
                 </div>
-                <h3 className="text-lg font-bold text-[#F4EFE4]">Ready for Inference</h3>
-                <p className="mt-2 max-w-xs text-xs leading-relaxed text-[#8AA68F]">
-                  All inputs are initialized to <span className="text-[#E3A63F]">0</span>. Fill in the
-                  values within the specified ranges or select a quick scenario, then click &quot;Predict Landslide Risk&quot;.
+                <p className="text-[11.5px] leading-relaxed text-[#8AA68F]">
+                  In accordance with disaster monitoring protocol, calculations adhere to valid parameter envelopes (Rainfall: 50–300 mm, Slope: 50–60°, Soil Saturation: 0–1, Earthquakes: 0–7 magnitude).
                 </p>
-
-                <div className="mt-6 flex flex-col gap-2.5 text-left text-xs text-[#8AA68F]">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
-                    <span>Rainfall: 50 – 300 mm</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
-                    <span>Slope Angle: 50 – 60°</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
-                    <span>Soil Saturation & Vegetation: 0 – 1</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
-                    <span>Earthquake: 0 – 7 | Water: 0 – 2</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
-                    <span>Soil Types (Gravel, Sand, Silt): 0 or 1</span>
-                  </div>
-                </div>
               </div>
-            )}
-          </section>
+            </div>
+          </div>
         </div>
       </main>
     </div>

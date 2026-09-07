@@ -18,16 +18,16 @@ const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").r
  * Heuristic fallback if backend is unreachable or undergoing maintenance
  */
 function calculateFallbackPrediction(data: LandslideRiskInput): AIPredictionResponse {
-  const rainWeight = ((data.Rainfall_mm - 50) / 250.0) * 35.0;
-  const slopeWeight = ((data.Slope_Angle - 50) / 10.0) * 25.0;
+  const rainWeight = (Math.min(300, data.Rainfall_mm) / 250.0) * 35.0;
+  const slopeWeight = (Math.min(65, data.Slope_Angle) / 60.0) * 30.0;
   const satWeight = data.Soil_Saturation * 25.0;
-  const eqWeight = (data.Earthquake_Activity / 7.0) * 15.0;
+  const eqWeight = (Math.min(7, data.Earthquake_Activity) / 7.0) * 15.0;
   const vegOffset = data.Vegetation_Cover * 15.0;
   const soilBonus = data.Soil_Type_Silt === 1 ? 10.0 : data.Soil_Type_Sand === 1 ? 5.0 : 0;
 
   const score = rainWeight + slopeWeight + satWeight + eqWeight - vegOffset + soilBonus;
-  const predictedClass = score > 45 ? 1 : 0;
-  const probability = Math.min(99.0, Math.max(1.0, Math.round(Math.max(1.0, score) * 100) / 100));
+  const probability = Math.min(99.0, Math.max(5.0, Math.round(score * 10) / 10));
+  const predictedClass = probability >= 50.0 ? 1 : 0;
 
   return {
     success: true,
@@ -42,18 +42,28 @@ function calculateFallbackPrediction(data: LandslideRiskInput): AIPredictionResp
  */
 function deriveAssessment(
   prediction: number,
-  probability: number
+  probability: number,
+  backendLevel?: LandslideRiskSeverity,
+  backendRec?: string
 ): { riskLevel: LandslideRiskSeverity; isHazard: boolean; recommendation: string } {
-  const isHazard = prediction === 1 || probability >= 60;
+  if (backendLevel && backendRec) {
+    return {
+      riskLevel: backendLevel,
+      isHazard: prediction === 1 || probability >= 50,
+      recommendation: backendRec,
+    };
+  }
+
+  const isHazard = prediction === 1 || probability >= 50;
 
   let riskLevel: LandslideRiskSeverity = "Low";
   let recommendation = "Terrain conditions are stable. Standard routine surveillance advised.";
 
-  if (probability >= 70 || (isHazard && probability >= 60)) {
-    riskLevel = "High";
+  if (probability >= 75) {
+    riskLevel = "High"; // High/Critical
     recommendation =
       "CRITICAL: High probability of slope failure detected. Issue slope warning, alert disaster management teams, and prepare evacuation corridors.";
-  } else if (probability >= 40 || isHazard) {
+  } else if (probability >= 45 || isHazard) {
     riskLevel = "Moderate";
     recommendation =
       "WARNING: Elevated slope instability detected. Deploy drone surveillance, inspect drainage channels, and monitor precipitation closely.";
@@ -120,7 +130,12 @@ export async function predictLandslideRisk(
 
   // Parse and validate response structure with Zod
   const parsed = aiPredictionResponseSchema.parse(rawData);
-  const { riskLevel, isHazard, recommendation } = deriveAssessment(parsed.prediction, parsed.probability);
+  const { riskLevel, isHazard, recommendation } = deriveAssessment(
+    parsed.prediction,
+    parsed.probability,
+    parsed.riskLevel as LandslideRiskSeverity | undefined,
+    parsed.recommendation
+  );
 
   return {
     riskLevel,

@@ -33,7 +33,7 @@ export interface AIPredictionResponse {
   message?: string;
 }
 
-export type LandslideRiskSeverity = "High" | "Moderate" | "Low";
+export type LandslideRiskSeverity = "Critical" | "High" | "Moderate" | "Low";
 
 export interface LandslideRiskAssessment {
   riskLevel: LandslideRiskSeverity;
