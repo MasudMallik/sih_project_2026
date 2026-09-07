@@ -376,10 +376,10 @@ function ChatSection() {
               <p className="text-sm font-semibold text-[#F4EFE4]">
                 Geo Rakshak AI Assistant
               </p>
-              <p className="text-[12px] flex items-center gap-1.5 font-medium text-[#D9A441]">
-                <span className="w-2 h-2 rounded-full bg-[#34D399] animate-pulse" />
-                Watching regional telemetry & hazard grids in real time
-              </p>
+              <div className="text-[12px] flex items-start sm:items-center gap-1.5 font-medium text-[#D9A441] mt-0.5">
+                <span className="w-2 h-2 rounded-full bg-[#34D399] animate-pulse shrink-0 mt-1 sm:mt-0" />
+                <span className="leading-snug">Watching regional telemetry & hazard grids in real time</span>
+              </div>
             </div>
             {confirmingClear && (
               <span className="text-[11px] whitespace-nowrap font-medium text-[#F2C14E]">
@@ -445,7 +445,7 @@ function ChatSection() {
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
               placeholder="Ask about a village, river, slope, or route…"
-              className="flex-1 px-4 py-2.5 rounded-full text-sm outline-none border border-white/15 bg-[#173123]/90 text-[#F4EFE4] placeholder-[#8AA68F] transition-all focus:border-[#34D399] focus:bg-[#1A3828]"
+              className="flex-1 min-w-0 px-4 py-2.5 rounded-full text-sm outline-none border border-white/15 bg-[#173123]/90 text-[#F4EFE4] placeholder-[#8AA68F] transition-all focus:border-[#34D399] focus:bg-[#1A3828]"
             />
             {/* Small Mic Button beside Send Button */}
             <button
@@ -561,7 +561,7 @@ export default function AiAnalysisPage() {
         `}</style>
 
         <div
-          className="h-[calc(100vh-60px)] flex flex-col overflow-hidden relative"
+          className="h-[calc(100dvh-60px)] flex flex-col overflow-hidden relative w-full"
           style={{
             backgroundImage: `linear-gradient(rgba(7, 20, 14, 0.76), rgba(7, 20, 14, 0.88)), url(${bg3Image})`,
             backgroundPosition: "center",

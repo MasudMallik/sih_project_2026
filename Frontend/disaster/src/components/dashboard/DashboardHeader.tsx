@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { Bot, Cross, LayoutDashboard, MapPinned } from "lucide-react";
+import { Bot, Cross, LayoutDashboard, MapPinned, Menu, X } from "lucide-react";
 import type { User } from "../../@types/interface/dashboard";
 
 interface DashboardHeaderProps {
@@ -25,26 +26,39 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#223B29] bg-[rgba(15,29,20,0.85)] backdrop-blur-sm">
       <div className="flex items-center justify-between px-9 py-[14px] max-md:px-5 max-md:py-3">
-        {/* Brand */}
-        <button
-          type="button"
-          onClick={() => navigate("/dashboard")}
-          className="flex items-center gap-2.5 text-left focus:outline-none"
-        >
-          <span className="h-2.5 w-2.5 rounded-full bg-gold shadow-[0_0_0_4px_rgba(201,138,60,0.25)]" />
-          <div>
-            <div className="text-[18px] font-semibold tracking-tight text-[#EAE7DA]">
-              Geo Rakshak
+        <div className="flex items-center gap-3">
+          {/* Mobile Hamburger Button */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="flex h-9 w-9 items-center justify-center rounded-md bg-[#1F3325] text-[#93A490] transition hover:bg-[#2A4632] hover:text-[#EAE7DA] md:hidden"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+
+          {/* Brand */}
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center gap-2.5 text-left focus:outline-none"
+          >
+            <span className="h-2.5 w-2.5 rounded-full bg-gold shadow-[0_0_0_4px_rgba(201,138,60,0.25)]" />
+            <div>
+              <div className="text-[18px] font-semibold tracking-tight text-[#EAE7DA]">
+                Geo Rakshak
+              </div>
+              <div className="text-[11px] text-[#6C7D6A]">
+                Disaster Response Dashboard
+              </div>
             </div>
-            <div className="text-[11px] text-[#6C7D6A]">
-              Disaster Response Dashboard
-            </div>
-          </div>
-        </button>
+          </button>
+        </div>
 
         {/* Dashboard Navigation Bar — hidden when sidebar layout is active */}
         {!hideNav && (
@@ -95,29 +109,33 @@ export function DashboardHeader({
         </div>
       </div>
 
-      {/* Mobile Nav Bar */}
-      <div className="flex overflow-x-auto border-t border-[#223B29]/60 px-4 py-2 md:hidden">
-        {DASHBOARD_NAV_ITEMS.map((item) => {
-          const isActive = location.pathname === item.path;
-          const Icon = item.icon;
-          return (
-            <button
-              key={item.path}
-              type="button"
-              onClick={() => navigate(item.path)}
-              className={`mr-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-md transition-all ${
-                isActive
-                  ? "bg-[#16281C] text-[#E3A63F]"
-                  : "text-[#93A490]"
-              }`}
-              aria-label={item.label}
-              title={item.label}
-            >
-              <Icon size={18} strokeWidth={1.8} aria-hidden="true" />
-            </button>
-          );
-        })}
-      </div>
+      {/* Mobile Nav Menu (Dropdown) */}
+      {mobileMenuOpen && (
+        <nav className="absolute left-0 top-full w-full border-b border-[#223B29] bg-[#0F1D14] shadow-xl md:hidden" aria-label="Mobile navigation">
+          {DASHBOARD_NAV_ITEMS.map((item) => {
+            const isActive = location.pathname === item.path;
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.path}
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate(item.path);
+                }}
+                className={`flex w-full items-center gap-3 px-5 py-4 transition-all ${
+                  isActive
+                    ? "bg-[#16281C] text-[#E3A63F]"
+                    : "text-[#93A490] hover:bg-[#16281C]/50 hover:text-[#EAE7DA]"
+                }`}
+              >
+                <Icon size={18} strokeWidth={1.8} aria-hidden="true" />
+                <span className="text-[14px] font-medium">{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      )}
     </header>
   );
 }

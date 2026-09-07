@@ -22,15 +22,15 @@ const statusStyles: Record<Incident["status"], string> = {
 export function IncidentList({ incidents, sortDescending, onToggleSort }: IncidentListProps) {
   return (
     <section className="rounded-2xl border border-white/10 bg-[#102419]/85 p-5 shadow-2xl backdrop-blur-md lg:p-6">
-      <div className="mb-5 flex items-center justify-between gap-4">
-        <div>
+      <div className="mb-5 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#d9a441]">Live operations</p>
           <h2 className="mt-1 text-xl font-semibold text-[#f4efe4]">Incident board</h2>
         </div>
         <button
           type="button"
           onClick={onToggleSort}
-          className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs font-medium text-[#b7cbb2] transition hover:border-[#d9a441]/70 hover:text-[#f4efe4]"
+          className="flex shrink-0 items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs font-medium text-[#b7cbb2] transition hover:border-[#d9a441]/70 hover:text-[#f4efe4]"
         >
           Severity {sortDescending ? "high to low" : "low to high"}
           <Clock3 size={14} />
@@ -40,11 +40,11 @@ export function IncidentList({ incidents, sortDescending, onToggleSort }: Incide
       <div className="space-y-3">
         {incidents.map((incident) => (
           <article key={incident.id} className="rounded-xl border border-white/10 bg-[#173123]/80 p-4 transition hover:border-[#d9a441]/40">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-semibold text-[#f4efe4]">{incident.name}</h3>
-                  <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${severityStyles[incident.severityLabel]}`}>
+            <div className="flex flex-wrap items-start justify-between gap-3 min-w-0">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-start sm:items-center gap-2 min-w-0">
+                  <h3 className="font-semibold text-[#f4efe4] break-words">{incident.name}</h3>
+                  <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${severityStyles[incident.severityLabel]}`}>
                     {incident.severityLabel}
                   </span>
                 </div>
